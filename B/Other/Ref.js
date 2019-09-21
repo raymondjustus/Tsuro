@@ -7,16 +7,14 @@ class Ref {
    */
   constructor(value = '') {
     this.value = value;
-    this.type = typeof value;
   }
 
   /**
-   * Sets the value of the ref to the given value. New value
-   * must have the same type as the ref.
+   * Sets the value of the ref to the given value.
    *
-   * If the ref is not of type `function`, can accept a function
-   * that dynamically sets the value. This function will be passed
-   * a single argument equal to the current value of the ref.
+   * Can accept a function that dynamically sets the value. This
+   * function will be passed a single argument equal to the current
+   * value of the ref.
    *
    * Example:
    * ```js
@@ -29,15 +27,10 @@ class Ref {
    * that accepts the current value
    */
   set(value) {
-    const valueType = typeof value;
-    const hasSameType = this.type === valueType;
-
-    if (valueType === 'function' && !hasSameType) {
+    if (typeof value === 'function') {
       this.value = value(this.value);
-    } else if (hasSameType) {
-      this.value = value;
     } else {
-      throw 'New value does not have same type as ref.';
+      this.value = value;
     }
   }
 

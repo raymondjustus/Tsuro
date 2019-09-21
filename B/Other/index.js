@@ -1,13 +1,15 @@
-const getFlag = require('./getFlag');
+require('./polyfills');
+
+// const getFlag = require('./getFlag');
 const getInput = require('./getInput');
+const parseInput = require('./parseInput');
 
 const main = () => {
   try {
-    const flag = getFlag(process.argv);
+    // const flag = getFlag(process.argv);
     getInput().then(input => {
       console.log('---------');
-      console.log(`FLAG: ${flag}`);
-      console.log(`INPUT: ${input}`);
+      parseInput(input);
     });
   } catch (error) {
     console.log(`ERROR: ${error}`);
