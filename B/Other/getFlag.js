@@ -12,16 +12,16 @@ const { FLAG_INDEX, FLAG_TYPES } = require('./constants');
  */
 const getFlag = (args = []) => {
   const hasFlag = args.length > FLAG_INDEX;
-  if (!hasFlag) {
-    throw `You must include an argument ${FLAG_TYPES.UP} or ${FLAG_TYPES.DOWN} flag.`;
+
+  if (hasFlag) {
+    const flag = args[FLAG_INDEX];
+    if (flag !== FLAG_TYPES.DOWN && flag !== FLAG_TYPES.UP) {
+      throw `Your provided flag must be either ${FLAG_TYPES.UP} or ${FLAG_TYPES.DOWN}.`;
+    }
+    return flag;
   }
 
-  const flag = args[FLAG_INDEX];
-  if (flag !== FLAG_TYPES.DOWN && flag !== FLAG_TYPES.UP) {
-    throw `Your provided flag must be either ${FLAG_TYPES.UP} or ${FLAG_TYPES.DOWN}.`;
-  }
-
-  return flag;
+  return null;
 };
 
 module.exports = getFlag;
