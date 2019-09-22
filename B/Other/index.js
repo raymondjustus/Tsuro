@@ -1,12 +1,13 @@
 const Parser = require('./Parser');
 const getFlag = require('./getFlag');
 const getInput = require('./getInput');
+const printItems = require('./printItems');
 const sortItems = require('./sortItems');
 
 /**
  * Main script function. Reads input from stdin, parses it
  * into valid JSON, sorts it based on a given flag, and
- * logs it to stdout.
+ * prints it to stdout.
  */
 const main = () => {
   try {
@@ -15,8 +16,7 @@ const main = () => {
       const parser = new Parser();
       const items = parser.parse(input);
       const sortedItems = sortItems(items, flag);
-      console.log('------------------------------');
-      sortedItems.forEach(item => console.log(JSON.stringify(item)));
+      printItems(sortedItems);
     });
   } catch (error) {
     console.log(`ERROR: ${error}`);
