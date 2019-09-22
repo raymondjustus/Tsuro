@@ -9,7 +9,8 @@ const main = () => {
     // const flag = getFlag(process.argv);
     getInput().then(input => {
       console.log('---------');
-      parseInput(input);
+      const items = parseInput(input);
+      console.log(items);
     });
   } catch (error) {
     console.log(`ERROR: ${error}`);
