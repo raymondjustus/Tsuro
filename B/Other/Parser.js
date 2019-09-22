@@ -11,22 +11,20 @@ const VALID_TYPES_DELIMITER_MAP = Object.keys(VALID_TYPES).reduce((acc, key) => 
   return acc;
 }, {});
 
-/**
- * Parses the input from the user into an array of
- * strings, arrays, and objects.
- *
- * @param {string} input the input from the user
- * @returns {any[]} the parsed input
- */
-const parseInput = input => {
-  // The current item type being parsed
-  let type = null;
+class Parser {
+  /**
+   * Initializes a new Parser object with default values.
+   */
+  constructor() {
+    // The current item type being parsed
+    this.itemType = null;
 
-  // The starting index of a type
-  let startIdx = -1;
+    // The starting index of a type
+    this.startIdx = -1;
 
-  // The current structure level (for objects and arrays)
-  let level = -1;
+    // The current structure level (for objects and arrays)
+    this.itemLevel = -1;
+  }
 
   /**
    * Checks whether the given character ends a string type
@@ -38,8 +36,9 @@ const parseInput = input => {
    * @returns {boolean} whether the given character ends a
    * string type from the given text
    */
-  const doesCharEndString = (char, prevChar) =>
-    char === VALID_TYPES.string.delimiters.end && prevChar !== '\\';
+  _doesCharEndString(char, prevChar) {
+    return char === VALID_TYPES.string.delimiters.end && prevChar !== '\\';
+  }
 
   /**
    * Checks whether the given character ends an array or object
@@ -49,18 +48,18 @@ const parseInput = input => {
    * @returns {boolean} whether the given character ends an
    * array or object type from the given text
    */
-  const doesCharEndObjectOrArray = char => {
-    const { start, end } = VALID_TYPES[type].delimiters;
+  _doesCharEndObjectOrArray(char) {
+    const { start, end } = VALID_TYPES[this.itemType].delimiters;
     if (char === start) {
-      level += 1;
+      this.itemLevel += 1;
     } else if (char === end) {
-      level -= 1;
-      if (level < 0) {
+      this.itemLevel -= 1;
+      if (this.itemLevel < 0) {
         return true;
       }
     }
     return false;
-  };
+  }
 
   /**
    * Checks whether the given character ends a valid type
@@ -73,25 +72,28 @@ const parseInput = input => {
    * @returns {boolean} whether the given character ends a
    * valid type
    */
-  const doesCharEndType = (char, prevChar) => {
-    if (type === VALID_TYPES.string.key) {
-      return doesCharEndString(char, prevChar);
-    } else if (type === VALID_TYPES.object.key || type === VALID_TYPES.array.key) {
-      return doesCharEndObjectOrArray(char);
+  _doesCharEndType(char, prevChar) {
+    if (this.itemType === VALID_TYPES.string.key) {
+      return this._doesCharEndString(char, prevChar);
+    } else if (
+      this.itemType === VALID_TYPES.object.key ||
+      this.itemType === VALID_TYPES.array.key
+    ) {
+      return this._doesCharEndObjectOrArray(char);
     } else {
       throw 'JSON type not valid. Please pass only strings, arrays, or objects.';
     }
-  };
+  }
 
   /**
    * Resets the parser variables to be able to start
    * checking for a new typed item.
    */
-  const resetParser = () => {
-    startIdx = -1;
-    level = -1;
-    type = null;
-  };
+  _reset() {
+    this.startIdx = -1;
+    this.itemLevel = -1;
+    this.itemType = null;
+  }
 
   /**
    * Parses the input from the user into an array of
@@ -100,36 +102,34 @@ const parseInput = input => {
    * @param {string} input the input from the user
    * @returns {any[]} the parsed input
    */
-  const parse = input => {
+  parse(input) {
     const items = [];
 
     const text = input.trim();
     const chars = text.split('');
 
     chars.forEach((char, i) => {
-      if (!type) {
+      if (!this.itemType) {
         const foundType = VALID_TYPES_DELIMITER_MAP[char];
         if (foundType) {
-          type = foundType;
-          startIdx = i;
-          level += 1;
+          this.itemType = foundType;
+          this.startIdx = i;
+          this.itemLevel += 1;
         }
-      } else if (doesCharEndType(char, chars[i - 1])) {
-        const item = text.slice(startIdx, i + 1);
+      } else if (this._doesCharEndType(char, chars[i - 1])) {
+        const item = text.slice(this.startIdx, i + 1);
         items.push(JSON.parse(item));
-
-        resetParser();
+        this._reset();
       }
     });
 
-    if (startIdx >= 0) {
+    if (this.startIdx >= 0) {
       throw 'Unable to parse given value. Check for closing brackets or quotations.';
     }
 
+    this._reset();
     return items;
-  };
+  }
+}
 
-  return parse(input);
-};
-
-module.exports = parseInput;
+module.exports = Parser;

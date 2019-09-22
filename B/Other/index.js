@@ -1,13 +1,14 @@
+const Parser = require('./Parser');
 // const getFlag = require('./getFlag');
 const getInput = require('./getInput');
-const parseInput = require('./parseInput');
 
 const main = () => {
   try {
     // const flag = getFlag(process.argv);
     getInput().then(input => {
       console.log('---------');
-      const items = parseInput(input);
+      const parser = new Parser();
+      const items = parser.parse(input);
       console.log(items);
     });
   } catch (error) {
