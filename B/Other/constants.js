@@ -5,7 +5,7 @@ exports.FLAG_TYPES = {
   UP: '-up',
 };
 
-exports.VALID_TYPES = {
+exports.ITEM_TYPES = {
   array: {
     key: 'array',
     delimiters: {

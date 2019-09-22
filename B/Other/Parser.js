@@ -1,10 +1,10 @@
-const { VALID_TYPES } = require('./constants');
+const { ITEM_TYPES } = require('./constants');
 
 /**
  * Map for starting delimiter to the valid type key.
  */
-const VALID_TYPES_DELIMITER_MAP = Object.keys(VALID_TYPES).reduce((acc, key) => {
-  const delimiter = VALID_TYPES[key].delimiters.start;
+const ITEM_TYPES_DELIMITER_MAP = Object.keys(ITEM_TYPES).reduce((acc, key) => {
+  const delimiter = ITEM_TYPES[key].delimiters.start;
   acc = Object.assign(acc, {
     [delimiter]: key,
   });
@@ -37,7 +37,7 @@ class Parser {
    * string type from the given text
    */
   _doesCharEndString(char, prevChar) {
-    return char === VALID_TYPES.string.delimiters.end && prevChar !== '\\';
+    return char === ITEM_TYPES.string.delimiters.end && prevChar !== '\\';
   }
 
   /**
@@ -49,7 +49,7 @@ class Parser {
    * array or object type from the given text
    */
   _doesCharEndObjectOrArray(char) {
-    const { start, end } = VALID_TYPES[this.itemType].delimiters;
+    const { start, end } = ITEM_TYPES[this.itemType].delimiters;
     if (char === start) {
       this.itemLevel += 1;
     } else if (char === end) {
@@ -72,13 +72,10 @@ class Parser {
    * @returns {boolean} whether the given character ends a
    * valid type
    */
-  _doesCharEndType(char, prevChar) {
-    if (this.itemType === VALID_TYPES.string.key) {
+  _doesCharEndItem(char, prevChar) {
+    if (this.itemType === ITEM_TYPES.string.key) {
       return this._doesCharEndString(char, prevChar);
-    } else if (
-      this.itemType === VALID_TYPES.object.key ||
-      this.itemType === VALID_TYPES.array.key
-    ) {
+    } else if (this.itemType === ITEM_TYPES.object.key || this.itemType === ITEM_TYPES.array.key) {
       return this._doesCharEndObjectOrArray(char);
     } else {
       throw 'JSON type not valid. Please pass only strings, arrays, or objects.';
@@ -110,13 +107,13 @@ class Parser {
 
     chars.forEach((char, i) => {
       if (!this.itemType) {
-        const foundType = VALID_TYPES_DELIMITER_MAP[char];
+        const foundType = ITEM_TYPES_DELIMITER_MAP[char];
         if (foundType) {
           this.itemType = foundType;
           this.startIdx = i;
           this.itemLevel += 1;
         }
-      } else if (this._doesCharEndType(char, chars[i - 1])) {
+      } else if (this._doesCharEndItem(char, chars[i - 1])) {
         const item = text.slice(this.startIdx, i + 1);
         items.push(JSON.parse(item));
         this._reset();
