@@ -41,14 +41,14 @@ class Parser {
   }
 
   /**
-   * Checks whether the given character ends an array or object
-   * type from the given text.
+   * Checks whether the given character ends the outermost array
+   * or object type from the given text.
    *
-   * @param {*} char the character to check
+   * @param {string} char the character to check
    * @returns {boolean} whether the given character ends an
    * array or object type from the given text
    */
-  _doesCharEndObjectOrArray(char) {
+  _doesCharEndOutermostObjectOrArray(char) {
     const { start, end } = ITEM_TYPES[this.itemType].delimiters;
     if (char === start) {
       this.itemLevel += 1;
@@ -76,7 +76,7 @@ class Parser {
     if (this.itemType === ITEM_TYPES.string.key) {
       return this._doesCharEndString(char, prevChar);
     } else if (this.itemType === ITEM_TYPES.object.key || this.itemType === ITEM_TYPES.array.key) {
-      return this._doesCharEndObjectOrArray(char);
+      return this._doesCharEndOutermostObjectOrArray(char);
     } else {
       throw 'JSON type not valid. Please pass only strings, arrays, or objects.';
     }
