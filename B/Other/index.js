@@ -1,5 +1,3 @@
-require('./polyfills');
-
 // const getFlag = require('./getFlag');
 const getInput = require('./getInput');
 const parseInput = require('./parseInput');

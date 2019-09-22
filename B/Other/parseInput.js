@@ -19,26 +19,27 @@ const VALID_TYPES_DELIMITER_MAP = Object.keys(VALID_TYPES).reduce((acc, key) => 
  * @returns {any[]} the parsed input
  */
 const parseInput = input => {
-  const parsedItems = [];
-
-  const text = input.trim();
-  const chars = text.split('');
-
-  let start = -1;
-  let level = -1;
+  // The current item type being parsed
   let type = null;
+
+  // The starting index of a type
+  let startIdx = -1;
+
+  // The current structure level (for objects and arrays)
+  let level = -1;
 
   /**
    * Checks whether the given character ends a string type
    * from the given text.
    *
    * @param {string} char the character to check
-   * @param {number} idx the index of the character
+   * @param {number} prevChar the previous character in the
+   * sequence
    * @returns {boolean} whether the given character ends a
    * string type from the given text
    */
-  const doesCharEndString = (char, idx) =>
-    char === VALID_TYPES.string.delimiters.end && chars[idx - 1] !== '\\';
+  const doesCharEndString = (char, prevChar) =>
+    char === VALID_TYPES.string.delimiters.end && prevChar !== '\\';
 
   /**
    * Checks whether the given character ends an array or object
@@ -67,13 +68,14 @@ const parseInput = input => {
    * the type.
    *
    * @param {string} char the character to check
-   * @param {number} idx the index of the character
+   * @param {number} prevChar the previous character in the
+   * sequence
    * @returns {boolean} whether the given character ends a
    * valid type
    */
-  const doesCharEndType = (char, i) => {
+  const doesCharEndType = (char, prevChar) => {
     if (type === VALID_TYPES.string.key) {
-      return doesCharEndString(char, i);
+      return doesCharEndString(char, prevChar);
     } else if (type === VALID_TYPES.object.key || type === VALID_TYPES.array.key) {
       return doesCharEndObjectOrArray(char);
     } else {
@@ -82,45 +84,52 @@ const parseInput = input => {
   };
 
   /**
-   * Adds a valid item to the parsed items array.
-   *
-   * @param {number} idx the index of the final char
-   * in the item
-   */
-  const addItem = idx => {
-    const item = text.slice(start, idx + 1);
-    parsedItems.push(JSON.parse(item));
-  };
-
-  /**
    * Resets the parser variables to be able to start
    * checking for a new typed item.
    */
   const resetParser = () => {
-    start = -1;
+    startIdx = -1;
     level = -1;
     type = null;
   };
 
-  chars.forEach((char, i) => {
-    if (!type) {
-      const foundType = VALID_TYPES_DELIMITER_MAP[char];
-      if (foundType) {
-        type = foundType;
-        start = i;
-        level += 1;
+  /**
+   * Parses the input from the user into an array of
+   * strings, arrays, and objects.
+   *
+   * @param {string} input the input from the user
+   * @returns {any[]} the parsed input
+   */
+  const parse = input => {
+    const items = [];
+
+    const text = input.trim();
+    const chars = text.split('');
+
+    chars.forEach((char, i) => {
+      if (!type) {
+        const foundType = VALID_TYPES_DELIMITER_MAP[char];
+        if (foundType) {
+          type = foundType;
+          startIdx = i;
+          level += 1;
+        }
+      } else if (doesCharEndType(char, chars[i - 1])) {
+        const item = text.slice(startIdx, i + 1);
+        items.push(JSON.parse(item));
+
+        resetParser();
       }
-    } else if (doesCharEndType(char, i)) {
-      addItem(i);
-      resetParser();
+    });
+
+    if (startIdx >= 0) {
+      throw 'Unable to parse given value. Check for closing brackets or quotations.';
     }
-  });
 
-  if (start >= 0) {
-    throw 'Unable to parse given value. Check for closing brackets or quotations.';
-  }
+    return items;
+  };
 
-  return parsedItems;
+  return parse(input);
 };
 
 module.exports = parseInput;
