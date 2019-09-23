@@ -7,8 +7,6 @@
 const printItems = items => {
   const lastIdx = items.length - 1;
 
-  console.log('------------------------------');
-
   items.forEach((item, i) => {
     console.log(JSON.stringify(item));
     if (i < lastIdx) {
