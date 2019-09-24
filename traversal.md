@@ -30,7 +30,7 @@ removeNode(id: string)
 ```js
 removeEdge(id1: string, id2: string)
 ```
-  Removes an Edge between two Nodes with the given ids `id1` and `id2`. Throws an error if either id does not belong to an existing Node.
+  Removes an Edge between two Nodes with the given ids `id1` and `id2`. Throws an error if either id does not belong to an existing Node, or an Edge does not exist between the Nodes with the given ids.
 
 ```js
 addToken(color: string, nodeId: string)
@@ -40,7 +40,7 @@ addToken(color: string, nodeId: string)
 ```js
 removeToken(tokenColor: string)
 ```
-  Removes a token of specified `tokenColor` from the specified node `nodeId`. Throws an error if the token does not exist.
+  Removes a token of specified `tokenColor`. Throws an error if a Token with the given color does not exist.
   
 ```js
 getNode(id: string)
@@ -52,13 +52,13 @@ isTherePathFromTokenToNode(tokenColor: string, nodeId: string)
 ```
 Confirms if there is a valid path from a Token of color `tokenColor` to a Node with the given id `nodeId`. Returns a `true` if there exists a path, or `false` otherwise.  Throws an error if a Token with the given color or if a Node with the given id does not exist.
 
-```js
+```ts
 interface Node {
   id: string;
   tokens: Token[];
 }
 
-intreface Edge {
+interface Edge {
   n1: Node;
   n2: Node;
 }
