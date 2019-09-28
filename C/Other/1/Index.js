@@ -1,5 +1,7 @@
+const server = require('./server');
+
 const main = () => {
-  console.log('Hello World!');
+  server.listen(8000, '127.0.0.1');
 };
 
 module.exports = main;
