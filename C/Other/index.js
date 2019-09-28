@@ -1,15 +1,22 @@
 const { COMMANDS, COLORS } = require('./constants');
 
+/**
+ * A Parser for Task 3 JSON commands. Requests the proper functions from the server.
+ */
 class Parser {
+  /**
+   * Initializes the Parser
+   */
   constructor() {
     this.edges = [];
     this.nodes = [];
     this.tokens = new Map();
-    this.firstLab = false;
+    this.firstLab = false; // Flag for whether the first lab command has been received
   }
   /**
    * Handles a lab command to send addnode and addEdge commands
    * @param jsonObjArray An array of objects in the format of [ {from: node1, to: node2} ...]
+   * @throws Error if the edge exists in the Labyrinth
    * @private
    */
   _labCommand(jsonObjArray) {
@@ -49,6 +56,7 @@ class Parser {
   /**
    * Handles an add command to send addToken commands
    * @param jsonObj A object in the format of {token: name, name: name}
+   * @throws Error If function is called before a lab command was called
    * @private
    */
   _addCommand(jsonObj) {
@@ -74,6 +82,7 @@ class Parser {
   /**
    * Handles an move command to send removeToken and addToken commands
    * @param jsonObj A object in the format of {token: name, name: name}
+   * @throws Error If function is called before a lab command was called
    * @private
    */
   _moveCommand(jsonObj) {
