@@ -136,8 +136,8 @@ const main = () => {
   const testAdd = '["add", { "token": "blue", "name": "toTest" }]';
   const testMove = '["move", { "token": "blue", "name": "fromTest" }]';
   const parser = new Parser();
-  parser.parse(testAdd);
   parser.parse(testLab);
+  parser.parse(testAdd);
   parser.parse(testMove);
 };
 
