@@ -5,6 +5,7 @@ class Parser {
     this.edges = [];
     this.nodes = [];
     this.tokens = new Map();
+    this.firstLab = false;
   }
   /**
    * Handles a lab command to send addnode and addEdge commands
@@ -13,6 +14,10 @@ class Parser {
    */
   _labCommand(jsonObjArray) {
     console.log(`Lab CMD:`);
+    if (this.firstLab) {
+      throw new Error('lab must be the first command');
+    }
+    this.firstLab = true;
     // Loop through all edge pairs
     jsonObjArray.forEach(jsonPair => {
       // Add nodes that haven't been added yet
@@ -48,14 +53,19 @@ class Parser {
    */
   _addCommand(jsonObj) {
     console.log(`Add CMD:`);
+    if (!this.firstLab) {
+      throw new Error('lab must be the first command');
+    }
     const token = jsonObj.token;
     const name = jsonObj.name;
     if (!Object.values(COLORS).includes(token)) {
-      throw new Error(`Invalid color: ${token}`);
+      console.error(`Invalid color: ${token}`);
+      return;
     }
     // Check that the token does not already exist and that the node does exist
     if (this.tokens.has(token) || !this.nodes.includes(name)) {
-      throw new Error('Invalid command. Either Token exists or node does not exist.');
+      console.error('Invalid command. Either Token exists or node does not exist.');
+      return;
     }
     // CLIENT: addToken()
     console.log(` Token ${token} created on node ${name}`);
@@ -68,14 +78,19 @@ class Parser {
    */
   _moveCommand(jsonObj) {
     console.log(`Move CMD:`);
+    if (!this.firstLab) {
+      throw new Error('lab must be the first command');
+    }
     const token = jsonObj.token;
     const name = jsonObj.name;
     if (!Object.values(COLORS).includes(token)) {
-      throw new Error(`Invalid color: ${token}`);
+      console.error(`Invalid color: ${token}`);
+      return;
     }
     // Check that the token does exist and that the node does exist
     if (!this.tokens.has(token) || !this.nodes.includes(name)) {
-      throw new Error('Invalid command. Either Token does not exist or node does not exist.');
+      console.error('Invalid command. Either Token does not exist or node does not exist.');
+      return;
     }
     // CLIENT: removeToken()
     // CLIENT: addToken()
@@ -121,9 +136,8 @@ const main = () => {
   const testAdd = '["add", { "token": "blue", "name": "toTest" }]';
   const testMove = '["move", { "token": "blue", "name": "fromTest" }]';
   const parser = new Parser();
-
-  parser.parse(testLab);
   parser.parse(testAdd);
+  parser.parse(testLab);
   parser.parse(testMove);
 };
 
