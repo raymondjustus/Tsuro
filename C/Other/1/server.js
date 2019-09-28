@@ -1,6 +1,6 @@
 const { createServer } = require('net');
 const Ref = require('../../../B/Other/Ref');
-const onInput = require('../../../B/Other/onInput');
+const getSortedItems = require('../../../B/Other/getSortedItems');
 const { FLAG_TYPES } = require('../../../B/Other/constants');
 
 /**
@@ -20,16 +20,21 @@ const onData = inputRef => chunk => {
 
 /**
  * A factory that creates an event handler for
- * closing the socket. Passes the socket data
- * to `onInput`.
+ * closing the socket. Prints the parsed input
+ * from the socket.
  *
  * @param {Ref} inputRef the input ref to fetch
  * the current value
+ * @param {net.Socket} socket the socket for
+ * the server that was opened
  * @returns {function} the event handler for
  * closing the socket
  */
-const onClose = inputRef => () => {
-  onInput(inputRef.get(), FLAG_TYPES.UP);
+const onClose = (inputRef, socket) => () => {
+  const items = getSortedItems(inputRef.get(), FLAG_TYPES.UP);
+  items.forEach(item => {
+    socket.write(`${item}\n\n`);
+  });
 };
 
 /**
@@ -43,7 +48,7 @@ const onConnection = socket => {
   const inputRef = new Ref();
 
   socket.on('data', onData(inputRef));
-  socket.on('close', onClose(inputRef));
+  socket.on('close', onClose(inputRef, socket));
 
   // Empty case for ECONNRESET error
   // https://stackoverflow.com/a/17637900
