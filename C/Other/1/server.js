@@ -32,6 +32,8 @@ const onClose = inputRef => () => {
   onInput(inputRef.get(), FLAG_TYPES.UP);
 };
 
+let index = 0;
+
 /**
  * The event handler for the connection of new
  * sockets.
@@ -40,9 +42,17 @@ const onClose = inputRef => () => {
  * the server that was opened
  */
 const onConnection = socket => {
+  index += 1;
   const inputRef = new Ref();
   socket.on('data', onData(inputRef));
   socket.on('close', onClose(inputRef));
+
+  socket.on('error', err => {
+    console.log('-------------');
+    console.log(`closed ${index}`);
+    console.log(err);
+    console.log('-------------');
+  });
 };
 
 const server = createServer(onConnection);
