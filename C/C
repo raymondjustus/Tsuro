@@ -2,4 +2,4 @@
 
 const main = require('./Other/1');
 
-main();
+main(8000);

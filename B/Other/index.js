@@ -1,8 +1,6 @@
-const Parser = require('./Parser');
 const getFlag = require('./getFlag');
 const getInput = require('./getInput');
-const printItems = require('./printItems');
-const sortItems = require('./sortItems');
+const onInput = require('./onInput');
 
 /**
  * Main script function. Reads input from stdin, parses it
@@ -13,10 +11,7 @@ const main = () => {
   try {
     const flag = getFlag(process.argv);
     getInput().then(input => {
-      const parser = new Parser();
-      const items = parser.parse(input);
-      const sortedItems = sortItems(items, flag);
-      printItems(sortedItems);
+      onInput(input, flag);
     });
   } catch (error) {
     console.log(`ERROR: ${error}`);
