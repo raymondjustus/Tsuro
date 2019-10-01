@@ -1,4 +1,4 @@
-
+import sys
 
 class Token:
   name = None
@@ -6,9 +6,7 @@ class Token:
 
   def __init__(self, color):
     self.color = color
-    
     return
-import sys
 
 class Node:
   name = None
@@ -16,7 +14,7 @@ class Node:
   def init(name):
     self.name = name
 
-class Labrynth:
+class Labyrinth:
   nodes = None
   neighbors = None
   tokens = None
@@ -28,7 +26,7 @@ class Labrynth:
     for node_name in nodes:
       self.nodes[node_name] = new Node(node_name)
 
-  # adds the given token to the labrynth's
+  # adds the given token to the labyrinth's
   # node with the given name
   def add_token(node_name, token):
     if token not in tokens:
@@ -48,8 +46,24 @@ class Labrynth:
 
     min = sys.maxint
 
+    for v in range(self.nodes):
+
+
   # the big man, the legend, the algorithm himself. Mr. Dijkstra
   def dijkstra(self, src):
+
+    dist = [sys.maxint] * self.nodes
+    dist[src] = 0
+    sptSet = [False] * self.nodes
+
+    for cout in range(self.nodes):
+      
+      u = self.minDistance(dist, sptSet)
+
+      sptSet[u] = True
+      
+
+
     #gogogogogogogo
       
 
