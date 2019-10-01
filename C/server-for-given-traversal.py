@@ -11,7 +11,6 @@ def check_type(value, type, message):
 
 class Token:
   color = ''
-  # `name` is not utilized, but outlined in specification
   name = ''
 
   def __init__(self, color):
@@ -77,6 +76,7 @@ class Labyrinth:
       raise RuntimeError('Token must be attached to a node')
     elif not node_name in self.nodes:
       raise RuntimeError('Node does not exist in Labyrinth')
+    
     attached_node_name = self.tokens[token.name]
     return self.__can_node_reach_target(attached_node_name, node_name, set())
 
