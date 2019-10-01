@@ -57,7 +57,7 @@
 |                                                            |     |                                                                | <-  | Req. get the Labyrinth      |
 |                                                            | <-  | getLabyrinth()                                                 |     |                             |
 | return copy of the Labyrinth or error                      | ->  |                                                                |     |                             |
-|                                                            |     | Show Labrynth or error                                         | ->  |                             |
+|                                                            |     | Show Labyrinth or error                                         | ->  |                             |
 | ---------------------------------                          | --  | --                                                             | --  | --                          |
 |                                                            |     |                                                                | <-  | Req. check if a path exists |
 |                                                            | <-  | isTherePathFromTokenToNode(tokenColor: string, nodeId: string) |     |                             |
