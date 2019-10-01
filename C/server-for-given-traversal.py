@@ -1,7 +1,36 @@
-import sys
-from check_type import check_type
-from Node import Node
-from Token import Token
+'''
+Checks if the given value is of the given type,
+otherwise raises a `TypeError` with the given
+message.
+'''
+def check_type(value, type, message):
+  if not isinstance(value, type):
+    raise TypeError(message)
+
+#------------------------------------------------------------------------------
+
+class Token:
+  color = ''
+  # `name` is not utilized, but outlined in specification
+  name = ''
+
+  def __init__(self, color):
+    check_type(color, str, 'Color must be a string')
+    self.color = color
+    # NOTE: ACTION NOT OUTLINED IN SPECIFICATION
+    # assuming `name` also has to be color, as per `add_token` spec
+    self.name = color
+
+#------------------------------------------------------------------------------
+
+class Node:
+  name = ''
+
+  def __init__(self, name):
+    check_type(name, str, 'Name must be a string')
+    self.name = name
+
+#------------------------------------------------------------------------------
 
 class Labyrinth:
   nodes = {}
@@ -70,7 +99,7 @@ class Labyrinth:
 
   '''
   NOTE: METHOD NOT OUTLINED IN SPECIFICATION
-  
+
   Adds an edge between two given nodes.
   '''
   def add_edge(self, node_name_1, node_name_2):
