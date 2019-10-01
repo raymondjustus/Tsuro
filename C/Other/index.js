@@ -62,6 +62,7 @@ class Parser {
       // CLIENT: addEdge(from, to), try/catch the call and print error as needed
       console.log(` Edge ${JSON.stringify(jsonPair)} created`);
       this.edges.push(jsonPair);
+      //CLIENT: getLabyrinth(), prints to STDOUT to show creation has been achieved
     });
   }
 
@@ -97,6 +98,7 @@ class Parser {
     // CLIENT: addToken(token, name), prints error if server returns one
     console.log(` Token ${token} created on node ${name}`);
     this.tokens.set(token, name);
+    //CLIENT: getToken(token), prints to STDOUT to show creation has been achieved
   }
   /**
    * Handles an move command to send removeToken and addToken commands
@@ -130,6 +132,7 @@ class Parser {
     // CLIENT: addToken(token, name), prints error if given one to console
     console.log(` Token ${token} moved to node ${name}`);
     this.tokens.set(token, name);
+    //CLIENT: getNode(name), prints to STDOUT to show move worked
   }
 
   /**
