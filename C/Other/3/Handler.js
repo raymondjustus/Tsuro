@@ -1,5 +1,4 @@
 const { COMMANDS, COLORS } = require("./constants");
-const Parser = require("./Parser");
 const Server = require("./Server");
 
 /**
@@ -19,10 +18,8 @@ class Handler {
       if (this.firstLab) {
         throw "Lab already created.";
       }
-    } else {
-      if (!this.firstLab) {
-        throw 'lab" must be the first command';
-      }
+    } else if (!this.firstLab) {
+      throw 'lab" must be the first command';
     }
   }
 
@@ -44,9 +41,6 @@ class Handler {
       });
       // Confirm this edge doesn't already exist in our edge list
       this.serverInstance.addEdge(jsonPair.from, jsonPair.to);
-      //Return newly made Labyrinth
-
-      console.log(this.serverInstance.getLabyrinth());
     });
   }
 
@@ -66,8 +60,6 @@ class Handler {
     }
 
     this.serverInstance.addToken(token, name);
-
-    console.log(`Token ${this.serverInstance.getToken(token)} exists`);
   }
   /**
    * Handles an move command to send removeToken and addToken commands
@@ -80,18 +72,12 @@ class Handler {
     this._checkForFirstLab(false);
 
     if (!Object.values(COLORS).includes(token)) {
-      console.error(`Invalid color: ${token}`);
-      return;
+      throw `Invalid color: ${token}`;
     }
-    // Check that the token does exist and that the node does exist
     //CLEINT: getToken(token), if recieve token, duplicate, print to console
     //CLEINT: getNode(name), if recieve error, node doesn't exist, print to console
-
-    this.serverInstance.getToken(token);
-    this.serverInstance.getNode(name);
     this.serverInstance.removeToken(name);
     this.serverInstance.addToken(token, name);
-    console.log(`Token ${this.serverInstance.getToken(name)} is still around`);
   }
 
   /**

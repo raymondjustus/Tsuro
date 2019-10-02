@@ -33,7 +33,7 @@ class Server {
 
   getEdge(id1, id2) {
     console.log(`Got edge from ${id1} to ${id2}`);
-    return "";
+    return {};
   }
 
   getToken(color) {
@@ -43,7 +43,7 @@ class Server {
 
   getLabyrinth() {
     console.log(`Got Labyrinth`);
-    return "";
+    return {};
   }
 
   isTherePathFromTokenToNode(tokenColor, nodeId) {

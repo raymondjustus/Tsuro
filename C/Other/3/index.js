@@ -1,5 +1,3 @@
-const { COMMANDS, COLORS } = require("./constants");
-
 const Handler = require("./Handler");
 const InputParser = require("./InputParser");
 const getInput = require("./GetInput.js");

@@ -27,20 +27,6 @@ class InputParser {
   }
 
   /**
-   * Checks whether the given character ends a string type
-   * from the given text.
-   *
-   * @param {string} char the character to check
-   * @param {number} prevChar the previous character in the
-   * sequence
-   * @returns {boolean} whether the given character ends a
-   * string type from the given text
-   */
-  _doesCharEndString(char, prevChar) {
-    return char === ITEM_TYPES.string.delimiters.end && prevChar !== "\\";
-  }
-
-  /**
    * Checks whether the given character ends the outermost array
    * or object type from the given text.
    *
