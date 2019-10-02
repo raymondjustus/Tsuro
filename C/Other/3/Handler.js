@@ -20,14 +20,10 @@ class Handler {
    * @throws Error if the edge exists in the Labyrinth
    * @private
    */
-  _labCommand(jsonObjArray) {
+  _onLabCommand(jsonObjArray) {
     console.log(`Lab CMD:`);
     if (this.firstLab) {
-      //CLIENT: getLabyrinth(), if ERROR, may proceed with creation of Labyrinth, if returns Labyrinth, error
-      try {
-        ServerInstance.getLabyrinth();
-        throw new Error("lab must be the first command");
-      } catch (e) {}
+      throw "Lab already created.";
     }
     this.firstLab = true;
     // Loop through all edge pairs
@@ -62,7 +58,7 @@ class Handler {
    * @throws Error If function is called before a lab command was called
    * @private
    */
-  _addCommand(jsonObj) {
+  _onAddCommand(jsonObj) {
     console.log(`Add CMD:`);
     if (!this.firstLab) {
       throw new Error("lab must be the first command");
@@ -94,7 +90,7 @@ class Handler {
    * @throws Error If function is called before a lab command was called
    * @private
    */
-  _moveCommand(jsonObj) {
+  _onMoveCommand(jsonObj) {
     console.log(`Move CMD:`);
     if (!this.firstLab) {
       throw new Error("lab must be the first command");
@@ -130,13 +126,13 @@ class Handler {
     // Handle which action to take based on command
     switch (cmd) {
       case COMMANDS.LAB:
-        this._labCommand(jsonObj.slice(1));
+        this._onLabCommand(jsonObj.slice(1));
         break;
       case COMMANDS.ADD:
-        this._addCommand(jsonObj[1]);
+        this._onAddCommand(jsonObj[1]);
         break;
       case COMMANDS.MOVE:
-        this._moveCommand(jsonObj[1]);
+        this._onMoveCommand(jsonObj[1]);
         break;
       default:
         throw new Error(`Invalid Command Key: ${cmd}`);

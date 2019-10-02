@@ -2,6 +2,9 @@ const { COMMANDS, COLORS } = require("./constants");
 const Parser = require("./Parser");
 const Handler = require("./Handler");
 
+/**
+ * Inits a parser and handler to read task 3 JSON inputs. Parses at EOF.
+ */
 const main = () => {
   const parser = new Parser();
   const handler = new Handler();
@@ -14,7 +17,6 @@ const main = () => {
   });
   process.stdin.on("end", () => {
     commands.forEach(cmd => {
-      //console.log(`CMD: ${cmd}`);
       handler.handle(cmd);
     });
   });
