@@ -55,8 +55,7 @@ class Handler {
     this._checkForFirstLab(false);
 
     if (!Object.values(COLORS).includes(token)) {
-      console.error(`Invalid color: ${token}`);
-      return;
+      throw `Invalid color: ${token}`;
     }
 
     this.serverInstance.addToken(token, name);
@@ -74,8 +73,7 @@ class Handler {
     if (!Object.values(COLORS).includes(token)) {
       throw `Invalid color: ${token}`;
     }
-    //CLEINT: getToken(token), if recieve token, duplicate, print to console
-    //CLEINT: getNode(name), if recieve error, node doesn't exist, print to console
+
     this.serverInstance.removeToken(name);
     this.serverInstance.addToken(token, name);
   }

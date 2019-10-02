@@ -11,9 +11,7 @@ const main = () => {
       const inputParser = new InputParser();
       const items = inputParser.parse(input);
       const handler = new Handler();
-      items.forEach(item => {
-        handler.handle(item);
-      });
+      items.forEach(handler.handle);
     });
   } catch (e) {
     console.error(e);
