@@ -16,56 +16,28 @@ Server              Client            User
   | Labyrinth or Error       |                                                 |
   |<-------------------------|                                                 |
   |    for all {from, to}    |                                                 |
-  |         getNode(from)    |                                                 |
-  |         getNode(to)      |                                                 |
+  |         addNode(from)    |                                                 |
+  |         addNode(to)      |                                                 |
+  |       addEdge(from, to)  |                                                 |
   |------------------------> |                                                 |
-  | Nodes or Error           |                                                 |
-  |<-------------------------|                                                 |
-  |     for all {from, to}   |                                                 |
-  |       getEdge(from, to)  |                                                 |
-  |       getEdge(to, from)  |                                                 |
-  |------------------------->|                                                 |
-  | Edges or Error           |                                                 |
-  |<-------------------------|                                                 |
-  |        addEdge(str, str) |                                                 |
+  | Error on failure of Edge |                                                 |
   |                          | --------------------------------------------->  |
   |                          |                    Print  success or Error      |
                            . . .
   |                          |<------------------------------------------------|
   |                          |  Send ["add" , token:color-string, name:string] |
   |<-------------------------|                                                 |
-  |          getLabyrinth()  |                                                 |
+  |    addToken(color, name) |                                                 |
   |------------------------> |                                                 |
-  | Labyrinth or Error       |                                                 |
-  |<-------------------------|                                                 |
-  |           getToken(str)  |                                                 |
-  |------------------------> |                                                 |
-  | Token or Error           |                                                 |
-  |<-------------------------|                                                 |
-  |           getNode(str))  |                                                 |
-  |------------------------> |                                                 |
-  | Node or Error            |                                                 |
-  |<-------------------------|                                                 |
-  |     addToken(token, name)|                                                 |
-  |------------------------> |                                                 |
-  | Error on failure         |                                                 |
+  | Error if:                |                                                 |
+  |    - token Exists        |                                                 |
+  |    - invalid Color       |                                                 |
+  |    - Node doesn't exist  |                                                 |
   |                          | --------------------------------------------->  |
   |                          |                    Print  success or Error      |
                            . . .
   |                          |<------------------------------------------------|
   |                          | Send  ["move", token:color-string, name:string] |
-  |<-------------------------|                                                 |
-  |          getLabyrinth()  |                                                 |
-  |------------------------> |                                                 |
-  | Labyrinth or Error       |                                                 |
-  |<-------------------------|                                                 |
-  |           getToken(str)  |                                                 |
-  |------------------------> |                                                 |
-  | Token or Error           |                                                 |
-  |<-------------------------|                                                 |
-  |           getNode(str))  |                                                 |
-  |------------------------> |                                                 |
-  | Node or Error            |                                                 |
   |<-------------------------|                                                 |
   |     removeToken(token)   |                                                 |
   |------------------------> |                                                 |
@@ -78,13 +50,7 @@ Server              Client            User
   |                          |                    Print  success or error      |
   |                          |                                                 |
                            . . .
-  |                          |               Send eof/end connection via STDIN |
-  |<------------------------ |                                                 |
-  |           getLabyrinth() |                                                 |
-  |------------------------> |                                                 |
-  | Labyrinth or error       |                                                 |
-  |                          |-----------------------------------------------> |
-  |                          | Print Labyrinth or error                        |
+  |                          |               Send end of connection to Server  |
   |<-------------------------|                                                 |
   |      Terminate Connection|                                                 |
   |            X             |                                                 |
