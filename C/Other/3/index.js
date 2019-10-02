@@ -1,6 +1,6 @@
 const Handler = require("./Handler");
 const InputParser = require("./InputParser");
-const getInput = require("./GetInput.js");
+const getInput = require("./getInput.js");
 
 /**
  * Inits a parser and handler to read task 3 JSON inputs. Parses at EOF.
