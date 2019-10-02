@@ -1,25 +1,26 @@
 const { COMMANDS, COLORS } = require("./constants");
-const Parser = require("./Parser");
+
 const Handler = require("./Handler");
+const InputParser = require("./InputParser");
+const getInput = require("./GetInput.js");
 
 /**
  * Inits a parser and handler to read task 3 JSON inputs. Parses at EOF.
  */
 const main = () => {
-  const parser = new Parser();
-  const handler = new Handler();
-
-  var commands = [];
-  process.stdin.setEncoding("utf8");
-  process.stdin.on("data", data => {
-    let chunk = data;
-    commands.push(parser.parse(chunk));
-  });
-  process.stdin.on("end", () => {
-    commands.forEach(cmd => {
-      handler.handle(cmd);
+  try {
+    getInput().then(input => {
+      const inputParser = new InputParser();
+      const items = inputParser.parse(input);
+      const handler = new Handler();
+      items.forEach(item => {
+        handler.handle(item);
+      });
     });
-  });
+  } catch (e) {
+    console.error(e);
+    process.exit(1);
+  }
 };
 
 module.exports = main;

@@ -1,7 +1,6 @@
 const { COMMANDS, COLORS } = require("./constants");
 const Parser = require("./Parser");
 const Server = require("./Server");
-const ServerInstance = new Server();
 
 /**
  * A Handler for Task 3 JSON commands. Requests the proper functions from the server.
@@ -11,8 +10,22 @@ class Handler {
    * Initializes the Handler and its fields
    */
   constructor() {
+    this.serverInstance = new Server();
     this.firstLab = false; // Flag for whether the first lab command has been received
   }
+
+  _checkForFirstLab(isLabCommand) {
+    if (isLabCommand) {
+      if (this.firstLab) {
+        throw "Lab already created.";
+      }
+    } else {
+      if (!this.firstLab) {
+        throw 'lab" must be the first command';
+      }
+    }
+  }
+
   /**
    * Handles a lab command to send addnode and addEdge commands
    *
@@ -21,33 +34,19 @@ class Handler {
    * @private
    */
   _onLabCommand(jsonObjArray) {
-    console.log(`Lab CMD:`);
-    if (this.firstLab) {
-      throw "Lab already created.";
-    }
+    this._checkForFirstLab(true);
     this.firstLab = true;
     // Loop through all edge pairs
     jsonObjArray.forEach(jsonPair => {
       // Add nodes that haven't been added yet
       Object.values(jsonPair).forEach(nodeId => {
-        try {
-          ServerInstance.addNode(nodeId);
-        } catch (e) {
-          console.log(e);
-        }
+        this.serverInstance.addNode(nodeId);
       });
       // Confirm this edge doesn't already exist in our edge list
-      try {
-        ServerInstance.addEdge(jsonPair.from, jsonPair.to);
-      } catch (e) {
-        console.log(e);
-      }
+      this.serverInstance.addEdge(jsonPair.from, jsonPair.to);
       //Return newly made Labyrinth
-      try {
-        console.log(ServerInstance.getLabyrinth());
-      } catch (e) {
-        console.log(e);
-      }
+
+      console.log(this.serverInstance.getLabyrinth());
     });
   }
 
@@ -58,30 +57,17 @@ class Handler {
    * @throws Error If function is called before a lab command was called
    * @private
    */
-  _onAddCommand(jsonObj) {
-    console.log(`Add CMD:`);
-    if (!this.firstLab) {
-      throw new Error("lab must be the first command");
-    }
-    const token = jsonObj.token;
-    const name = jsonObj.name;
+  _onAddCommand(token, name) {
+    this._checkForFirstLab(false);
 
     if (!Object.values(COLORS).includes(token)) {
       console.error(`Invalid color: ${token}`);
       return;
     }
 
-    try {
-      ServerInstance.addToken(token, name);
-    } catch (e) {
-      console.log(e);
-    }
+    this.serverInstance.addToken(token, name);
 
-    try {
-      console.log(`Token ${ServerInstance.getToken(token)} exists`);
-    } catch (e) {
-      console.log(e);
-    }
+    console.log(`Token ${this.serverInstance.getToken(token)} exists`);
   }
   /**
    * Handles an move command to send removeToken and addToken commands
@@ -90,13 +76,8 @@ class Handler {
    * @throws Error If function is called before a lab command was called
    * @private
    */
-  _onMoveCommand(jsonObj) {
-    console.log(`Move CMD:`);
-    if (!this.firstLab) {
-      throw new Error("lab must be the first command");
-    }
-    const token = jsonObj.token;
-    const name = jsonObj.name;
+  _onMoveCommand(token, name) {
+    this._checkForFirstLab(false);
 
     if (!Object.values(COLORS).includes(token)) {
       console.error(`Invalid color: ${token}`);
@@ -105,15 +86,12 @@ class Handler {
     // Check that the token does exist and that the node does exist
     //CLEINT: getToken(token), if recieve token, duplicate, print to console
     //CLEINT: getNode(name), if recieve error, node doesn't exist, print to console
-    try {
-      ServerInstance.getToken(token);
-      ServerInstance.getNode(name);
-      ServerInstance.removeToken(name);
-      ServerInstance.addToken(token, name);
-      console.log(`Token ${ServerInstance.getToken(name)} is still around`);
-    } catch (e) {
-      console.log(e);
-    }
+
+    this.serverInstance.getToken(token);
+    this.serverInstance.getNode(name);
+    this.serverInstance.removeToken(name);
+    this.serverInstance.addToken(token, name);
+    console.log(`Token ${this.serverInstance.getToken(name)} is still around`);
   }
 
   /**
@@ -129,13 +107,13 @@ class Handler {
         this._onLabCommand(jsonObj.slice(1));
         break;
       case COMMANDS.ADD:
-        this._onAddCommand(jsonObj[1]);
+        this._onAddCommand(jsonObj[1], jsonObj[2]);
         break;
       case COMMANDS.MOVE:
-        this._onMoveCommand(jsonObj[1]);
+        this._onMoveCommand(jsonObj[1], jsonObj[2]);
         break;
       default:
-        throw new Error(`Invalid Command Key: ${cmd}`);
+        throw `Invalid Command Key: ${cmd}`;
     }
   }
 }
