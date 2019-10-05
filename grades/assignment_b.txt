@@ -1,0 +1,11 @@
+  
+* Deliveries 19/19
+
+* Running tests on B 16/16 (4 test cases)
+
+* Traversal.md 15/15
+
+Total: 50/50
+Good Job!
+
+Graded by Divya.
