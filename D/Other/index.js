@@ -1,25 +1,36 @@
-const getClient = require('./getClient');
+const getServerClient = require('./getServerClient');
 const parseArguments = require('./parseArguments');
 
 const main = () => {
-  const { ipAddress, port } = parseArguments(process.argv);
-  getClient(ipAddress, port)
-    .then(client => {
+  const { ipAddress, port, username } = parseArguments(process.argv);
+  getServerClient(ipAddress, port)
+    .then(serverClient => {
+      let sessionId = null;
+
+      // Initialize STDIN
       process.stdin.setEncoding('utf8');
       process.stdin.on('data', data => {
         const text = data.toString().trim();
-        client.write(text);
+        serverClient.write(text);
       });
       process.stdin.on('end', () => {
         console.log('END OF INPUT');
-        client.destroy();
+        serverClient.destroy();
         process.exit(0);
       });
 
-      client.on('data', data => {
+      // Initialize data listener for server
+      serverClient.on('data', data => {
         const text = data.toString().trim();
-        console.log(`SERVER: ${text}`);
+        if (!sessionId) {
+          sessionId = JSON.parse(text);
+        } else {
+          console.log(`SERVER: ${text}`);
+        }
       });
+
+      // Register username
+      serverClient.write(JSON.stringify(username));
     })
     .catch(() => {
       process.exit(1);
