@@ -1,5 +1,6 @@
 const getServerClient = require('./getServerClient');
 const parseArguments = require('./parseArguments');
+const printResponse = require('./printResponse');
 
 const main = () => {
   const { ipAddress, port, username } = parseArguments(process.argv);
@@ -24,6 +25,7 @@ const main = () => {
         const text = data.toString().trim();
         if (!sessionId) {
           sessionId = JSON.parse(text);
+          printResponse('this server will call me', sessionId);
         } else {
           console.log(`SERVER: ${text}`);
         }
