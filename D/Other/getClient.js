@@ -7,7 +7,7 @@ const { Socket } = require('net');
  * @param {string} ipAddress the IP address to
  * connect to
  * @param {string} port the port to connect to
- * @returns {Promise} that resolves with the client
+ * @returns {Promise<Socket>} that resolves with the client
  * object, or rejects on error
  */
 const getClient = (ipAddress, port) =>
