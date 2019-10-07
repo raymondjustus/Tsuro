@@ -1,13 +1,18 @@
+const getClient = require('./getClient');
 const parseArguments = require('./parseArguments');
 
 const main = () => {
-  try {
-    const { ipAddress, port, username } = parseArguments(process.argv);
-    console.log(ipAddress, port, username);
-  } catch (err) {
-    console.error(err);
-    process.exit(1);
-  }
+  const { ipAddress, port } = parseArguments(process.argv);
+  getClient(ipAddress, port)
+    .then(client => {
+      client.on('data', data => {
+        const text = data.toString().trim();
+        console.log(`SERVER: ${text}`);
+      });
+    })
+    .catch(() => {
+      process.exit(1);
+    });
 };
 
 module.exports = main;
