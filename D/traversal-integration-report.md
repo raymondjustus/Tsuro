@@ -2,30 +2,23 @@
 
 1. The other team followed our specification to the letter. They used our instructions as the comment headers on each function, wrote signatures matching exactly what we asked for, and overall gave us exactly what we requested. There was no attempt to deviate from our design. Because our design seems to work fine, this is a good thing.
 
-The only notable marks against them are a handful of missteps in the implementation. Several times they removed the wrong index of an object from an array. In the following, they get the index of the object (edge, token) and name it `index`, then when splicing the individual nodes from the edge, or the token from the node, they use `index` again instead of the variables they created that hold the correct indecies (`indexNode1`, `indexNode2`)
+The only notable marks against them are a handful of missteps in the implementation. Several times they removed the wrong index of an object from an array. In the following, they get the index of the object (edge, token) and name it `index`, then when splicing the individual nodes from the edge, or the token from the node, they use `index` again instead of the variables they created that hold the correct indecies (`indexNode`)
 
-```
-  // removes an Edge between two Nodes with the given ids id1 and id2
-  // throws an error if either id does not belong to an existing Node,
-  // or an Edge does not exist between the Nodes with the given ids.
-  removeEdge(id1, id2) {
-    const edge = this.getEdge(id1, id2);
+```js
+  removeToken(tokenColor) {
+    const token = this.getToken(tokenColor);
 
-    const index = this.edges.indexOf(edge);
-    this.edges.splice(index, 1);
+    const index = this.tokens.indexOf(token);
+    this.tokens.splice(index, 1);
 
-    const indexNode1 = edge.node1.edges.indexOf(edge);
-    edge.node1.edges.splice(index, 1);
-    const indexNode2 = edge.node2.edges.indexOf(edge);
-    edge.node2.edges.splice(index, 1);
+    const indexNode = token.node.tokens.indexOf(token);
+    token.node.tokens.splice(index, 1);
   }
 ```
 
 Also, for the return methods, they returned the actual object and not a copy as we specified.
 
-```
-    // returns a copy of the given Node with the given id.
-  // throws an error if a Node with the given id doesn't exist.
+```js
   getNode(id) {
     const node = this.nodes.find(node => node.id === id);
     if (node === undefined) {
