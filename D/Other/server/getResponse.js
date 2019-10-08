@@ -13,12 +13,12 @@ const { COMMAND_INDEX, COMMANDS } = require('../constants');
 const getResponse = (clients, sessionId, text) => {
   const data = JSON.parse(text);
   if (!clients[sessionId].username) {
+    // Initial username
     clients[sessionId].username = data;
-    console.log(`Connected "${data}" with ID: ${sessionId}`);
     return sessionId;
   } else if (data[COMMAND_INDEX] === COMMANDS.LAB) {
+    // Creating a lab
     if (clients[sessionId].lab) {
-      console.log('Lab already created.');
       return data;
     }
     clients[sessionId].lab = {
@@ -26,8 +26,8 @@ const getResponse = (clients, sessionId, text) => {
       edges: data[2],
       tokens: {},
     };
-    console.log('Created lab.');
   } else {
+    // Handling add/remove commands
     const response = [];
     data.forEach(command => {
       const [type, color, node] = command;
@@ -38,11 +38,10 @@ const getResponse = (clients, sessionId, text) => {
           clients[sessionId].lab.tokens[color] = node;
         }
       } else if (type === COMMANDS.MOVE) {
-        // not reimplementing djikstra's, just a test
+        // NOTE: not reimplementing djikstra's, just a test
         response.push(clients[sessionId].lab.tokens[color] === node);
       }
     });
-    console.log('Add/move command received.');
     return response;
   }
 };
