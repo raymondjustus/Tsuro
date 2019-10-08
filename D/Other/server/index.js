@@ -31,7 +31,9 @@ const startServer = (ipAddress, port) => {
     return data => {
       const text = data.toString().trim();
       const response = getResponse(clients, sessionId, text);
-      client.write(response);
+      if (response) {
+        client.write(JSON.stringify(response));
+      }
     };
   };
 
@@ -52,6 +54,7 @@ const startServer = (ipAddress, port) => {
     clients[sessionId] = {
       client,
       username: null,
+      lab: null,
     };
 
     client.on('data', onData(sessionId));

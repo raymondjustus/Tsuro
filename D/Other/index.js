@@ -1,3 +1,4 @@
+require('./polyfills');
 const getServerClient = require('./getServerClient');
 const initEventHandlers = require('./initEventHandlers');
 const parseArguments = require('./parseArguments');
