@@ -101,11 +101,11 @@ const onStdinData = (serverClient, commands) => {
           commands.history.push(request);
           sendToServer(request);
         }
-      } catch (err) {
-        if (err instanceof SyntaxError) {
+      } catch (error) {
+        if (error instanceof SyntaxError) {
           return printResponse('not a request', text);
         }
-        throw err;
+        throw error;
       }
     }
   };

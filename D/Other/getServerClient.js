@@ -17,7 +17,7 @@ const getServerClient = (ipAddress, port) =>
       client.connect(port, ipAddress, () => {
         resolve(client);
       });
-    } catch {
+    } catch (error) {
       reject();
     }
   });
