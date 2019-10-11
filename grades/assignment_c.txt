@@ -1,0 +1,16 @@
+* (20/20) Correctly named artifacts
+* (5/5)   Correct directory organization
+* (5/5)   Executable C runs without input without throwing
+* (24/24) Executable C passing tests
+    - Nice.
+* (10/10) Task 2
+    - Nice.
+* (12/12) Task 3
+    - Wow.
+* (18/18) Task 4
+    - Nice.
+
+Total: (94/94)
+
+Graded by Ivan Chen.
+
