@@ -29,7 +29,9 @@ This is the repository for all of the work created by the `sudo-wudo` team in th
 
 3. Run `npm install` for dev dependencies
 
-4. Run `npm run hook:install` to install Git pre-commit hook
+4. Run `npm run bootstrap` for package dependencies
+
+5. Run `npm run hook:install` to install Git pre-commit hook
 
 ## 🛠 Development Workflow
 
