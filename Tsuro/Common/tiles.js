@@ -2,9 +2,74 @@ const fs = require('fs');
 const path = require('path');
 const D3Node = require('d3-node');
 
+const PORTS = {
+  NORTH: 'north',
+  EAST: 'east',
+  SOUTH: 'south',
+  WEST: 'west',
+};
+
 const RENDER_DIR = path.resolve(__dirname, '..', '1');
 
+const COLORS = {
+  BROWN: '#7b2a26',
+  RED: '#bf2952',
+  GREEN: '#63af33',
+  YELLOW: '#d2b53c',
+};
+
+const D3_NODE_OPTIONS = {
+  styles: `
+    .background, .port {
+      stroke: #000000;
+      stroke-width: 1;
+    }
+
+    .background {
+      fill: #eeeeee;
+    }
+
+    .port {
+      fill: #ffffff;
+    }
+
+    .path {
+      fill: none;
+      stroke-width: 3;
+    }
+  `,
+};
+
 class Tile {
+  constructor() {
+    this.d3Node = new D3Node(D3_NODE_OPTIONS);
+    this.d3 = this.d3Node.d3;
+
+    // Temporary paths definition
+    this.paths = [
+      {
+        start: [PORTS.NORTH, 0],
+        end: [PORTS.NORTH, 1],
+        color: COLORS.BROWN,
+      },
+      {
+        start: [PORTS.WEST, 0],
+        end: [PORTS.SOUTH, 0],
+        color: COLORS.RED,
+      },
+      {
+        start: [PORTS.EAST, 0],
+        end: [PORTS.SOUTH, 1],
+        color: COLORS.YELLOW,
+      },
+      {
+        start: [PORTS.WEST, 1],
+        end: [PORTS.EAST, 1],
+        color: COLORS.GREEN,
+      },
+    ];
+  }
+
   /**
    * Gets the linear scale for rendering on a single tile.
    *
@@ -14,7 +79,7 @@ class Tile {
    * axis, from 0 to 1
    */
   _getRenderScale(min, size) {
-    return new D3Node().d3
+    return this.d3
       .scaleLinear()
       .domain([0, 1])
       .range([min, min + size]);
@@ -35,11 +100,11 @@ class Tile {
     const xScale = this._getRenderScale(x, width);
     const yScale = this._getRenderScale(y, height);
 
-    const PORTS = {
-      NORTH: [[1 / 3, 0], [2 / 3, 0]],
-      EAST: [[0, 1 / 3], [0, 2 / 3]],
-      SOUTH: [[1 / 3, 1], [2 / 3, 1]],
-      WEST: [[1, 1 / 3], [1, 2 / 3]],
+    const PORT_POINTS = {
+      [PORTS.NORTH]: [[1 / 3, 0], [2 / 3, 0]],
+      [PORTS.EAST]: [[1, 1 / 3], [1, 2 / 3]],
+      [PORTS.SOUTH]: [[1 / 3, 1], [2 / 3, 1]],
+      [PORTS.WEST]: [[0, 1 / 3], [0, 2 / 3]],
     };
 
     /**
@@ -52,6 +117,54 @@ class Tile {
         .attr('y', y)
         .attr('width', width)
         .attr('height', height);
+    };
+
+    /**
+     * Renders a path from a given starting port to a
+     * given ending port.
+     *
+     * @param {number[]} start The starting port of the path
+     * @param {number[]} end The ending port of the path
+     * @param {string} color The color of the path
+     */
+    const renderPath = (start, end, color) => {
+      const lineFunction = this.d3
+        .line()
+        .x(([x]) => xScale(x))
+        .y(([, y]) => yScale(y))
+        .curve(this.d3.curveBasis);
+
+      let midX1 = start[0];
+      let midY1 = start[1];
+      let midX2 = end[0];
+      let midY2 = end[1];
+
+      if (start[1] === end[1]) {
+        if (start[1] === 0) {
+          midY1 = midY2 = 0.25;
+        } else if (start[1] === 1) {
+          midY1 = midY2 = 0.75;
+        }
+      } else if ((start[0] === 0 && end[0] === 1) || (start[0] === 1 && end[0] === 0)) {
+        midX1 = start[0] === 1 ? 0.75 : 0.25;
+        midY1 = start[1];
+        midX2 = end[0] === 1 ? 0.75 : 0.25;
+        midY2 = end[1];
+      } else if (start[0] === 0 || start[0] === 1) {
+        midY1 = midY2 = start[1];
+      } else if (end[0] === 0 || end[0] === 1) {
+        midY1 = midY2 = end[1];
+      } else {
+        midX1 = start[0];
+        midY1 = start[1] === 1 ? 0.75 : 0.25;
+        midX2 = end[0];
+        midY2 = end[1] === 1 ? 0.75 : 0.25;
+      }
+
+      g.append('path')
+        .attr('class', 'path')
+        .attr('stroke', color)
+        .attr('d', lineFunction([start, [midX1, midY1], [midX2, midY2], end]));
     };
 
     /**
@@ -70,9 +183,17 @@ class Tile {
         .attr('r', 6);
     };
 
+    // Renders background
     renderBackground();
-    Object.keys(PORTS).forEach(direction => {
-      PORTS[direction].forEach(([x, y]) => {
+
+    // Renders paths
+    this.paths.forEach(({ start, end, color }) => {
+      renderPath(PORT_POINTS[start[0]][start[1]], PORT_POINTS[end[0]][end[1]], color);
+    });
+
+    // Renders ports
+    Object.keys(PORT_POINTS).forEach(direction => {
+      PORT_POINTS[direction].forEach(([x, y]) => {
         renderPort(x, y);
       });
     });
@@ -88,28 +209,12 @@ class Tile {
     const padding = 20;
     const renderSize = size - 2 * padding;
 
-    const d3n = new D3Node({
-      styles: `
-        .background, .port {
-          stroke: #000000;
-          stroke-width: 1;
-        }
-
-        .background {
-          fill: #eeeeee;
-        }
-
-        .port {
-          fill: #ffffff;
-        }
-      `,
-    });
-    const svg = d3n.createSVG(size, size);
+    const svg = this.d3Node.createSVG(size, size);
 
     this.render(svg, padding, padding, renderSize, renderSize);
 
     const svgFile = fs.createWriteStream(path.resolve(RENDER_DIR, `${fileName}.svg`));
-    svgFile.write(d3n.svgString());
+    svgFile.write(this.d3Node.svgString());
     svgFile.end();
   }
 }
