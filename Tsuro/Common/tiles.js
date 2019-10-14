@@ -53,21 +53,46 @@ class Tile {
         color: COLORS.BROWN,
       },
       {
-        start: [DIRECTIONS.WEST, 0],
-        end: [DIRECTIONS.SOUTH, 0],
+        start: [DIRECTIONS.WEST, 1],
+        end: [DIRECTIONS.SOUTH, 1],
         color: COLORS.RED,
       },
       {
         start: [DIRECTIONS.EAST, 0],
-        end: [DIRECTIONS.SOUTH, 1],
+        end: [DIRECTIONS.SOUTH, 0],
         color: COLORS.YELLOW,
       },
       {
-        start: [DIRECTIONS.WEST, 1],
+        start: [DIRECTIONS.WEST, 0],
         end: [DIRECTIONS.EAST, 1],
         color: COLORS.GREEN,
       },
     ];
+  }
+
+  rotate(rotations) {
+    const CLOCKWISE_DIRECTIONS = [
+      DIRECTIONS.NORTH,
+      DIRECTIONS.EAST,
+      DIRECTIONS.SOUTH,
+      DIRECTIONS.WEST,
+    ];
+
+    const actualRotations = rotations % CLOCKWISE_DIRECTIONS.length;
+
+    if (actualRotations > 0) {
+      const rotateDirection = direction => {
+        const idx = CLOCKWISE_DIRECTIONS.indexOf(direction);
+        const newIdx = (idx + rotations) % CLOCKWISE_DIRECTIONS.length;
+        return CLOCKWISE_DIRECTIONS[newIdx];
+      };
+
+      this.paths = this.paths.map(({ start, end, color }) => ({
+        start: [rotateDirection(start[0]), start[1]],
+        end: [rotateDirection(end[0]), end[1]],
+        color,
+      }));
+    }
   }
 
   /**
@@ -102,8 +127,8 @@ class Tile {
     const PORT_POINTS = {
       [DIRECTIONS.NORTH]: [[1 / 3, 0], [2 / 3, 0]],
       [DIRECTIONS.EAST]: [[1, 1 / 3], [1, 2 / 3]],
-      [DIRECTIONS.SOUTH]: [[1 / 3, 1], [2 / 3, 1]],
-      [DIRECTIONS.WEST]: [[0, 1 / 3], [0, 2 / 3]],
+      [DIRECTIONS.SOUTH]: [[2 / 3, 1], [1 / 3, 1]],
+      [DIRECTIONS.WEST]: [[0, 2 / 3], [0, 1 / 3]],
     };
 
     const group = selection.append('g');
@@ -179,7 +204,7 @@ class Tile {
           midX2 = getClosestQuarterValue(midX2);
         } else if (isZeroOrOne(midX1)) {
           midY2 = midY1;
-        } else if (isZeroOrOne(midX1)) {
+        } else if (isZeroOrOne(midX2)) {
           midY1 = midY2;
         } else {
           midY1 = getClosestQuarterValue(midY1);
@@ -227,8 +252,8 @@ class Tile {
 
     // Renders ports
     Object.keys(PORT_POINTS).forEach(direction => {
-      PORT_POINTS[direction].forEach(([x, y]) => {
-        renderPort(x, y);
+      PORT_POINTS[direction].forEach(([x, y], i) => {
+        renderPort(x, y, i === 0);
       });
     });
   }
