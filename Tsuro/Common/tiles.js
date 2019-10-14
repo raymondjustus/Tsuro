@@ -2,69 +2,69 @@ const fs = require('fs');
 const path = require('path');
 const D3Node = require('d3-node');
 
-const PORTS = {
+// Constants
+const DIRECTIONS = {
   NORTH: 'north',
   EAST: 'east',
   SOUTH: 'south',
   WEST: 'west',
 };
 
-const RENDER_DIR = path.resolve(__dirname, '..', '1');
-
 const COLORS = {
+  BLACK: '#000000',
   BROWN: '#7b2a26',
-  RED: '#bf2952',
+  GRAY: '#eeeeee',
   GREEN: '#63af33',
+  RED: '#bf2952',
+  WHITE: '#ffffff',
   YELLOW: '#d2b53c',
 };
 
-const D3_NODE_OPTIONS = {
-  styles: `
-    .background, .port {
-      stroke: #000000;
-      stroke-width: 1;
-    }
+const STYLES = `
+  .background, .port {
+    stroke: ${COLORS.BLACK};
+    stroke-width: 1;
+  }
 
-    .background {
-      fill: #eeeeee;
-    }
+  .background {
+    fill: ${COLORS.GRAY};
+  }
 
-    .port {
-      fill: #ffffff;
-    }
+  .port {
+    fill: ${COLORS.WHITE};
+  }
 
-    .path {
-      fill: none;
-      stroke-width: 3;
-    }
-  `,
-};
+  .path {
+    fill: none;
+    stroke-width: 3;
+  }
+`;
 
 class Tile {
   constructor() {
-    this.d3Node = new D3Node(D3_NODE_OPTIONS);
+    this.d3Node = new D3Node({ styles: STYLES });
     this.d3 = this.d3Node.d3;
 
     // Temporary paths definition
     this.paths = [
       {
-        start: [PORTS.NORTH, 0],
-        end: [PORTS.NORTH, 1],
+        start: [DIRECTIONS.NORTH, 0],
+        end: [DIRECTIONS.NORTH, 1],
         color: COLORS.BROWN,
       },
       {
-        start: [PORTS.WEST, 0],
-        end: [PORTS.SOUTH, 0],
+        start: [DIRECTIONS.WEST, 0],
+        end: [DIRECTIONS.SOUTH, 0],
         color: COLORS.RED,
       },
       {
-        start: [PORTS.EAST, 0],
-        end: [PORTS.SOUTH, 1],
+        start: [DIRECTIONS.EAST, 0],
+        end: [DIRECTIONS.SOUTH, 1],
         color: COLORS.YELLOW,
       },
       {
-        start: [PORTS.WEST, 1],
-        end: [PORTS.EAST, 1],
+        start: [DIRECTIONS.WEST, 1],
+        end: [DIRECTIONS.EAST, 1],
         color: COLORS.GREEN,
       },
     ];
@@ -75,8 +75,8 @@ class Tile {
    *
    * @param {number} min the minimum point of the range
    * @param {number} size the size of the tile
-   * @returns {d3.ScaleLinear} the linear scale of a given
-   * axis, from 0 to 1
+   * @returns {d3.ScaleLinear<number, number>} the linear scale
+   * of a given axis, from 0 to 1
    */
   _getRenderScale(min, size) {
     return this.d3
@@ -86,85 +86,116 @@ class Tile {
   }
 
   /**
-   * Renders a tile to the given SVG group with the given
+   * Renders a tile to the given D3 selection with the given
    * parameters.
    *
-   * @param {SVGGElement} g the SVG group element to render
-   * the tile to
+   * @param {d3.Selection} selection the current D3 selection
    * @param {number} x the starting X position
    * @param {number} y  the starting Y position
-   * @param {number} width  the total width of the tile
-   * @param {number} height the total height of the tile
+   * @param {number} size  the total size of the tile
+   * (equivalent to width or height)
    */
-  render(g, x, y, width, height) {
-    const xScale = this._getRenderScale(x, width);
-    const yScale = this._getRenderScale(y, height);
+  render(selection, x, y, size) {
+    const scaleX = this._getRenderScale(x, size);
+    const scaleY = this._getRenderScale(y, size);
 
     const PORT_POINTS = {
-      [PORTS.NORTH]: [[1 / 3, 0], [2 / 3, 0]],
-      [PORTS.EAST]: [[1, 1 / 3], [1, 2 / 3]],
-      [PORTS.SOUTH]: [[1 / 3, 1], [2 / 3, 1]],
-      [PORTS.WEST]: [[0, 1 / 3], [0, 2 / 3]],
+      [DIRECTIONS.NORTH]: [[1 / 3, 0], [2 / 3, 0]],
+      [DIRECTIONS.EAST]: [[1, 1 / 3], [1, 2 / 3]],
+      [DIRECTIONS.SOUTH]: [[1 / 3, 1], [2 / 3, 1]],
+      [DIRECTIONS.WEST]: [[0, 1 / 3], [0, 2 / 3]],
     };
+
+    const group = selection.append('g');
 
     /**
      * Renders the tile's background.
      */
     const renderBackground = () => {
-      g.append('rect')
+      group
+        .append('rect')
         .attr('class', 'background')
         .attr('x', x)
         .attr('y', y)
-        .attr('width', width)
-        .attr('height', height);
+        .attr('width', size)
+        .attr('height', size);
     };
 
     /**
-     * Renders a path from a given starting port to a
-     * given ending port.
+     * Renders a path from a given starting point to a given
+     * ending point.
      *
-     * @param {number[]} start The starting port of the path
-     * @param {number[]} end The ending port of the path
+     * @param {number[]} start The starting point of the path
+     * @param {number[]} end The ending point of the path
      * @param {string} color The color of the path
      */
     const renderPath = (start, end, color) => {
-      const lineFunction = this.d3
+      /**
+       * Gets the draw commands for an svg `path` from an array of
+       * points. It draws a path using a basis curve.
+       *
+       * @param {number[][]} points an array of points to convert
+       * to draw commands
+       * @returns {string} the draw commands to pass to the `d`
+       * attribute of a path
+       */
+      const getDrawCommands = this.d3
         .line()
-        .x(([x]) => xScale(x))
-        .y(([, y]) => yScale(y))
+        .x(([x]) => scaleX(x))
+        .y(([, y]) => scaleY(y))
         .curve(this.d3.curveBasis);
 
-      let midX1 = start[0];
-      let midY1 = start[1];
-      let midX2 = end[0];
-      let midY2 = end[1];
+      /**
+       * Gets the mid points of a path. This is used to achieve
+       * smoothly curved lines that blend into adjacent tiles.
+       *
+       * @returns {number[][]} an array of mid points
+       */
+      const getMidPoints = () => {
+        let [midX1, midY1] = start;
+        let [midX2, midY2] = end;
 
-      if (start[1] === end[1]) {
-        if (start[1] === 0) {
-          midY1 = midY2 = 0.25;
-        } else if (start[1] === 1) {
-          midY1 = midY2 = 0.75;
+        /**
+         * Gets the closest quarter value. If the value is 1, it'll
+         * return 0.75; otherwise, it'll return 0.25.
+         *
+         * @param {number} val the value to check
+         * @returns {number} the closest quarter value
+         */
+        const getClosestQuarterValue = val => (val === 1 ? 0.75 : 0.25);
+
+        /**
+         * Checks if value is 0 or 1, on a scale from 0 to 1.
+         *
+         * @param {number} val the value to check
+         * @returns {boolean} whether value is 0 or 1
+         */
+        const isZeroOrOne = val => val % 1 === 0;
+
+        if (midY1 === midY2 && isZeroOrOne(midY1)) {
+          midY1 = midY2 = getClosestQuarterValue(midY1);
+        } else if (isZeroOrOne(midX1) && isZeroOrOne(midX2)) {
+          midX1 = getClosestQuarterValue(midX1);
+          midX2 = getClosestQuarterValue(midX2);
+        } else if (isZeroOrOne(midX1)) {
+          midY2 = midY1;
+        } else if (isZeroOrOne(midX1)) {
+          midY1 = midY2;
+        } else {
+          midY1 = getClosestQuarterValue(midY1);
+          midY2 = getClosestQuarterValue(midY2);
         }
-      } else if ((start[0] === 0 && end[0] === 1) || (start[0] === 1 && end[0] === 0)) {
-        midX1 = start[0] === 1 ? 0.75 : 0.25;
-        midY1 = start[1];
-        midX2 = end[0] === 1 ? 0.75 : 0.25;
-        midY2 = end[1];
-      } else if (start[0] === 0 || start[0] === 1) {
-        midY1 = midY2 = start[1];
-      } else if (end[0] === 0 || end[0] === 1) {
-        midY1 = midY2 = end[1];
-      } else {
-        midX1 = start[0];
-        midY1 = start[1] === 1 ? 0.75 : 0.25;
-        midX2 = end[0];
-        midY2 = end[1] === 1 ? 0.75 : 0.25;
-      }
 
-      g.append('path')
+        return [[midX1, midY1], [midX2, midY2]];
+      };
+
+      const points = [start, ...getMidPoints(), end];
+
+      group
+        .append('path')
         .attr('class', 'path')
         .attr('stroke', color)
-        .attr('d', lineFunction([start, [midX1, midY1], [midX2, midY2], end]));
+        .attr('d', getDrawCommands(points));
     };
 
     /**
@@ -176,19 +207,22 @@ class Tile {
      * scale of 0 to 1)
      */
     const renderPort = (x, y) => {
-      g.append('circle')
+      group
+        .append('circle')
         .attr('class', 'port')
-        .attr('cx', xScale(x))
-        .attr('cy', yScale(y))
-        .attr('r', 6);
+        .attr('cx', scaleX(x))
+        .attr('cy', scaleY(y))
+        .attr('r', Math.min(size * 0.025, 8));
     };
 
     // Renders background
     renderBackground();
 
     // Renders paths
-    this.paths.forEach(({ start, end, color }) => {
-      renderPath(PORT_POINTS[start[0]][start[1]], PORT_POINTS[end[0]][end[1]], color);
+    this.paths.forEach(({ color, end, start }) => {
+      const startPoint = PORT_POINTS[start[0]][start[1]];
+      const endPoint = PORT_POINTS[end[0]][end[1]];
+      renderPath(startPoint, endPoint, color);
     });
 
     // Renders ports
@@ -203,16 +237,15 @@ class Tile {
    * Renders a tile to the render directory, given a filename.
    *
    * @param {string} fileName the name of the file (sans extension)
+   * @param {string} size the size of the image
    */
-  renderToFile(fileName) {
-    const size = 300;
-    const padding = 20;
-    const renderSize = size - 2 * padding;
-
+  renderToFile(fileName, size = 250) {
     const svg = this.d3Node.createSVG(size, size);
 
-    this.render(svg, padding, padding, renderSize, renderSize);
+    const padding = size * 0.05;
+    this.render(svg, padding, padding, size - 2 * padding);
 
+    const RENDER_DIR = path.resolve(__dirname, '..', '1');
     const svgFile = fs.createWriteStream(path.resolve(RENDER_DIR, `${fileName}.svg`));
     svgFile.write(this.d3Node.svgString());
     svgFile.end();
