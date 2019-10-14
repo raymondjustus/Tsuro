@@ -1,24 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const D3Node = require('d3-node');
-
-// Constants
-const DIRECTIONS = {
-  NORTH: 'north',
-  EAST: 'east',
-  SOUTH: 'south',
-  WEST: 'west',
-};
-
-const COLORS = {
-  BLACK: '#000000',
-  BROWN: '#7b2a26',
-  GRAY: '#eeeeee',
-  GREEN: '#63af33',
-  RED: '#bf2952',
-  WHITE: '#ffffff',
-  YELLOW: '#d2b53c',
-};
+const { COLORS, DIRECTIONS } = require('./constants');
 
 const STYLES = `
   .background, .port {
@@ -70,6 +53,13 @@ class Tile {
     ];
   }
 
+  /**
+   * Rotates the tile 90 degrees clockwise per number of
+   * rotations given.
+   *
+   * @param {number} rotations the amount of 90-degree
+   * clockwise rotations to perform
+   */
   rotate(rotations) {
     const CLOCKWISE_DIRECTIONS = [
       DIRECTIONS.NORTH,
@@ -81,6 +71,13 @@ class Tile {
     const actualRotations = rotations % CLOCKWISE_DIRECTIONS.length;
 
     if (actualRotations > 0) {
+      /**
+       * Updates the given direction to reflect the number
+       * of rotations (clockwise).
+       *
+       * @param {string} direction the direction to update
+       * @returns {string} the final rotated direction
+       */
       const rotateDirection = direction => {
         const idx = CLOCKWISE_DIRECTIONS.indexOf(direction);
         const newIdx = (idx + rotations) % CLOCKWISE_DIRECTIONS.length;
@@ -252,8 +249,8 @@ class Tile {
 
     // Renders ports
     Object.keys(PORT_POINTS).forEach(direction => {
-      PORT_POINTS[direction].forEach(([x, y], i) => {
-        renderPort(x, y, i === 0);
+      PORT_POINTS[direction].forEach(([x, y]) => {
+        renderPort(x, y);
       });
     });
   }
