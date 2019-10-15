@@ -90,9 +90,6 @@ interface Player {
 
   // Sends a given action from the Player to the Referee
   sendAction(action: Action): void;
-
-  // Updates the player's version of the board to match current one
-  updateBoard(board: Board): void;
 }
 
 // The board's representation of a player
