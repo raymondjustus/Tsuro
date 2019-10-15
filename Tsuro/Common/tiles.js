@@ -1,7 +1,7 @@
-const fs = require('fs');
-const path = require('path');
-const D3Node = require('d3-node');
-const { COLORS, DIRECTIONS } = require('./constants');
+const fs = require("fs");
+const path = require("path");
+const D3Node = require("d3-node");
+const { COLORS, DIRECTIONS } = require("./constants");
 
 const STYLES = `
   .background, .port {
@@ -27,30 +27,83 @@ class Tile {
   constructor() {
     this.d3Node = new D3Node({ styles: STYLES });
     this.d3 = this.d3Node.d3;
+    this.paths = [];
+  }
 
-    // Temporary paths definition
+  /**
+   * Adds the 4 paths to this Tile
+   * @param {{start, end}[]} pathways is a list of 4 {start,end} node
+   *
+   * each indedx is [(side, port), (side, port)]
+   */
+  addPaths(pathways) {
+    //TODO: random colors for funsies
+
     this.paths = [
       {
-        start: [DIRECTIONS.NORTH, 0],
-        end: [DIRECTIONS.NORTH, 1],
-        color: COLORS.BROWN,
+        start: pathways[0][0],
+        end: pathways[0][1],
+        color: COLORS.BROWN
       },
       {
-        start: [DIRECTIONS.WEST, 1],
-        end: [DIRECTIONS.SOUTH, 1],
-        color: COLORS.RED,
+        start: pathways[1][0],
+        end: pathways[1][1],
+        color: COLORS.RED
       },
       {
-        start: [DIRECTIONS.EAST, 0],
-        end: [DIRECTIONS.SOUTH, 0],
-        color: COLORS.YELLOW,
+        start: pathways[2][0],
+        end: pathways[2][1],
+        color: COLORS.YELLOW
       },
       {
-        start: [DIRECTIONS.WEST, 0],
-        end: [DIRECTIONS.EAST, 1],
-        color: COLORS.GREEN,
-      },
+        start: pathways[3][0],
+        end: pathways[3][1],
+        color: COLORS.GREEN
+      }
     ];
+  }
+
+  /**
+   * checks exact match on pathways between this tile and the given one
+   * @param {Object} tile
+   */
+  checkTileEquality(tile) {
+    // console.log("\n\nSTART NEW CHECK \n");
+    let i = 0;
+
+    let checks = [false, false, false, false];
+    for (i; i < 4; i++) {
+      let tilePath = tile.paths[i];
+      // console.log("oPath: " + JSON.stringify(tilePath));
+      let tileStart = JSON.stringify(tilePath.start);
+      let tileEnd = JSON.stringify(tilePath.end);
+      let j = 0;
+      for (j; j < 4; j++) {
+        let path = this.paths[j];
+        let start = JSON.stringify(path.start);
+        let end = JSON.stringify(path.end);
+        // console.log("tPath: " + JSON.stringify(path));
+        if (start == tileStart || start == tileEnd) {
+          if (end == tileStart || end == tileEnd) {
+            checks[i] = true;
+            // console.log("checks out");
+          } else {
+            // console.log("bad bruh");
+            return false;
+          }
+        } else {
+          // console.log("no chance");
+        }
+      }
+    }
+
+    for (let k = 0; k < 4; k++) {
+      // console.log("K = " + k + "  -  " + checks[k]);
+      if (!checks[k]) {
+        return false;
+      }
+    }
+    return true;
   }
 
   /**
@@ -65,7 +118,7 @@ class Tile {
       DIRECTIONS.NORTH,
       DIRECTIONS.EAST,
       DIRECTIONS.SOUTH,
-      DIRECTIONS.WEST,
+      DIRECTIONS.WEST
     ];
 
     const actualRotations = rotations % CLOCKWISE_DIRECTIONS.length;
@@ -87,9 +140,49 @@ class Tile {
       this.paths = this.paths.map(({ start, end, color }) => ({
         start: [rotateDirection(start[0]), start[1]],
         end: [rotateDirection(end[0]), end[1]],
-        color,
+        color
       }));
     }
+  }
+
+  /**
+   * Returns a copy of a node that has been rotated
+   * @param {number} rotations  the amount of 90=degree clockwise rotations to perform
+   */
+  newRotated(rotations) {
+    let temp = new Tile();
+    temp.paths = this.paths;
+    temp.rotate(rotations);
+    return temp;
+  }
+
+  /**
+   * checks the equality of this tile vs the given allowing for a difference in rotations
+   * @param {Object} tile
+   */
+  checkRotationalEquality(tile) {
+    let zero = this.checkTileEquality(tile);
+    let one = this.checkTileEquality(tile.newRotated(1));
+    let two = this.checkTileEquality(tile.newRotated(2));
+    let three = this.checkTileEquality(tile.newRotated(3));
+
+    // console.log(zero + " " + one + " " + two + " " + three);
+
+    // console.log("CHEAT TEST");
+    // console.log(JSON.stringify(this.paths));
+    // console.log(JSON.stringify(tile.newRotated(2).paths));
+    // console.log(this.checkTileEquality(tile.newRotated(2)));
+    // console.log("END CHEAT");
+
+    return (
+      this.checkTileEquality(tile) ||
+      // console.log("\n ------------------ Rotate 1: -----------------") ||
+      this.checkTileEquality(tile.newRotated(1)) ||
+      // console.log("\n ------------------ Rotate 2: -----------------") ||
+      this.checkTileEquality(tile.newRotated(2)) ||
+      // console.log("\n ------------------ Rotate 3: -----------------") ||
+      this.checkTileEquality(tile.newRotated(3))
+    );
   }
 
   /**
@@ -125,22 +218,22 @@ class Tile {
       [DIRECTIONS.NORTH]: [[1 / 3, 0], [2 / 3, 0]],
       [DIRECTIONS.EAST]: [[1, 1 / 3], [1, 2 / 3]],
       [DIRECTIONS.SOUTH]: [[2 / 3, 1], [1 / 3, 1]],
-      [DIRECTIONS.WEST]: [[0, 2 / 3], [0, 1 / 3]],
+      [DIRECTIONS.WEST]: [[0, 2 / 3], [0, 1 / 3]]
     };
 
-    const group = selection.append('g');
+    const group = selection.append("g");
 
     /**
      * Renders the tile's background.
      */
     const renderBackground = () => {
       group
-        .append('rect')
-        .attr('class', 'background')
-        .attr('x', x)
-        .attr('y', y)
-        .attr('width', size)
-        .attr('height', size);
+        .append("rect")
+        .attr("class", "background")
+        .attr("x", x)
+        .attr("y", y)
+        .attr("width", size)
+        .attr("height", size);
     };
 
     /**
@@ -214,10 +307,10 @@ class Tile {
       const points = [start, ...getMidPoints(), end];
 
       group
-        .append('path')
-        .attr('class', 'path')
-        .attr('stroke', color)
-        .attr('d', getDrawCommands(points));
+        .append("path")
+        .attr("class", "path")
+        .attr("stroke", color)
+        .attr("d", getDrawCommands(points));
     };
 
     /**
@@ -230,11 +323,11 @@ class Tile {
      */
     const renderPort = (x, y) => {
       group
-        .append('circle')
-        .attr('class', 'port')
-        .attr('cx', scaleX(x))
-        .attr('cy', scaleY(y))
-        .attr('r', Math.min(size * 0.025, 8));
+        .append("circle")
+        .attr("class", "port")
+        .attr("cx", scaleX(x))
+        .attr("cy", scaleY(y))
+        .attr("r", Math.min(size * 0.025, 8));
     };
 
     // Renders background
@@ -267,8 +360,10 @@ class Tile {
     const padding = size * 0.05;
     this.render(svg, padding, padding, size - 2 * padding);
 
-    const RENDER_DIR = path.resolve(__dirname, '..', '1');
-    const svgFile = fs.createWriteStream(path.resolve(RENDER_DIR, `${fileName}.svg`));
+    const RENDER_DIR = path.resolve(__dirname, "..", "1");
+    const svgFile = fs.createWriteStream(
+      path.resolve(RENDER_DIR, `${fileName}.svg`)
+    );
     svgFile.write(this.d3Node.svgString());
     svgFile.end();
   }

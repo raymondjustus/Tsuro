@@ -1,4 +1,3 @@
-const Tile = require('./Common/tiles');
+const allTiles = require("./1/allTiles");
 
-const t = new Tile();
-t.renderToFile('tile-1');
+allTiles();
