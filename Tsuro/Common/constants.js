@@ -6,12 +6,24 @@ exports.COLORS = {
   RED: '#bf2952',
   WHITE: '#ffffff',
   YELLOW: '#d2b53c',
-  RANDOM: '#' + Math.floor(Math.random() * 16777215).toString(16),
 };
 
-exports.DIRECTIONS = {
+const DIRECTIONS = {
   NORTH: 'north',
   EAST: 'east',
   SOUTH: 'south',
   WEST: 'west',
+};
+exports.DIRECTIONS = DIRECTIONS;
+
+exports.DIRECTIONS_CLOCKWISE = [
+  DIRECTIONS.NORTH,
+  DIRECTIONS.EAST,
+  DIRECTIONS.SOUTH,
+  DIRECTIONS.WEST,
+];
+
+exports.PORTS = {
+  ZERO: 0,
+  ONE: 1,
 };

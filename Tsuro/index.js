@@ -1,4 +1,4 @@
-const allTiles = require("./1/allTiles");
+const allTiles = require('./1/allTiles');
 
 allTiles();
 

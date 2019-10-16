@@ -1,6 +1,4 @@
-const Tile = require('../Common/tiles');
-const Position = require('../Common/position');
-const Path = require('../Common/path');
+const { Path, Position, Tile } = require('../Common');
 const { DIRECTIONS } = require('../Common/constants');
 
 /**
@@ -10,7 +8,7 @@ const { DIRECTIONS } = require('../Common/constants');
  */
 const tileRepetitionCheck = (tileList, tile) => {
   for (let i = 0; i < tileList.length; i++) {
-    if (tile.checkRotationalEquality(tileList[i])) {
+    if (tile.isEqualToRotated(tileList[i])) {
       return false;
     }
   }
@@ -24,7 +22,7 @@ const tileRepetitionCheck = (tileList, tile) => {
  */
 const simpleRepetitionCheck = (tileList, tile) => {
   for (let i = 0; i < tileList.length; i++) {
-    if (tile.checkTileEquality(tileList[i])) {
+    if (tile.isEqualTo(tileList[i])) {
       return false;
     }
   }
@@ -35,36 +33,36 @@ const simpleRepetitionCheck = (tileList, tile) => {
  * Creates one version of each 35 possible tiles for the game Tsuro
  */
 const allTiles = () => {
-  let foundTiles = [];
-  let zero = new Position(DIRECTIONS.NORTH, 0);
-  let one = new Position(DIRECTIONS.NORTH, 1);
-  let two = new Position(DIRECTIONS.EAST, 0);
-  let three = new Position(DIRECTIONS.EAST, 1);
-  let four = new Position(DIRECTIONS.SOUTH, 0);
-  let five = new Position(DIRECTIONS.SOUTH, 1);
-  let six = new Position(DIRECTIONS.WEST, 0);
-  let seven = new Position(DIRECTIONS.WEST, 1);
+  const foundTiles = [];
+  const zero = new Position(DIRECTIONS.NORTH, 0);
+  const one = new Position(DIRECTIONS.NORTH, 1);
+  const two = new Position(DIRECTIONS.EAST, 0);
+  const three = new Position(DIRECTIONS.EAST, 1);
+  const four = new Position(DIRECTIONS.SOUTH, 0);
+  const five = new Position(DIRECTIONS.SOUTH, 1);
+  const six = new Position(DIRECTIONS.WEST, 0);
+  const seven = new Position(DIRECTIONS.WEST, 1);
 
   for (let i = 0; i < 7; i++) {
-    let portOptions = [one, two, three, four, five, six, seven];
-    let startFirst = zero;
-    let endFirst = portOptions.splice(i, 1).shift();
+    const portOptions = [one, two, three, four, five, six, seven];
+    const startFirst = zero;
+    const endFirst = portOptions.splice(i, 1).shift();
     for (let j = 0; j < 5; j++) {
-      let startSecond = portOptions.shift();
-      let endSecond = portOptions.splice(j, 1).shift();
+      const startSecond = portOptions.shift();
+      const endSecond = portOptions.splice(j, 1).shift();
       for (let k = 0; k < 3; k++) {
-        let startThird = portOptions.shift();
-        let endThird = portOptions.splice(k, 1).shift();
-        let startFourth = portOptions.shift();
-        let endFourth = portOptions.shift();
-        let layout = [
+        const startThird = portOptions.shift();
+        const endThird = portOptions.splice(k, 1).shift();
+        const startFourth = portOptions.shift();
+        const endFourth = portOptions.shift();
+        const layout = [
           new Path(startFirst, endFirst),
           new Path(startSecond, endSecond),
           new Path(startThird, endThird),
           new Path(startFourth, endFourth),
         ];
 
-        let temporary = new Tile(layout);
+        const temporary = new Tile(layout);
         foundTiles.push(temporary);
 
         portOptions.unshift(endFourth);
@@ -79,16 +77,16 @@ const allTiles = () => {
     portOptions.unshift(startFirst);
   }
 
-  let simpleScrub = [];
+  const simpleScrub = [];
   foundTiles.forEach(tile => {
     if (simpleRepetitionCheck(simpleScrub, tile)) {
       simpleScrub.push(tile);
     }
   });
 
-  let lastList = [];
+  const lastList = [];
   while (simpleScrub.length > 0) {
-    let tile = simpleScrub.pop();
+    const tile = simpleScrub.pop();
     if (tileRepetitionCheck(lastList, tile)) {
       lastList.push(tile);
     }
@@ -96,7 +94,7 @@ const allTiles = () => {
 
   let n = 0;
   lastList.forEach(tile => {
-    let s = 'tile-' + n;
+    const s = `tile-${n}`;
     n += 1;
     tile.renderToFile(s);
   });

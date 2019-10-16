@@ -1,9 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const Position = require('../Common/position');
-const Path = require('../Common/path');
 const D3Node = require('d3-node');
-const { COLORS, DIRECTIONS } = require('./constants');
+const { COLORS, DIRECTIONS, DIRECTIONS_CLOCKWISE } = require('./constants');
 
 const STYLES = `
   .background, .port {
@@ -21,6 +19,7 @@ const STYLES = `
 
   .path {
     fill: none;
+    stroke: ${COLORS.BLACK};
     stroke-width: 3;
   }
 `;
@@ -29,42 +28,48 @@ class Tile {
   constructor(paths) {
     this.d3Node = new D3Node({ styles: STYLES });
     this.d3 = this.d3Node.d3;
+
     this.paths = paths;
   }
 
   /**
-   * checks exact match on pathways between this tile and the given one
-   * @param {Tile} tile
+   * Returns a new copy of this tile.
+   *
+   * @param {number} [rotations] rotations to perform on the new copy
+   * @returns {Tile} a copy of this tile
    */
-  checkTileEquality(tile) {
-    let i = 0;
-    let checks = [false, false, false, false];
-    for (i; i < 4; i++) {
-      let tilePath = tile.paths[i];
-      let tileStart = JSON.stringify(tilePath.start);
-      let tileEnd = JSON.stringify(tilePath.end);
-      let j = 0;
-      for (j; j < 4; j++) {
-        let path = this.paths[j];
-        let start = JSON.stringify(path.start);
-        let end = JSON.stringify(path.end);
-        if (start == tileStart || start == tileEnd) {
-          if (end == tileStart || end == tileEnd) {
-            checks[i] = true;
-          } else {
-            return false;
-          }
-        } else {
-        }
-      }
+  copy(rotations = 0) {
+    const tileCopy = new Tile(this.paths.map(path => path.copy()));
+    if (rotations > 0) {
+      tileCopy.rotate(rotations);
     }
+    return tileCopy;
+  }
 
-    for (let k = 0; k < 4; k++) {
-      if (!checks[k]) {
-        return false;
-      }
-    }
-    return true;
+  /**
+   * Checks exact match on pathways between this tile and the given one.
+   *
+   * @param {Tile} tile the tile to check equality against
+   * @returns {boolean} whether the given tile is equal to this one
+   */
+  isEqualTo(tile) {
+    return this.paths.every(path => tile.paths.some(otherPath => otherPath.isEqualTo(path)));
+  }
+
+  /**
+   * Checks the equality of this tile versus the given, allowing for a
+   * difference in rotations.
+   *
+   * @param {Tile} tile the tile to check equality against
+   * @returns {boolean} whether the given tile is equal to this one
+   */
+  isEqualToRotated(tile) {
+    return (
+      this.isEqualTo(tile) ||
+      this.isEqualTo(tile.copy(1)) ||
+      this.isEqualTo(tile.copy(2)) ||
+      this.isEqualTo(tile.copy(3))
+    );
   }
 
   /**
@@ -75,68 +80,13 @@ class Tile {
    * clockwise rotations to perform
    */
   rotate(rotations) {
-    const CLOCKWISE_DIRECTIONS = [
-      DIRECTIONS.NORTH,
-      DIRECTIONS.EAST,
-      DIRECTIONS.SOUTH,
-      DIRECTIONS.WEST,
-    ];
-
-    const actualRotations = rotations % CLOCKWISE_DIRECTIONS.length;
-
+    const actualRotations = rotations % DIRECTIONS_CLOCKWISE.length;
     if (actualRotations > 0) {
-      /**
-       * Updates the given direction to reflect the number
-       * of rotations (clockwise).
-       *
-       * @param {string} direction the direction to update
-       * @returns {string} the final rotated direction
-       */
-      const rotateDirection = direction => {
-        const idx = CLOCKWISE_DIRECTIONS.indexOf(direction);
-        const newIdx = (idx + rotations) % CLOCKWISE_DIRECTIONS.length;
-        return CLOCKWISE_DIRECTIONS[newIdx];
-      };
-
-      // this.paths = this.paths.map(({ start, end, color }) => ({
-      //   start: [rotateDirection(start[0]), start[1]],
-      //   end: [rotateDirection(end[0]), end[1]],
-      //   color
-      // }));
-      let rotatedpaths = [];
-      this.paths.forEach(path => {
-        let newpath = new Path(
-          new Position(rotateDirection(path.start.direction), path.start.port),
-          new Position(rotateDirection(path.end.direction), path.end.port),
-        );
-        newpath.color = path.color;
-        rotatedpaths.push(newpath);
+      this.paths = this.paths.map(path => {
+        path.rotate(actualRotations);
+        return path;
       });
-      this.paths = rotatedpaths;
     }
-  }
-
-  /**
-   * Returns a copy of a node that has been rotated
-   * @param {number} rotations  the amount of 90=degree clockwise rotations to perform
-   */
-  newRotated(rotations) {
-    let temp = new Tile(this.paths);
-    temp.rotate(rotations);
-    return temp;
-  }
-
-  /**
-   * checks the equality of this tile vs the given allowing for a difference in rotations
-   * @param {Tile} tile
-   */
-  checkRotationalEquality(tile) {
-    return (
-      this.checkTileEquality(tile) ||
-      this.checkTileEquality(tile.newRotated(1)) ||
-      this.checkTileEquality(tile.newRotated(2)) ||
-      this.checkTileEquality(tile.newRotated(3))
-    );
   }
 
   /**
@@ -198,7 +148,7 @@ class Tile {
      * @param {number[]} end The ending point of the path
      * @param {string} color The color of the path
      */
-    const renderPath = (start, end, color) => {
+    const renderPath = (start, end) => {
       /**
        * Gets the draw commands for an svg `path` from an array of
        * points. It draws a path using a basis curve.
@@ -263,7 +213,6 @@ class Tile {
       group
         .append('path')
         .attr('class', 'path')
-        .attr('stroke', color)
         .attr('d', getDrawCommands(points));
     };
 
@@ -291,7 +240,7 @@ class Tile {
     this.paths.forEach(path => {
       const startPoint = PORT_POINTS[path.start.direction][path.start.port];
       const endPoint = PORT_POINTS[path.end.direction][path.end.port];
-      renderPath(startPoint, endPoint, path.color);
+      renderPath(startPoint, endPoint);
     });
 
     // Renders ports
