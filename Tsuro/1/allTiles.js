@@ -1,85 +1,72 @@
 const { Path, Position, Tile } = require('../Common');
-const { DIRECTIONS } = require('../Common/constants');
+const { DIRECTIONS, PORTS } = require('../Common/constants');
 
 /**
- * Checks to see if the given tile is in the tile list
- * @param {Tile[]} tileList
- * @param {Tile} tile
+ * Checks to see if the given tile exists alredy in the tile list.
+ *
+ * @param {Tile} tile the tile to check
+ * @param {Tile[]} tileList the list of tiles to check repitition against
+ * @param {boolean} [checkForRotations=false] whether to check for equality,
+ * regardless of orientation
  */
-const tileRepetitionCheck = (tileList, tile) => {
-  for (let i = 0; i < tileList.length; i++) {
-    if (tile.isEqualToRotated(tileList[i])) {
-      return false;
+const checkForTileRepitition = (tile, tileList, checkForRotations = false) =>
+  tileList.every(tileItem => {
+    if (checkForRotations) {
+      return !tile.isEqualToRotated(tileItem);
     }
-  }
-  return true;
-};
-
-/**
- * Checks to see if the given tile is in the tile list, does not check for rotation equality
- * @param {Tile[]} tileList
- * @param {Tile} tile
- */
-const simpleRepetitionCheck = (tileList, tile) => {
-  for (let i = 0; i < tileList.length; i++) {
-    if (tile.isEqualTo(tileList[i])) {
-      return false;
-    }
-  }
-  return true;
-};
+    return !tile.isEqualTo(tileItem);
+  });
 
 /**
  * Creates one version of each 35 possible tiles for the game Tsuro
  */
 const allTiles = () => {
   const foundTiles = [];
-  const zero = new Position(DIRECTIONS.NORTH, 0);
-  const one = new Position(DIRECTIONS.NORTH, 1);
-  const two = new Position(DIRECTIONS.EAST, 0);
-  const three = new Position(DIRECTIONS.EAST, 1);
-  const four = new Position(DIRECTIONS.SOUTH, 0);
-  const five = new Position(DIRECTIONS.SOUTH, 1);
-  const six = new Position(DIRECTIONS.WEST, 0);
-  const seven = new Position(DIRECTIONS.WEST, 1);
+  const zero = new Position(DIRECTIONS.NORTH, PORTS.ZERO);
+  const one = new Position(DIRECTIONS.NORTH, PORTS.ONE);
+  const two = new Position(DIRECTIONS.EAST, PORTS.ZERO);
+  const three = new Position(DIRECTIONS.EAST, PORTS.ONE);
+  const four = new Position(DIRECTIONS.SOUTH, PORTS.ZERO);
+  const five = new Position(DIRECTIONS.SOUTH, PORTS.ONE);
+  const six = new Position(DIRECTIONS.WEST, PORTS.ZERO);
+  const seven = new Position(DIRECTIONS.WEST, PORTS.ONE);
 
   for (let i = 0; i < 7; i++) {
-    const portOptions = [one, two, three, four, five, six, seven];
+    const positions = [one, two, three, four, five, six, seven];
     const startFirst = zero;
-    const endFirst = portOptions.splice(i, 1).shift();
+    const endFirst = positions.splice(i, 1).shift();
     for (let j = 0; j < 5; j++) {
-      const startSecond = portOptions.shift();
-      const endSecond = portOptions.splice(j, 1).shift();
+      const startSecond = positions.shift();
+      const endSecond = positions.splice(j, 1).shift();
       for (let k = 0; k < 3; k++) {
-        const startThird = portOptions.shift();
-        const endThird = portOptions.splice(k, 1).shift();
-        const startFourth = portOptions.shift();
-        const endFourth = portOptions.shift();
-        const layout = [
+        const startThird = positions.shift();
+        const endThird = positions.splice(k, 1).shift();
+        const startFourth = positions.shift();
+        const endFourth = positions.shift();
+
+        const tempTile = new Tile([
           new Path(startFirst, endFirst),
           new Path(startSecond, endSecond),
           new Path(startThird, endThird),
           new Path(startFourth, endFourth),
-        ];
+        ]);
+        foundTiles.push(tempTile);
 
-        const temporary = new Tile(layout);
-        foundTiles.push(temporary);
-
-        portOptions.unshift(endFourth);
-        portOptions.unshift(startFourth);
-        portOptions.unshift(endThird);
-        portOptions.unshift(startThird);
+        positions.unshift(endFourth);
+        positions.unshift(startFourth);
+        positions.unshift(endThird);
+        positions.unshift(startThird);
       }
-      portOptions.unshift(endSecond);
-      portOptions.unshift(startSecond);
+      positions.unshift(endSecond);
+      positions.unshift(startSecond);
     }
-    portOptions.unshift(endFirst);
-    portOptions.unshift(startFirst);
+    positions.unshift(endFirst);
+    positions.unshift(startFirst);
   }
 
   const simpleScrub = [];
   foundTiles.forEach(tile => {
-    if (simpleRepetitionCheck(simpleScrub, tile)) {
+    if (checkForTileRepitition(tile, simpleScrub)) {
       simpleScrub.push(tile);
     }
   });
@@ -87,16 +74,13 @@ const allTiles = () => {
   const lastList = [];
   while (simpleScrub.length > 0) {
     const tile = simpleScrub.pop();
-    if (tileRepetitionCheck(lastList, tile)) {
+    if (checkForTileRepitition(tile, lastList, true)) {
       lastList.push(tile);
     }
   }
 
-  let n = 0;
-  lastList.forEach(tile => {
-    const s = `tile-${n}`;
-    n += 1;
-    tile.renderToFile(s);
+  lastList.forEach((tile, i) => {
+    tile.renderToFile(`tile-${i}`);
   });
 };
 
