@@ -29,17 +29,6 @@ const simpleRepetitionCheck = (tileList, tile) => {
   return true;
 };
 
-// const smartFilter = tiles => {
-//   let filteredList = [];
-//   tiles.array.forEach(item => {
-//     if (simpleRepetitionCheck(filteredList, item)) {
-//       filteredList.push(item);
-//     }
-//   });
-
-//   return filteredList;
-// };
-
 /**
  * Creates one version of each 35 possible tiles for the game Tsuro
  */
@@ -59,21 +48,15 @@ const allTiles = () => {
   for (let i = 0; i < 7; i++) {
     let portOptions = [one, two, three, four, five, six, seven];
     let startFirst = zero;
-    // console.log("got here 1");
-    console.log("removed " + startFirst);
     let endFirst = portOptions.splice(i, 1).shift();
     for (let j = 0; j < 5; j++) {
-      // console.log("got here 2");
       let startSecond = portOptions.shift();
       let endSecond = portOptions.splice(j, 1).shift();
       for (let k = 0; k < 3; k++) {
-        // console.log("got here 3");
-        console.log("Len: " + portOptions.length);
         let startThird = portOptions.shift();
         let endThird = portOptions.splice(k, 1).shift();
         let startFourth = portOptions.shift();
         let endFourth = portOptions.shift();
-        // console.log("got here 4");
         let layout = [
           [startFirst, endFirst],
           [startSecond, endSecond],
@@ -83,11 +66,7 @@ const allTiles = () => {
 
         let temporary = new Tile();
         temporary.addPaths(layout);
-
-        // if (tileRepetitionCheck(foundTiles, temporary)) {
         foundTiles.push(temporary);
-        //   console.log("Found another: " + foundTiles.length);
-        // }
 
         portOptions.unshift(endFourth);
         portOptions.unshift(startFourth);
@@ -99,26 +78,20 @@ const allTiles = () => {
     }
     portOptions.unshift(endFirst);
     portOptions.unshift(startFirst);
-    console.log("JUST CHECKING: " + JSON.stringify(portOptions));
   }
 
-  let finalList = [];
-  console.log(foundTiles.length);
+  let simpleScrub = [];
   foundTiles.forEach(item => {
-    if (simpleRepetitionCheck(finalList, item)) {
-      finalList.push(item);
+    if (simpleRepetitionCheck(simpleScrub, item)) {
+      simpleScrub.push(item);
     }
   });
-  console.log("LENGTH: " + finalList.length);
+
   let lastList = [];
-  while (finalList.length > 0) {
-    let item = finalList.pop();
+  while (simpleScrub.length > 0) {
+    let item = simpleScrub.pop();
     if (tileRepetitionCheck(lastList, item)) {
       lastList.push(item);
-      console.log(lastList.length + " -- " + JSON.stringify(item.paths));
-    }
-    if (lastList.length >= 34) {
-      console.log("Nearing end: " + finalList.length);
     }
   }
 
@@ -128,7 +101,6 @@ const allTiles = () => {
     n += 1;
     tile.renderToFile(s);
   });
-  console.log("LENGTH: " + lastList.length);
 };
 
 module.exports = allTiles;
