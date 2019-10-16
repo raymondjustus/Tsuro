@@ -1,10 +1,12 @@
-const Tile = require("../Common/tiles");
-const { DIRECTIONS } = require("../Common/constants");
+const Tile = require('../Common/tiles');
+const Position = require('../Common/position');
+const Path = require('../Common/path');
+const { DIRECTIONS } = require('../Common/constants');
 
 /**
  * Checks to see if the given tile is in the tile list
  * @param {Tile[]} tileList
- * @param {Tile Object} tile
+ * @param {Tile} tile
  */
 const tileRepetitionCheck = (tileList, tile) => {
   for (let i = 0; i < tileList.length; i++) {
@@ -18,7 +20,7 @@ const tileRepetitionCheck = (tileList, tile) => {
 /**
  * Checks to see if the given tile is in the tile list, does not check for rotation equality
  * @param {Tile[]} tileList
- * @param {Tile Object} tile
+ * @param {Tile} tile
  */
 const simpleRepetitionCheck = (tileList, tile) => {
   for (let i = 0; i < tileList.length; i++) {
@@ -34,16 +36,14 @@ const simpleRepetitionCheck = (tileList, tile) => {
  */
 const allTiles = () => {
   let foundTiles = [];
-  let zero = [DIRECTIONS.NORTH, 0];
-  let one = [DIRECTIONS.NORTH, 1];
-  let two = [DIRECTIONS.EAST, 0];
-  let three = [DIRECTIONS.EAST, 1];
-  let four = [DIRECTIONS.SOUTH, 0];
-  let five = [DIRECTIONS.SOUTH, 1];
-  let six = [DIRECTIONS.WEST, 0];
-  let seven = [DIRECTIONS.WEST, 1];
-
-  let count = 0;
+  let zero = new Position(DIRECTIONS.NORTH, 0);
+  let one = new Position(DIRECTIONS.NORTH, 1);
+  let two = new Position(DIRECTIONS.EAST, 0);
+  let three = new Position(DIRECTIONS.EAST, 1);
+  let four = new Position(DIRECTIONS.SOUTH, 0);
+  let five = new Position(DIRECTIONS.SOUTH, 1);
+  let six = new Position(DIRECTIONS.WEST, 0);
+  let seven = new Position(DIRECTIONS.WEST, 1);
 
   for (let i = 0; i < 7; i++) {
     let portOptions = [one, two, three, four, five, six, seven];
@@ -58,14 +58,13 @@ const allTiles = () => {
         let startFourth = portOptions.shift();
         let endFourth = portOptions.shift();
         let layout = [
-          [startFirst, endFirst],
-          [startSecond, endSecond],
-          [startThird, endThird],
-          [startFourth, endFourth]
+          new Path(startFirst, endFirst),
+          new Path(startSecond, endSecond),
+          new Path(startThird, endThird),
+          new Path(startFourth, endFourth),
         ];
 
-        let temporary = new Tile();
-        temporary.addPaths(layout);
+        let temporary = new Tile(layout);
         foundTiles.push(temporary);
 
         portOptions.unshift(endFourth);
@@ -81,23 +80,23 @@ const allTiles = () => {
   }
 
   let simpleScrub = [];
-  foundTiles.forEach(item => {
-    if (simpleRepetitionCheck(simpleScrub, item)) {
-      simpleScrub.push(item);
+  foundTiles.forEach(tile => {
+    if (simpleRepetitionCheck(simpleScrub, tile)) {
+      simpleScrub.push(tile);
     }
   });
 
   let lastList = [];
   while (simpleScrub.length > 0) {
-    let item = simpleScrub.pop();
-    if (tileRepetitionCheck(lastList, item)) {
-      lastList.push(item);
+    let tile = simpleScrub.pop();
+    if (tileRepetitionCheck(lastList, tile)) {
+      lastList.push(tile);
     }
   }
 
   let n = 0;
   lastList.forEach(tile => {
-    let s = "tile-" + n;
+    let s = 'tile-' + n;
     n += 1;
     tile.renderToFile(s);
   });

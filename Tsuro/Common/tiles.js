@@ -1,7 +1,9 @@
-const fs = require("fs");
-const path = require("path");
-const D3Node = require("d3-node");
-const { COLORS, DIRECTIONS } = require("./constants");
+const fs = require('fs');
+const path = require('path');
+const Position = require('../Common/position');
+const Path = require('../Common/path');
+const D3Node = require('d3-node');
+const { COLORS, DIRECTIONS } = require('./constants');
 
 const STYLES = `
   .background, .port {
@@ -24,50 +26,18 @@ const STYLES = `
 `;
 
 class Tile {
-  constructor() {
+  constructor(paths) {
     this.d3Node = new D3Node({ styles: STYLES });
     this.d3 = this.d3Node.d3;
-    this.paths = [];
-  }
-
-  /**
-   * Adds the 4 paths to this Tile
-   * @param {{start, end}[]} pathways is a list of 4 {start,end} node
-   *
-   * each indedx is [(side, port), (side, port)]
-   */
-  addPaths(pathways) {
-    this.paths = [
-      {
-        start: pathways[0][0],
-        end: pathways[0][1],
-        color: "#" + Math.floor(Math.random() * 16777215).toString(16)
-      },
-      {
-        start: pathways[1][0],
-        end: pathways[1][1],
-        color: "#" + Math.floor(Math.random() * 16777215).toString(16)
-      },
-      {
-        start: pathways[2][0],
-        end: pathways[2][1],
-        color: "#" + Math.floor(Math.random() * 16777215).toString(16)
-      },
-      {
-        start: pathways[3][0],
-        end: pathways[3][1],
-        color: "#" + Math.floor(Math.random() * 16777215).toString(16)
-      }
-    ];
+    this.paths = paths;
   }
 
   /**
    * checks exact match on pathways between this tile and the given one
-   * @param {Object} tile
+   * @param {Tile} tile
    */
   checkTileEquality(tile) {
     let i = 0;
-
     let checks = [false, false, false, false];
     for (i; i < 4; i++) {
       let tilePath = tile.paths[i];
@@ -109,7 +79,7 @@ class Tile {
       DIRECTIONS.NORTH,
       DIRECTIONS.EAST,
       DIRECTIONS.SOUTH,
-      DIRECTIONS.WEST
+      DIRECTIONS.WEST,
     ];
 
     const actualRotations = rotations % CLOCKWISE_DIRECTIONS.length;
@@ -128,11 +98,21 @@ class Tile {
         return CLOCKWISE_DIRECTIONS[newIdx];
       };
 
-      this.paths = this.paths.map(({ start, end, color }) => ({
-        start: [rotateDirection(start[0]), start[1]],
-        end: [rotateDirection(end[0]), end[1]],
-        color
-      }));
+      // this.paths = this.paths.map(({ start, end, color }) => ({
+      //   start: [rotateDirection(start[0]), start[1]],
+      //   end: [rotateDirection(end[0]), end[1]],
+      //   color
+      // }));
+      let rotatedpaths = [];
+      this.paths.forEach(path => {
+        let newpath = new Path(
+          new Position(rotateDirection(path.start.direction), path.start.port),
+          new Position(rotateDirection(path.end.direction), path.end.port),
+        );
+        newpath.color = path.color;
+        rotatedpaths.push(newpath);
+      });
+      this.paths = rotatedpaths;
     }
   }
 
@@ -141,15 +121,14 @@ class Tile {
    * @param {number} rotations  the amount of 90=degree clockwise rotations to perform
    */
   newRotated(rotations) {
-    let temp = new Tile();
-    temp.paths = this.paths;
+    let temp = new Tile(this.paths);
     temp.rotate(rotations);
     return temp;
   }
 
   /**
    * checks the equality of this tile vs the given allowing for a difference in rotations
-   * @param {Object} tile
+   * @param {Tile} tile
    */
   checkRotationalEquality(tile) {
     return (
@@ -193,22 +172,22 @@ class Tile {
       [DIRECTIONS.NORTH]: [[1 / 3, 0], [2 / 3, 0]],
       [DIRECTIONS.EAST]: [[1, 1 / 3], [1, 2 / 3]],
       [DIRECTIONS.SOUTH]: [[2 / 3, 1], [1 / 3, 1]],
-      [DIRECTIONS.WEST]: [[0, 2 / 3], [0, 1 / 3]]
+      [DIRECTIONS.WEST]: [[0, 2 / 3], [0, 1 / 3]],
     };
 
-    const group = selection.append("g");
+    const group = selection.append('g');
 
     /**
      * Renders the tile's background.
      */
     const renderBackground = () => {
       group
-        .append("rect")
-        .attr("class", "background")
-        .attr("x", x)
-        .attr("y", y)
-        .attr("width", size)
-        .attr("height", size);
+        .append('rect')
+        .attr('class', 'background')
+        .attr('x', x)
+        .attr('y', y)
+        .attr('width', size)
+        .attr('height', size);
     };
 
     /**
@@ -282,10 +261,10 @@ class Tile {
       const points = [start, ...getMidPoints(), end];
 
       group
-        .append("path")
-        .attr("class", "path")
-        .attr("stroke", color)
-        .attr("d", getDrawCommands(points));
+        .append('path')
+        .attr('class', 'path')
+        .attr('stroke', color)
+        .attr('d', getDrawCommands(points));
     };
 
     /**
@@ -298,21 +277,21 @@ class Tile {
      */
     const renderPort = (x, y) => {
       group
-        .append("circle")
-        .attr("class", "port")
-        .attr("cx", scaleX(x))
-        .attr("cy", scaleY(y))
-        .attr("r", Math.min(size * 0.025, 8));
+        .append('circle')
+        .attr('class', 'port')
+        .attr('cx', scaleX(x))
+        .attr('cy', scaleY(y))
+        .attr('r', Math.min(size * 0.025, 8));
     };
 
     // Renders background
     renderBackground();
 
     // Renders paths
-    this.paths.forEach(({ color, end, start }) => {
-      const startPoint = PORT_POINTS[start[0]][start[1]];
-      const endPoint = PORT_POINTS[end[0]][end[1]];
-      renderPath(startPoint, endPoint, color);
+    this.paths.forEach(path => {
+      const startPoint = PORT_POINTS[path.start.direction][path.start.port];
+      const endPoint = PORT_POINTS[path.end.direction][path.end.port];
+      renderPath(startPoint, endPoint, path.color);
     });
 
     // Renders ports
@@ -335,10 +314,8 @@ class Tile {
     const padding = size * 0.05;
     this.render(svg, padding, padding, size - 2 * padding);
 
-    const RENDER_DIR = path.resolve(__dirname, "..", "1");
-    const svgFile = fs.createWriteStream(
-      path.resolve(RENDER_DIR, `${fileName}.svg`)
-    );
+    const RENDER_DIR = path.resolve(__dirname, '..', '1');
+    const svgFile = fs.createWriteStream(path.resolve(RENDER_DIR, `${fileName}.svg`));
     svgFile.write(this.d3Node.svgString());
     svgFile.end();
   }

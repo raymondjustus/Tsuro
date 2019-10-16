@@ -4,4 +4,3 @@ node_modules
 .idea
 npm-*.log
 *.pyc
-*.svg
