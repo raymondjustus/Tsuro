@@ -119,7 +119,6 @@ const allTiles = () => {
     }
     if (lastList.length >= 34) {
       console.log("Nearing end: " + finalList.length);
-      break;
     }
   }
 
