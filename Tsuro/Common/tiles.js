@@ -37,28 +37,26 @@ class Tile {
    * each indedx is [(side, port), (side, port)]
    */
   addPaths(pathways) {
-    //TODO: random colors for funsies
-
     this.paths = [
       {
         start: pathways[0][0],
         end: pathways[0][1],
-        color: COLORS.BROWN
+        color: "#" + Math.floor(Math.random() * 16777215).toString(16)
       },
       {
         start: pathways[1][0],
         end: pathways[1][1],
-        color: COLORS.RED
+        color: "#" + Math.floor(Math.random() * 16777215).toString(16)
       },
       {
         start: pathways[2][0],
         end: pathways[2][1],
-        color: COLORS.YELLOW
+        color: "#" + Math.floor(Math.random() * 16777215).toString(16)
       },
       {
         start: pathways[3][0],
         end: pathways[3][1],
-        color: COLORS.GREEN
+        color: "#" + Math.floor(Math.random() * 16777215).toString(16)
       }
     ];
   }
@@ -68,13 +66,11 @@ class Tile {
    * @param {Object} tile
    */
   checkTileEquality(tile) {
-    // console.log("\n\nSTART NEW CHECK \n");
     let i = 0;
 
     let checks = [false, false, false, false];
     for (i; i < 4; i++) {
       let tilePath = tile.paths[i];
-      // console.log("oPath: " + JSON.stringify(tilePath));
       let tileStart = JSON.stringify(tilePath.start);
       let tileEnd = JSON.stringify(tilePath.end);
       let j = 0;
@@ -82,23 +78,18 @@ class Tile {
         let path = this.paths[j];
         let start = JSON.stringify(path.start);
         let end = JSON.stringify(path.end);
-        // console.log("tPath: " + JSON.stringify(path));
         if (start == tileStart || start == tileEnd) {
           if (end == tileStart || end == tileEnd) {
             checks[i] = true;
-            // console.log("checks out");
           } else {
-            // console.log("bad bruh");
             return false;
           }
         } else {
-          // console.log("no chance");
         }
       }
     }
 
     for (let k = 0; k < 4; k++) {
-      // console.log("K = " + k + "  -  " + checks[k]);
       if (!checks[k]) {
         return false;
       }
@@ -161,26 +152,10 @@ class Tile {
    * @param {Object} tile
    */
   checkRotationalEquality(tile) {
-    let zero = this.checkTileEquality(tile);
-    let one = this.checkTileEquality(tile.newRotated(1));
-    let two = this.checkTileEquality(tile.newRotated(2));
-    let three = this.checkTileEquality(tile.newRotated(3));
-
-    // console.log(zero + " " + one + " " + two + " " + three);
-
-    // console.log("CHEAT TEST");
-    // console.log(JSON.stringify(this.paths));
-    // console.log(JSON.stringify(tile.newRotated(2).paths));
-    // console.log(this.checkTileEquality(tile.newRotated(2)));
-    // console.log("END CHEAT");
-
     return (
       this.checkTileEquality(tile) ||
-      // console.log("\n ------------------ Rotate 1: -----------------") ||
       this.checkTileEquality(tile.newRotated(1)) ||
-      // console.log("\n ------------------ Rotate 2: -----------------") ||
       this.checkTileEquality(tile.newRotated(2)) ||
-      // console.log("\n ------------------ Rotate 3: -----------------") ||
       this.checkTileEquality(tile.newRotated(3))
     );
   }
