@@ -1,5 +1,5 @@
-const { Path, Position, Tile } = require('../Common');
-const { DIRECTIONS, PORTS } = require('../Common/constants');
+const { Path, Position, Tile } = require("../Common");
+const { DIRECTIONS, PORTS } = require("../Common/constants");
 
 /**
  * Checks to see if the given tile exists alredy in the tile list.
@@ -48,9 +48,12 @@ const allTiles = () => {
           new Path(startFirst, endFirst),
           new Path(startSecond, endSecond),
           new Path(startThird, endThird),
-          new Path(startFourth, endFourth),
+          new Path(startFourth, endFourth)
         ]);
-        foundTiles.push(tempTile);
+
+        if (checkForTileRepitition(tempTile, foundTiles, true)) {
+          foundTiles.push(tempTile);
+        }
 
         positions.unshift(endFourth);
         positions.unshift(startFourth);
@@ -64,22 +67,22 @@ const allTiles = () => {
     positions.unshift(startFirst);
   }
 
-  const simpleScrub = [];
-  foundTiles.forEach(tile => {
-    if (checkForTileRepitition(tile, simpleScrub)) {
-      simpleScrub.push(tile);
-    }
-  });
+  // const simpleScrub = [];
+  // foundTiles.forEach(tile => {
+  //   if (checkForTileRepitition(tile, simpleScrub)) {
+  //     simpleScrub.push(tile);
+  //   }
+  // });
 
-  const lastList = [];
-  while (simpleScrub.length > 0) {
-    const tile = simpleScrub.pop();
-    if (checkForTileRepitition(tile, lastList, true)) {
-      lastList.push(tile);
-    }
-  }
+  // const lastList = [];
+  // while (simpleScrub.length > 0) {
+  //   const tile = simpleScrub.pop();
+  //   if (checkForTileRepitition(tile, lastList, true)) {
+  //     lastList.push(tile);
+  //   }
+  // }
 
-  lastList.forEach((tile, i) => {
+  foundTiles.forEach((tile, i) => {
     tile.renderToFile(`tile-${i}`);
   });
 };
