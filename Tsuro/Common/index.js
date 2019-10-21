@@ -1,11 +1,11 @@
-const { AvatarPlacement, TilePlacement } = require('./placement');
+const { InitialPlacement, TilePlacement } = require('./placement');
 
-exports.Path = require('./Path');
-exports.Position = require('./Position');
-exports.Tile = require('./tiles');
-exports.Player = require('./player');
+exports.Avatar = require('./avatar');
 exports.Board = require('./board');
 exports.Coords = require('./coords');
-exports.Avatar = require('./avatar');
-exports.AvatarPlacement = AvatarPlacement;
+exports.InitialPlacement = InitialPlacement;
+exports.Path = require('./Path');
+exports.Player = require('./player');
+exports.Position = require('./Position');
+exports.Tile = require('./tiles');
 exports.TilePlacement = TilePlacement;

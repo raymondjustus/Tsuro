@@ -1,19 +1,13 @@
-class Placement {
-  constructor(coords) {
-    this.coords = coords;
-  }
-}
-
-class TilePlacement extends Placement {
+class TilePlacement {
   constructor(tile, coords) {
-    super(coords);
+    this.coords = coords;
     this.tile = tile;
   }
 }
 
-class AvatarPlacement extends Placement {
-  constructor(player, color, coords, position) {
-    super(coords);
+class InitialPlacement extends TilePlacement {
+  constructor(tile, coords, player, color, position) {
+    super(tile, coords);
     this.player = player;
     this.color = color;
     this.position = position;
@@ -21,4 +15,4 @@ class AvatarPlacement extends Placement {
 }
 
 exports.TilePlacement = TilePlacement;
-exports.AvatarPlacement = AvatarPlacement;
+exports.InitialPlacement = InitialPlacement;
