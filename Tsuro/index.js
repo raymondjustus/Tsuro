@@ -1,3 +1,7 @@
-const allTiles = require('./1/allTiles');
+//const allTiles = require('./1/allTiles');
 
-allTiles();
+//allTiles();
+
+const Board = require('./Common/board');
+const b = new Board();
+console.log(b.tiles);
