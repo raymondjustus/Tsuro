@@ -20,6 +20,16 @@ class Path {
   }
 
   /**
+   * Returns whether this path contains the given position.
+   *
+   * @param {Position} position the position to check for
+   * @returns {boolean} whether the position is within the path
+   */
+  has(position) {
+    return this.start.isEqualTo(position) || this.end.isEqualTo(position);
+  }
+
+  /**
    * Gets the ending position of the path, given the starting position.
    *
    * @param {Position} position the starting position to check
