@@ -1,5 +1,14 @@
 const Position = require('../position');
-const { DIRECTIONS_CLOCKWISE, LETTERS, LETTERS_MAP, PORTS } = require('./constants');
+const { DIRECTIONS_CLOCKWISE, PORTS } = require('./constants');
+
+const LETTERS = 'ABCDEFGH'.split('');
+const LETTERS_MAP = LETTERS.reduce(
+  (acc, key, i) =>
+    Object.assign(acc, {
+      [key]: i,
+    }),
+  {},
+);
 
 const POSITIONS_MAP = {};
 const POSITIONS = DIRECTIONS_CLOCKWISE.flatMap((direction, i) => {
