@@ -1,4 +1,5 @@
 const { InitialPlacement, TilePlacement } = require('./placement');
+require('./utils/polyfills');
 
 exports.Avatar = require('./avatar');
 exports.BoardState = require('./boardState');
