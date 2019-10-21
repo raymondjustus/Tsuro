@@ -105,6 +105,10 @@ class Tile {
     }
   }
 
+  ///////////////////////////////////
+  // RENDER FUNCTIONS
+  ///////////////////////////////////
+
   /**
    * Gets the linear scale for rendering on a single tile.
    *

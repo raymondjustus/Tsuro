@@ -15,7 +15,7 @@ const onData = onDataCallback => data => {
         const json = JSON.parse(line);
         onDataCallback(json);
       } catch (err) {
-        printMessage('Invalid JSON', data);
+        printMessage('Invalid JSON ', data);
       }
     }
   });

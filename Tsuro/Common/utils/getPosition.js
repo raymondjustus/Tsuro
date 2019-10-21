@@ -22,23 +22,6 @@ const POSITIONS = DIRECTIONS_CLOCKWISE.flatMap((direction, i) => {
 });
 
 /**
- * Gets a Position object based on a given letter that
- * specifies a port on a tile.
- *
- * @param {string} letter a letter A-H, specifying a port
- * from North-0 to West-1, clockwise
- * @returns {Position} the respective position
- */
-const getPositionFromLetter = letter => {
-  const positionIdx = LETTERS_MAP[letter];
-  if (positionIdx === undefined) {
-    throw 'Letter is not valid.';
-  }
-  const position = POSITIONS[positionIdx];
-  return position.copy();
-};
-
-/**
  * Gets a letter based on a given Position object.
  *
  * @param {Position} position the position object that
@@ -60,6 +43,23 @@ const getLetterFromPosition = position => {
     throw 'Port is not valid';
   }
   return LETTERS[letterIdx];
+};
+
+/**
+ * Gets a Position object based on a given letter that
+ * specifies a port on a tile.
+ *
+ * @param {string} letter a letter A-H, specifying a port
+ * from North-0 to West-1, clockwise
+ * @returns {Position} the respective position
+ */
+const getPositionFromLetter = letter => {
+  const positionIdx = LETTERS_MAP[letter];
+  if (positionIdx === undefined) {
+    throw 'Letter is not valid.';
+  }
+  const position = POSITIONS[positionIdx];
+  return position.copy();
 };
 
 exports.getLetterFromPosition = getLetterFromPosition;
