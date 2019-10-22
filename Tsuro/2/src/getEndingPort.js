@@ -14,7 +14,7 @@ const VALID_DEGREES = new Set([0, 90, 180, 270]);
  */
 const getTile = tileJSON => {
   const paths = tileJSON.map(
-    ([start, end]) => new Path(getPositionFromLetter(start), getPositionFromLetter(end)),
+    ([start, end]) => new Path(getPositionFromLetter(start), getPositionFromLetter(end))
   );
   return new Tile(paths);
 };

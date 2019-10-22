@@ -7,19 +7,20 @@ const LETTERS_MAP = LETTERS.reduce(
     Object.assign(acc, {
       [key]: i,
     }),
-  {},
+  {}
 );
 
 const POSITIONS_MAP = {};
-const POSITIONS = DIRECTIONS_CLOCKWISE.flatMap((direction, i) => {
+const POSITIONS = DIRECTIONS_CLOCKWISE.reduce((acc, direction, i) => {
   const idx = i * 2;
   POSITIONS_MAP[direction] = {
     [PORTS.ZERO]: idx,
     [PORTS.ONE]: idx + 1,
   };
 
-  return [new Position(direction, PORTS.ZERO), new Position(direction, PORTS.ONE)];
-});
+  acc.push(new Position(direction, PORTS.ZERO), new Position(direction, PORTS.ONE));
+  return acc;
+}, []);
 
 /**
  * Gets a letter based on a given Position object.
