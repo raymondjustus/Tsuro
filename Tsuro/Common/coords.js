@@ -1,6 +1,12 @@
 const { BOARD_SIZE, DIRECTIONS } = require('./constants');
 
 class Coords {
+  /**
+   * Creates a new Coords object.
+   *
+   * @param {number} x the x coordinate
+   * @param {number} y the y coordinate
+   */
   constructor(x, y) {
     this.x = x;
     this.y = y;

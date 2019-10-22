@@ -26,6 +26,11 @@ const STYLES = `
 `;
 
 class Tile {
+  /**
+   * Creates a new Tile, with the given paths.
+   *
+   * @param {Path[]} paths the paths of the tile
+   */
   constructor(paths) {
     this.d3Node = new D3Node({ styles: STYLES });
     this.d3 = this.d3Node.d3;
