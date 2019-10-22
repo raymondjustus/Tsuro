@@ -1,4 +1,4 @@
-const { Avatar } = require('.');
+const { BoardState } = require('.');
 const { BOARD_SIZE, DIRECTIONS, DIRECTIONS_CLOCKWISE } = require('./constants');
 
 class Board {
@@ -8,23 +8,10 @@ class Board {
    *
    * @param {InitialPlacement[]} [initialPlacements=[]] an array of initial
    * placements that outline tile and avatar coords/positions
-   * @param {tile[]} [tilesOverride] override array for tiles
-   * @param {{ [string]: avatar }} [avatarsOverride] override object for
-   * avatars
+   * @param {BoardState} [stateOverride] override for initial state
    */
-  constructor(initialPlacements = [], tilesOverride, avatarsOverride) {
-    this.avatars = avatarsOverride || {};
-
-    this.tiles = tilesOverride;
-    if (!tilesOverride) {
-      this.tiles = [];
-      for (let x = 0; x < BOARD_SIZE; x++) {
-        this.tiles[x] = [];
-        for (let y = 0; y < BOARD_SIZE; y++) {
-          this.tiles[x][y] = null;
-        }
-      }
-    }
+  constructor(initialPlacements = [], stateOverride) {
+    this.state = new BoardState(stateOverride);
 
     initialPlacements.forEach(({ tile, coords, player, color, position }) => {
       if (this._hasNeighboringTiles(coords)) {
@@ -35,7 +22,7 @@ class Board {
         throw 'Avatar must be placed on an inward-facing port';
       }
       this.placeTile(tile, coords, true);
-      this._addAvatar(player, color, coords, position);
+      this.state.addAvatar(player, color, coords, position);
     });
   }
 
@@ -45,15 +32,8 @@ class Board {
    * @returns {Board} a copy of this Board
    */
   copy() {
-    const tiles = this.tiles.map(row => row.map(tile => (tile ? tile.copy() : null)));
-    const avatars = Object.keys(this.avatars).reduce(
-      (acc, id) =>
-        Object.assign(acc, {
-          [id]: this.avatars[id].copy(),
-        }),
-      {}
-    );
-    return new Board([], tiles, avatars);
+    const copiedState = this.getState();
+    return new Board([], copiedState);
   }
 
   /**
@@ -62,11 +42,12 @@ class Board {
    * @returns {Board} the current state of the board
    */
   getState() {
-    return this.copy();
+    return this.state.copy();
   }
 
   /**
-   * Places a tile on the board at the given coordinates.
+   * Places a tile on the board at the given coordinates. Then, updates
+   * the board state with the new tile.
    *
    * @param {Tile} tile the tile to place
    * @param {Coords} coords the coordinates to place the tile at
@@ -74,32 +55,11 @@ class Board {
    * the avatars on the board after place
    */
   placeTile(tile, coords, skipUpdate = false) {
-    const { x, y } = coords;
-    const currentTile = this.tiles[x][y];
-    if (currentTile) {
-      throw 'Tile already exists at coords!';
-    }
-    this.tiles[x][y] = tile;
+    this.state.addTile(tile, coords);
 
     if (!skipUpdate) {
       this._updateAvatars();
     }
-  }
-
-  /**
-   * Adds an avatar to the board.
-   *
-   * @param {Player} player the player to attach to the avatar
-   * @param {string} color the chosen avatar color
-   * @param {Coords} coords the starting coordinates of the avatar
-   * @param {Position} position the starting position of the avatar
-   */
-  _addAvatar(player, color, coords, position) {
-    const { id } = player;
-    if (this.avatars[id]) {
-      throw 'Player already has avatar on board';
-    }
-    this.avatars[id] = new Avatar(id, color, coords, position);
   }
 
   /**
@@ -113,26 +73,10 @@ class Board {
   _getNeighboringTile(coords, direction) {
     try {
       const neighborCoords = coords.copy().moveOne(direction);
-      return this._getTile(neighborCoords);
+      return this.state.getTile(neighborCoords);
     } catch (err) {
       return null;
     }
-  }
-
-  /**
-   * Gets a tile at the given coordinates. Returns null if no
-   * tile exists.
-   *
-   * @param {Coords} coords the coordinates to get the tile at
-   * @returns {Tile} the tile at the given coordinates
-   * @returns {null} `null`, if no tile exists at given coordinates
-   */
-  _getTile(coords) {
-    const { x, y } = coords;
-    if (this.tiles[x] && this.tiles[x][y]) {
-      return this.tiles[x][y];
-    }
-    return null;
   }
 
   /**
@@ -194,11 +138,11 @@ class Board {
    * @param {Avatar} avatar the avatar to update
    */
   _updateAvatar(avatar) {
-    const tile = this._getTile(avatar.coords);
+    const tile = this.state.getTile(avatar.coords);
     const endPosition = tile.getEndingPosition(avatar.position);
 
     const neighborCoords = avatar.coords.copy().moveOne(endPosition.direction);
-    const neighborTile = this._getTile(neighborCoords);
+    const neighborTile = this.state.getTile(neighborCoords);
 
     if (neighborTile) {
       avatar.move(neighborCoords, endPosition.reflect());
@@ -210,8 +154,7 @@ class Board {
    * Updates the coordinates and positions of all avatars.
    */
   _updateAvatars() {
-    Object.keys(this.avatars).forEach(id => {
-      const avatar = this.avatars[id];
+    this.state.getAvatars().forEach(avatar => {
       this._updateAvatar(avatar);
     });
   }

@@ -23,4 +23,4 @@ const placements = [
 const b = new Board(placements);
 
 b.placeTile(tile, new Coords(1, 0));
-console.log(b.avatars);
+console.log(b.state.getAvatars());

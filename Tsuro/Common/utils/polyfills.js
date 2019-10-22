@@ -19,3 +19,7 @@ Array.prototype.first = function(getValueFromItem) {
   });
   return firstValue;
 };
+
+Object.prototype.entries = function(object) {
+  return Object.keys(object).map(key => object[key]);
+};

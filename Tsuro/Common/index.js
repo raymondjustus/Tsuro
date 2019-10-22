@@ -1,6 +1,7 @@
 const { InitialPlacement, TilePlacement } = require('./placement');
 
 exports.Avatar = require('./avatar');
+exports.BoardState = require('./boardState');
 exports.Board = require('./board');
 exports.Coords = require('./coords');
 exports.InitialPlacement = InitialPlacement;
