@@ -1,3 +1,5 @@
+exports.BOARD_SIZE = 10;
+
 exports.COLORS = {
   BLACK: '#000000',
   BROWN: '#7b2a26',
