@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const D3Node = require('d3-node');
 const { COLORS, DIRECTIONS, DIRECTIONS_CLOCKWISE } = require('./constants');
+require('./utils/polyfills');
 
 const STYLES = `
   .background, .port {
@@ -44,6 +45,16 @@ class Tile {
       tileCopy.rotate(rotations);
     }
     return tileCopy;
+  }
+
+  /**
+   * Gets the ending position of the given starting position on the tile.
+   *
+   * @param {Position} position the chosen starting position
+   * @returns {Position} the respective ending position
+   */
+  getEndingPosition(position) {
+    return this.paths.first(path => path.getEndingPosition(position));
   }
 
   /**

@@ -1,4 +1,4 @@
-const { DIRECTIONS_CLOCKWISE } = require('./constants');
+const { DIRECTIONS, DIRECTIONS_CLOCKWISE, PORTS } = require('./constants');
 
 class Position {
   /**
@@ -22,6 +22,26 @@ class Position {
   }
 
   /**
+   * Reflects the current position to represent the connecting
+   * side on a neighboring tile.
+   *
+   * @returns {Position} this position, reflected
+   */
+  reflect() {
+    if (this.direction === DIRECTIONS.NORTH) {
+      this.direction = DIRECTIONS.SOUTH;
+    } else if (this.direction === DIRECTIONS.EAST) {
+      this.direction = DIRECTIONS.WEST;
+    } else if (this.direction === DIRECTIONS.SOUTH) {
+      this.direction = DIRECTIONS.NORTH;
+    } else if (this.direction === DIRECTIONS.WEST) {
+      this.direction = DIRECTIONS.EAST;
+    }
+    this.port = this.port === PORTS.ZERO ? PORTS.ONE : PORTS.ZERO;
+    return this;
+  }
+
+  /**
    * Checks for an exact match on direction and port between this position
    * and the given one.
    *
@@ -37,11 +57,13 @@ class Position {
    *
    * @param {number} rotations the amount of 90-degree clockwise rotations
    * to perform
+   * @returns {Position} this position, rotated
    */
   rotate(rotations) {
     const idx = DIRECTIONS_CLOCKWISE.indexOf(this.direction);
     const newIdx = (idx + rotations) % DIRECTIONS_CLOCKWISE.length;
     this.direction = DIRECTIONS_CLOCKWISE[newIdx];
+    return this;
   }
 }
 
