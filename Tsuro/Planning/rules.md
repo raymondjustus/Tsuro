@@ -5,22 +5,22 @@
 * Interface that checks the rules for the Tsuro game. Can be called by a player, will ALWAYS be called by the referee
 * to check the validity of a given action by a player.
 */
-interface ruleChecker {
+interface RuleChecker {
     /**
-    * Takes in the board state (boardState), the player who is sending the action (actorID), and the action itself (action)
+    * Takes in the board state (boardState), the player who is sending the action (playerId), and the action itself (action)
     */
-    canTakeAction(BoardState: boardState, string: actorId, Action: action): boolean;
+    canTakeAction(boardState: BoardState, playerId: string, action: Action): boolean;
     
     /**
     * Checks in with the server to see if the player can draw cards.
     */
-    canDraw(string: playerID): boolean;
+    canDraw(playerId: string): boolean;
 
     /**
-    * Checks whether the given player (playerID) can place their avatar in the given position (position) at the tile (tile) 
+    * Checks whether the given player (playerId) can place their avatar in the given position (position) at the tile (tile) 
     * located at the given Coord (coord) at the start of the game.
     */
-    canPlaceAvatar(string: playerId, Coords: coords, Tile: tile, Position: position): boolean;
+    canPlaceAvatar(playerId: string, coords: Coords, tile: Tile, position: Position): boolean;
 }
 ```
 ### canTakeAction
