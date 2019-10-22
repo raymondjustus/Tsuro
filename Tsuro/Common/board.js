@@ -78,6 +78,7 @@ class Board {
         //bottom left corner
         return position.direction === 'WEST' || position.direction === 'SOUTH';
       }
+      //non-corner left side
       return position.direction === 'WEST';
       // right side of board
     } else if (x === BOARD_SIZE - 1) {
@@ -89,7 +90,14 @@ class Board {
         //bottom right corner
         return position.direction === 'EAST' || position.direction === 'SOUTH';
       }
+      // non-corner right side
       return position.direction === 'EAST';
+      // non-corner top side
+    } else if (y === 0) {
+      return position.direction === 'NORTH';
+      // non-corner bottom side
+    } else if (y === BOARD_SIZE - 1) {
+      return position.direction === 'SOUTH';
     } else {
       // idk if this is right. double check here <<<<<<<<<<<<<<<<
       return false;
