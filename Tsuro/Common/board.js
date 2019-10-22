@@ -68,14 +68,28 @@ class Board {
 
   _isTokenOnCorrectEdge(coords, position) {
     const { x, y } = coords;
+    //left side of board
     if (x === 0) {
+      if (y === 0) {
+        //top left corener
+        return position.direction === 'WEST' || position.direction === 'NORTH';
+      }
+      if (y === BOARD_SIZE - 1) {
+        //bottom left corner
+        return position.direction === 'WEST' || position.direction === 'SOUTH';
+      }
       return position.direction === 'WEST';
+      // right side of board
     } else if (x === BOARD_SIZE - 1) {
+      if (y === 0) {
+        //top right corener
+        return position.direction === 'EAST' || position.direction === 'NORTH';
+      }
+      if (y === BOARD_SIZE - 1) {
+        //bottom right corner
+        return position.direction === 'EAST' || position.direction === 'SOUTH';
+      }
       return position.direction === 'EAST';
-    } else if (y === 0) {
-      return position.direction === 'NORTH';
-    } else if (y === BOARD_SIZE - 1) {
-      return position.direction === 'SOUTH';
     } else {
       // idk if this is right. double check here <<<<<<<<<<<<<<<<
       return false;
