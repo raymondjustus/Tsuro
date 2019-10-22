@@ -1,4 +1,4 @@
-const { DIRECTIONS, DIRECTIONS_CLOCKWISE, PORTS } = require('./constants');
+const { DIRECTIONS, DIRECTIONS_CLOCKWISE, PORTS } = require('./utils/constants');
 
 class Position {
   /**

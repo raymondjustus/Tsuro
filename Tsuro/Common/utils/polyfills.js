@@ -20,6 +20,12 @@ Array.prototype.first = function(getValueFromItem) {
   return firstValue;
 };
 
-Object.prototype.entries = function(object) {
+/**
+ * Retrieves all values from a given object.
+ *
+ * @param {object} object the object to retrieve the values from
+ * @returns {any[]} an array of the object values
+ */
+Object.prototype.values = function(object) {
   return Object.keys(object).map(key => object[key]);
 };

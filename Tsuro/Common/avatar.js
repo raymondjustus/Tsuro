@@ -1,5 +1,5 @@
 const { Coords, Position } = require('.');
-const { DIRECTIONS, PORTS } = require('./constants');
+const { DIRECTIONS, PORTS } = require('./utils/constants');
 
 class Avatar {
   /**

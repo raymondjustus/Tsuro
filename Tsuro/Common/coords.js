@@ -1,4 +1,4 @@
-const { BOARD_SIZE, DIRECTIONS } = require('./constants');
+const { BOARD_SIZE, DIRECTIONS } = require('./utils/constants');
 
 class Coords {
   /**

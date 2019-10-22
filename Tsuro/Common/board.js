@@ -1,5 +1,5 @@
 const { BoardState } = require('.');
-const { BOARD_SIZE, DIRECTIONS, DIRECTIONS_CLOCKWISE } = require('./constants');
+const { BOARD_SIZE, DIRECTIONS, DIRECTIONS_CLOCKWISE } = require('./utils/constants');
 
 class Board {
   /**
@@ -11,7 +11,7 @@ class Board {
    * @param {BoardState} [stateOverride] override for initial state
    */
   constructor(initialPlacements = [], stateOverride) {
-    this.state = new BoardState(stateOverride);
+    this._state = new BoardState(stateOverride);
 
     initialPlacements.forEach(({ tile, coords, player, color, position }) => {
       if (this._hasNeighboringTiles(coords)) {
@@ -22,7 +22,7 @@ class Board {
         throw 'Avatar must be placed on an inward-facing port';
       }
       this.placeTile(tile, coords, true);
-      this.state.addAvatar(player, color, coords, position);
+      this._state.addAvatar(player, color, coords, position);
     });
   }
 
@@ -42,7 +42,7 @@ class Board {
    * @returns {Board} the current state of the board
    */
   getState() {
-    return this.state.copy();
+    return this._state.copy();
   }
 
   /**
@@ -55,7 +55,7 @@ class Board {
    * the avatars on the board after place
    */
   placeTile(tile, coords, skipUpdate = false) {
-    this.state.addTile(tile, coords);
+    this._state.addTile(tile, coords);
 
     if (!skipUpdate) {
       this._updateAvatars();
@@ -73,7 +73,7 @@ class Board {
   _getNeighboringTile(coords, direction) {
     try {
       const neighborCoords = coords.copy().moveOne(direction);
-      return this.state.getTile(neighborCoords);
+      return this._state.getTile(neighborCoords);
     } catch (err) {
       return null;
     }
@@ -138,11 +138,11 @@ class Board {
    * @param {Avatar} avatar the avatar to update
    */
   _updateAvatar(avatar) {
-    const tile = this.state.getTile(avatar.coords);
+    const tile = this._state.getTile(avatar.coords);
     const endPosition = tile.getEndingPosition(avatar.position);
 
     const neighborCoords = avatar.coords.copy().moveOne(endPosition.direction);
-    const neighborTile = this.state.getTile(neighborCoords);
+    const neighborTile = this._state.getTile(neighborCoords);
 
     if (neighborTile) {
       avatar.move(neighborCoords, endPosition.reflect());
@@ -154,7 +154,7 @@ class Board {
    * Updates the coordinates and positions of all avatars.
    */
   _updateAvatars() {
-    this.state.getAvatars().forEach(avatar => {
+    this._state.getAvatars().forEach(avatar => {
       this._updateAvatar(avatar);
     });
   }

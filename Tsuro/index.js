@@ -1,5 +1,5 @@
 const { Board, Coords, InitialPlacement, Path, Player, Position, Tile } = require('./Common');
-const { COLORS, DIRECTIONS, PORTS } = require('./Common/constants');
+const { COLORS, DIRECTIONS, PORTS } = require('./Common/utils/constants');
 
 const playerA = new Player('a', 'Josh');
 
@@ -23,4 +23,4 @@ const placements = [
 const b = new Board(placements);
 
 b.placeTile(tile, new Coords(1, 0));
-console.log(b.state.getAvatars());
+console.log(b.getState().getAvatars());

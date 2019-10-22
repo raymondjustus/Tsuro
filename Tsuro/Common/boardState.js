@@ -1,5 +1,6 @@
 const { Avatar } = require('.');
-const { BOARD_SIZE } = require('./constants');
+const { BOARD_SIZE } = require('./utils/constants');
+require('./utils/polyfills');
 
 class BoardState {
   /**
@@ -61,9 +62,10 @@ class BoardState {
    * @returns {BoardState} a copy of this Board State
    */
   copy() {
-    const avatars = Object.keys(this._avatars).map(key => this._avatars[key].copy());
-    const tiles = this._tiles.map(row => row.map(tile => (tile ? tile.copy() : null)));
-    return new BoardState(tiles, avatars);
+    const newState = new BoardState();
+    newState._avatars = Object.keys(this._avatars).map(key => this._avatars[key].copy());
+    newState._tiles = this._tiles.map(row => row.map(tile => (tile ? tile.copy() : null)));
+    return newState;
   }
 
   /**
@@ -84,7 +86,7 @@ class BoardState {
    * @returns {Avatar[]} a list of avatars
    */
   getAvatars() {
-    return Object.entries(this._avatars);
+    return Object.values(this._avatars);
   }
 
   /**

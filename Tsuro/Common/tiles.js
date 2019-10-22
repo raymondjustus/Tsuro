@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const D3Node = require('d3-node');
-const { COLORS, DIRECTIONS, DIRECTIONS_CLOCKWISE } = require('./constants');
+const { COLORS, DIRECTIONS, DIRECTIONS_CLOCKWISE } = require('./utils/constants');
 require('./utils/polyfills');
 
 const STYLES = `
