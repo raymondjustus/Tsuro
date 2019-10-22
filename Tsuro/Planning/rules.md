@@ -16,8 +16,10 @@ interface ruleChecker {
 }
 ```
 
-The `canTakeAction` funciton takes a gameboard from the referee or player, and uses its knowledge of the gameboard to infer if the given action is valid. If being called by a player, the player will just substitute their playerId for both `turnID` and `actorID`. This means that if a player would like to plan ahead before it is their turn they can, and on their turn they will be able to check their move legality as well. This does not allow for players to move on someone else's turn, as the referee knows whose turn it is and will call the function with the ID of the expected player as well as the move they were given. Should a player try to move, this will ensure that the move is rejected. This function returns a `Boolean`, `true` if the move is valid for the given state, and `false` if the move is invalid for the given state. NOTE: if a player sends an out of date board, this function may return true when the move is actually false given perfect knowledge.
+The `canTakeAction` method uses a given board state to infer if the given action is valid. This means that a player can check their move legality during their turn, or plan ahead. This does not allow for players to move on someone else's turn, and will return that the move is invalid. This function returns a `Boolean`: `true` if the move is valid for the given state, and `false` if the move is invalid for the given state.
 
-The `canDraw` function is given a `playerID`, checks with the server to see if they are allowed to draw at this time. Returns a `Boolean`, `true` if they can and `false` if they are not allowed to.
+_**NOTE:** If a player sends an out-of-date board state, this function may return true when the move is actually false given perfect knowledge._
 
-the `canPlaceToken` function is given a `playerID`, the function asks the server if that player is allowed to place their avatar at the given `tile` and `position` on that tile. This returns a `Boolean`, `true` if the given tile and position is a valid start place for that player, and `false` otherwise.
+The `canDraw` method is given a `playerId` and checks with the server to see if that player is allowed to draw at this time. Returns a `Boolean`: `true` if they can and `false` if they are not allowed to.
+
+The `canPlaceAvatar` method is given a `tile` and `coords`, and asks the server if that player is allowed to place their avatar at the `position` on that tile. This returns a `Boolean`: `true` if the given tile and position is a valid start place for that player, and `false` otherwise.
