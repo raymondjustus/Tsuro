@@ -11,6 +11,8 @@ class Board {
         throw 'Tile neighbors existing tile';
       } else if (!this._isTileOnBorder(coords)) {
         throw 'Tile must be placed on Border';
+      } else if (!this._isTokenOnCorrectEdge(coords, position)) {
+        throw 'Token must be placed on forward-facing port';
       }
       this.placeTile(tile, coords);
       this._addAvatar(player, color, coords, position);
@@ -62,6 +64,22 @@ class Board {
   _isTileOnBorder(coords) {
     const { x, y } = coords;
     return x === 0 || x === BOARD_SIZE - 1 || y === 0 || y === BOARD_SIZE - 1;
+  }
+
+  _isTokenOnCorrectEdge(coords, position) {
+    const { x, y } = coords;
+    if (x === 0) {
+      return position.direction === 'WEST';
+    } else if (x === BOARD_SIZE - 1) {
+      return position.direction === 'EAST';
+    } else if (y === 0) {
+      return position.direction === 'NORTH';
+    } else if (y === BOARD_SIZE - 1) {
+      return position.direction === 'SOUTH';
+    } else {
+      // idk if this is right. double check here <<<<<<<<<<<<<<<<
+      return false;
+    }
   }
 }
 
