@@ -1,5 +1,5 @@
 const { Path, Position, Tile } = require('../Common');
-const { DIRECTIONS, PORTS } = require('../Common/constants');
+const { DIRECTIONS, PORTS } = require('../Common/utils/constants');
 
 /**
  * Checks to see if the given tile exists alredy in the tile list.

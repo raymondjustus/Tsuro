@@ -36,6 +36,16 @@ class Path {
   }
 
   /**
+   * Returns whether this path contains the given position.
+   *
+   * @param {Position} position the position to check for
+   * @returns {boolean} whether the position is within the path
+   */
+  has(position) {
+    return this.start.isEqualTo(position) || this.end.isEqualTo(position);
+  }
+
+  /**
    * Checks for a match on positions between this path and the given one.
    *
    * @param {Path} path the path to check equality against
