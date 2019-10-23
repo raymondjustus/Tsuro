@@ -12,7 +12,7 @@ interface RuleChecker {
     canTakeAction(boardState: BoardState, playerId: string, action: Action): boolean;
     
     /**
-    * Checks in with the server to see if the player can draw cards.
+    * Checks in with the server to see if the player can draw tiles.
     */
     canDraw(playerId: string): boolean;
 
