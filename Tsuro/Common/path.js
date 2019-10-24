@@ -20,6 +20,32 @@ class Path {
   }
 
   /**
+   * Gets the ending position of the path, given the starting position.
+   *
+   * @param {Position} position the starting position to check
+   * @returns {Position} the other position, given a valid starting position
+   * @returns {null} null if the position does not exist on the path
+   */
+  getEndingPosition(position) {
+    if (this.start.isEqualTo(position)) {
+      return this.end.copy();
+    } else if (this.end.isEqualTo(position)) {
+      return this.start.copy();
+    }
+    return null;
+  }
+
+  /**
+   * Returns whether this path contains the given position.
+   *
+   * @param {Position} position the position to check for
+   * @returns {boolean} whether the position is within the path
+   */
+  has(position) {
+    return this.start.isEqualTo(position) || this.end.isEqualTo(position);
+  }
+
+  /**
    * Checks for a match on positions between this path and the given one.
    *
    * @param {Path} path the path to check equality against

@@ -1,1 +1,3 @@
-module.exports = require('@upstatement/prettier-config');
+module.exports = Object.assign(require('@upstatement/prettier-config'), {
+  trailingComma: 'es5',
+});
