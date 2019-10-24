@@ -1,6 +1,5 @@
 * (20/20) Correctly named artifacts
-* (4/5)   Correct directory organization 
-    - -1 as everything apart from required files isn't in other folder. 
+* (5/5)   Correct directory organization 
 * (5/5)   Executable D runs without input without throwing 
 * (5/5)   D takes arguments
 * (12/12) D connecting, sending, printing, disconnecting correctly
@@ -8,6 +7,6 @@
           - Let's chat through email or office hours so I can figure out how to run this then we can fix the grade.
 * (18/18) Task 2
 
-Total: (64/80)
+Total: (65/80)
 
 Graded by Sai.
