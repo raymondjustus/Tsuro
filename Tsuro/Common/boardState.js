@@ -1,5 +1,6 @@
 const { Avatar } = require('.');
 const { getEmptyBoardArray } = require('./utils');
+const { DIRECTIONS_CLOCKWISE } = require('./utils/constants');
 require('./utils/polyfills');
 
 class BoardState {
@@ -11,10 +12,11 @@ class BoardState {
   constructor(initialState) {
     if (initialState) {
       this._avatars = initialState._avatars;
+      this._initialAvatarHashes = initialState._initialAvatarHashes;
       this._tiles = initialState._tiles;
     } else {
       this._avatars = {};
-
+      this._initialAvatarHashes = {};
       this._tiles = getEmptyBoardArray();
     }
   }
@@ -33,8 +35,14 @@ class BoardState {
     if (this._avatars[id]) {
       throw 'Player already has avatar on board';
     }
-    this._avatars[id] = new Avatar(id, color, coords, position);
-    return this._avatars[id];
+    const tile = this.getTile(coords);
+    const avatar = new Avatar(id, color, coords, position);
+    this._initialAvatarHashes[avatar.getHash(coords, position)] = id;
+    this._avatars[id] = avatar;
+
+    const endPosition = tile.getEndingPosition(position);
+    this.moveAvatar(id, coords, endPosition);
+    return avatar;
   }
 
   /**
@@ -60,6 +68,13 @@ class BoardState {
   copy() {
     const newState = new BoardState();
     newState._avatars = Object.keys(this._avatars).map(key => this._avatars[key].copy());
+    newState._initialAvatarHashes = Object.keys(this._initialAvatarHashes).reduce(
+      (acc, key) =>
+        Object.assign(acc, {
+          [key]: this._initialAvatarHashes[key],
+        }),
+      {}
+    );
     newState._tiles = this._tiles.map(row => row.map(tile => (tile ? tile.copy() : null)));
     return newState;
   }
@@ -137,6 +152,14 @@ class BoardState {
    */
   hasNeighboringTiles(coords) {
     return DIRECTIONS_CLOCKWISE.some(direction => !!this._getNeighboringTile(coords, direction));
+  }
+
+  moveAvatar(id, coords, position) {
+    const avatar = this.getAvatar(id);
+    avatar.move(coords, position);
+    if (this._initialAvatarHashes[avatar.getHash()]) {
+      avatar.collide();
+    }
   }
 }
 

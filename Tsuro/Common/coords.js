@@ -10,6 +10,7 @@ class Coords {
   constructor(x, y) {
     this.x = x;
     this.y = y;
+    this._updateHash();
   }
 
   /**
@@ -21,6 +22,10 @@ class Coords {
     return new Coords(this.x, this.y);
   }
 
+  getHash() {
+    return this._hash;
+  }
+
   /**
    * Checks whether the given value is valid as a single
    * coordinate value.
@@ -29,7 +34,7 @@ class Coords {
    * @returns {boolean} whether the coordinate value is valid
    */
   _isValidCoordinate(value) {
-    return value > 0 && value < BOARD_SIZE;
+    return value >= 0 && value < BOARD_SIZE;
   }
 
   /**
@@ -69,6 +74,7 @@ class Coords {
         throw 'Invalid direction';
       }
     }
+    this._updateHash();
     return this;
   }
 
@@ -90,6 +96,10 @@ class Coords {
    */
   isEqualTo(coords) {
     return this.x === coords.x && this.y === coords.y;
+  }
+  
+  _updateHash() {
+    this._hash = `${this.x}${this.y}`;
   }
 }
 

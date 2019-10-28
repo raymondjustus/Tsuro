@@ -68,10 +68,8 @@ class Board {
    * @param {Position} position the starting position of the avatar
    */
   placeAvatar(player, color, coords, position) {
-    const tile = this._state.getTile(coords);
-    const endPosition = tile.getEndingPosition(position);
-    const avatar = this._state.addAvatar(player, color, coords, endPosition);
-    this._updateAvatar(avatar);
+    this._state.addAvatar(player, color, coords, position);
+    this._updateAvatars();
   }
 
   /**
@@ -150,21 +148,24 @@ class Board {
    * @param {Avatar} avatar the avatar to update
    */
   _updateAvatar(avatar) {
-    const position = avatar.position.copy();
+    if (!avatar.hasExited()) {
+      const position = avatar.position.copy();
 
-    let neighborCoords = null;
-    try {
-      neighborCoords = avatar.coords.copy().moveOne(position.direction);
-    } catch (err) {
-      return avatar.exit();
-    }
-    const neighborTile = this._state.getTile(neighborCoords);
+      let neighborCoords = null;
+      try {
+        neighborCoords = avatar.coords.copy().moveOne(position.direction);
+      } catch (err) {
+        // this._state.moveAvatar(avatar.id, avatar.coords, position);
+        return avatar.exit();
+      }
+      const neighborTile = this._state.getTile(neighborCoords);
 
-    if (neighborTile) {
-      const intermediatePosition = position.reflect();
-      const finalPosition = neighborTile.getEndingPosition(intermediatePosition);
-      avatar.move(neighborCoords, finalPosition);
-      this._updateAvatar(avatar);
+      if (neighborTile) {
+        const intermediatePosition = position.reflect();
+        const finalPosition = neighborTile.getEndingPosition(intermediatePosition);
+        this._state.moveAvatar(avatar.id, neighborCoords, finalPosition);
+        this._updateAvatar(avatar);
+      }
     }
   }
 
@@ -173,9 +174,7 @@ class Board {
    */
   _updateAvatars() {
     this._state.getAvatars().forEach(avatar => {
-      if (!avatar.hasExited()) {
-        this._updateAvatar(avatar);
-      }
+      this._updateAvatar(avatar);
     });
   }
 }
