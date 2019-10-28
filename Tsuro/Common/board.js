@@ -1,5 +1,5 @@
 const { BoardState } = require('.');
-const { BOARD_SIZE, DIRECTIONS, DIRECTIONS_CLOCKWISE } = require('./utils/constants');
+const { BOARD_SIZE, DIRECTIONS } = require('./utils/constants');
 
 class Board {
   /**
@@ -60,7 +60,8 @@ class Board {
   }
 
   /**
-   * Places an avatar on the board.
+   * Places an avatar on the board. Then, updates the board state with the
+   * new avatar.
    *
    * @param {Player} player the player to attach to the avatar
    * @param {string} color the chosen avatar color
@@ -101,6 +102,7 @@ class Board {
   }
 
   /**
+   * @private
    * Whether an avatar is to be placed on a valid initial position
    * on a tile at the given coordinates.
    *
@@ -130,6 +132,7 @@ class Board {
   }
 
   /**
+   * @private
    * Checks whether the given coordinates of a tile are along
    * the board's border.
    *
@@ -142,8 +145,10 @@ class Board {
   }
 
   /**
-   * Updates the coordinates and position of the given avatar.
-   * Moves the avatar along the board based on board paths.
+   * @private
+   * Updates the coordinates and position of the given avatar, given that
+   * the avatar has not yet exited the board. Moves the avatar along the board
+   * based on board paths. Marks the avatar as exited if it cannot move further.
    *
    * @param {Avatar} avatar the avatar to update
    */
@@ -155,7 +160,6 @@ class Board {
       try {
         neighborCoords = avatar.coords.copy().moveOne(position.direction);
       } catch (err) {
-        // this._state.moveAvatar(avatar.id, avatar.coords, position);
         return avatar.exit();
       }
       const neighborTile = this._state.getTile(neighborCoords);
@@ -170,6 +174,7 @@ class Board {
   }
 
   /**
+   * @private
    * Updates the coordinates and positions of all avatars.
    */
   _updateAvatars() {

@@ -4,9 +4,8 @@
  *
  * @param  {...string} messages the message parts
  * to send as an array
+ * @returns {string} the stringified JSON array of messages
  */
-const getMessage = (...messages) => {
-  console.log(JSON.stringify(messages));
-};
+const getMessage = (...messages) => JSON.stringify(messages);
 
 module.exports = getMessage;

@@ -22,6 +22,11 @@ class Position {
     return new Position(this.direction, this.port);
   }
 
+  /**
+   * Gets the hash for this Position.
+   *
+   * @returns {string} the hash for this Position
+   */
   getHash() {
     return this._hash;
   }
@@ -73,6 +78,10 @@ class Position {
     return this;
   }
 
+  /**
+   * @private
+   * Updates the hash for this Position when the direction and/or port changes.
+   */
   _updateHash() {
     this._hash = `${this.direction}${this.port}`;
   }

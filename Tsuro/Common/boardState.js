@@ -154,8 +154,20 @@ class BoardState {
     return DIRECTIONS_CLOCKWISE.some(direction => !!this._getNeighboringTile(coords, direction));
   }
 
+  /**
+   * Moves an avatar with the given ID to the given coordinates and
+   * position. Marks an avatar as collided if it lands on another
+   * avatar's initial starting place.
+   *
+   * @param {string} id the ID of the avatar
+   * @param {Coords} coords the new coords of the avatar
+   * @param {Position} position the new position of the avatar
+   */
   moveAvatar(id, coords, position) {
     const avatar = this.getAvatar(id);
+    if (!avatar) {
+      throw 'Avatar does not exist.';
+    }
     avatar.move(coords, position);
     if (this._initialAvatarHashes[avatar.getHash()]) {
       avatar.collide();

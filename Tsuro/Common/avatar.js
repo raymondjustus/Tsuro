@@ -22,6 +22,12 @@ class Avatar {
     this._updateHash();
   }
 
+  /**
+   * Marks this Avatar as having collided with another
+   * avatar.
+   *
+   * @returns {Avatar} this avatar, collided
+   */
   collide() {
     this._collided = true;
     return this;
@@ -43,27 +49,62 @@ class Avatar {
     return avatar;
   }
 
+  /**
+   * Marks this Avatar as having exited the board.
+   *
+   * @returns {Avatar} this avatar, exited
+   */
   exit() {
     this._exited = true;
     return this;
   }
 
+  /**
+   * @static
+   * Static method for generating an Avatar hash, using the
+   * given coordinates and position.
+   *
+   * @param {Coords} coords the coordinates of an Avatar
+   * @param {Position} position the position of an Avatar
+   * @returns {string} the theoretical Avatar hash
+   */
   static generateHash(coords, position) {
     return `${coords.getHash()}${position.getHash()}`;
   }
 
+  /**
+   * Gets this Avatar's hash.
+   *
+   * @returns {string} this Avatar's hash
+   */
   getHash() {
     return this._hash;
   }
 
+  /**
+   * Checks whether this Avatar has lost, either by colliding
+   * or exiting the board.
+   *
+   * @returns {boolean} whether this Avatar has lost
+   */
   hasLost() {
     return this._collided || this._exited;
   }
 
+  /**
+   * Checks whether this Avatar has collided with another Avatar.
+   *
+   * @returns {boolean} whether this Avatar collided
+   */
   hasCollided() {
     return this._collided;
   }
 
+  /**
+   * Checks whether this Avatar has exited the board.
+   *
+   * @returns {boolean} whether this Avatar exited the board
+   */
   hasExited() {
     return this._exited;
   }
@@ -80,6 +121,11 @@ class Avatar {
     this._updateHash();
   }
 
+  /**
+   * @private
+   * Updates this Avatar's hash to match new coordinates and/ors
+   * position.
+   */
   _updateHash() {
     this._hash = `${this.coords.getHash()}${this.position.getHash()}`;
   }

@@ -22,11 +22,17 @@ class Coords {
     return new Coords(this.x, this.y);
   }
 
+  /**
+   * Gets the hash for this Coords.
+   *
+   * @returns {string} the hash for this Coords
+   */
   getHash() {
     return this._hash;
   }
 
   /**
+   * @private
    * Checks whether the given value is valid as a single
    * coordinate value.
    *
@@ -38,6 +44,7 @@ class Coords {
   }
 
   /**
+   * @private
    * Moves the coordinates along a single axis by the given value.
    *
    * @param {number} value the value to move by
@@ -98,6 +105,11 @@ class Coords {
     return this.x === coords.x && this.y === coords.y;
   }
   
+  /**
+   * @private
+   * Updates the hash for this Coords when the x and/or
+   * y position changes.
+   */
   _updateHash() {
     this._hash = `${this.x}${this.y}`;
   }
