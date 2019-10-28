@@ -1,0 +1,7 @@
+[
+  ["white", " exited"],
+  ["black", " never played"],
+  ["red", " never played"],
+  ["green", 1, 90, "F", 3, 1],
+  ["blue", " never played"]
+]
