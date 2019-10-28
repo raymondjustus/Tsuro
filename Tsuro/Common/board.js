@@ -22,7 +22,7 @@ class Board {
         throw 'Avatar must be placed on an inward-facing port';
       }
       this.placeTile(tile, coords, true);
-      this._state.addAvatar(player, color, coords, position);
+      this.placeAvatar(player, color, coords, position);
     });
   }
 
@@ -37,12 +37,38 @@ class Board {
   }
 
   /**
+   * Gets a copy of an avatar with the given ID.
+   *
+   * @returns {Avatar} the copy of the avatar with the given ID
+   * @returns {null} `null`, if the avatar doesn't exist
+   */
+  getAvatar(id) {
+    const avatar = this._state.getAvatar(id);
+    if (avatar) {
+      return avatar.copy();
+    }
+    return avatar;
+  }
+
+  /**
    * Gets the current state of the board, via a copy.
    *
-   * @returns {Board} the current state of the board
+   * @returns {BoardState} the current state of the board
    */
   getState() {
     return this._state.copy();
+  }
+
+  /**
+   * Places an avatar on the board.
+   *
+   * @param {Player} player the player to attach to the avatar
+   * @param {string} color the chosen avatar color
+   * @param {Coords} coords the starting coordinates of the avatar
+   * @param {Position} position the starting position of the avatar
+   */
+  placeAvatar(player, color, coords, position) {
+    this._state.addAvatar(player, color, coords, position);
   }
 
   /**

@@ -94,6 +94,7 @@ class Tile {
    *
    * @param {number} rotations the amount of 90-degree
    * clockwise rotations to perform
+   * @returns {Tile} this tile, rotated
    */
   rotate(rotations) {
     const actualRotations = rotations % DIRECTIONS_CLOCKWISE.length;
@@ -103,6 +104,7 @@ class Tile {
         return path;
       });
     }
+    return this;
   }
 
   ///////////////////////////////////

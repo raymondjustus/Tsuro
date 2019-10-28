@@ -1,5 +1,5 @@
 const { Avatar } = require('.');
-const { BOARD_SIZE } = require('./utils/constants');
+const { getEmptyBoardArray } = require('./utils');
 require('./utils/polyfills');
 
 class BoardState {
@@ -15,13 +15,7 @@ class BoardState {
     } else {
       this._avatars = {};
 
-      this._tiles = [];
-      for (let x = 0; x < BOARD_SIZE; x++) {
-        this._tiles[x] = [];
-        for (let y = 0; y < BOARD_SIZE; y++) {
-          this._tiles[x][y] = null;
-        }
-      }
+      this._tiles = getEmptyBoardArray();
     }
   }
 
