@@ -9,54 +9,65 @@ const { tiles } = require('../../Common/__tests__');
 
 const isInitialPlacement = placement => typeof placement[0] === 'number';
 
-const getResponses = placements => {
+const handlePlacements = placements => {
   const board = new Board();
-
   const jsonBoard = getEmptyBoardArray();
 
-  const getAvatarResponse = color => {
-    const {
-      coords: { x, y },
-      position,
-    } = board.getAvatar(color);
-    const port = getLetterFromPosition(position);
-    const { tileIndex, rotation } = jsonBoard[x][y];
-    return [color, tileIndex, rotation, port, x, y];
-  };
-
-  const responses = placements.map(placement => {
-    if (isInitialPlacement(placement)) {
-      const [tileIndex, rotation, color, port, x, y] = placement;
+  const usePlacements = () => {
+    const placeTile = (tileIndex, rotation, x, y) => {
       const coords = new Coords(x, y);
       const tile = getTileFromLetters(tiles[tileIndex]).rotate(rotation / 90);
-      const position = getPositionFromLetter(port);
-
-      const player = new Player(color, color);
 
       board.placeTile(tile, coords);
       jsonBoard[x][y] = { tileIndex, rotation };
-      board.placeAvatar(player, color, coords, position);
-      return getAvatarResponse(color);
-    } else {
-      const [color, tileIndex, rotation, x, y] = placement;
+    };
+
+    const handleInitialPlacement = ([tileIndex, rotation, color, port, x, y]) => {
+      placeTile(tileIndex, rotation, x, y);
+
+      const player = new Player(color, color);
       const coords = new Coords(x, y);
-      const tile = getTileFromLetters(tiles[tileIndex]).rotate(rotation / 90);
+      const position = getPositionFromLetter(port);
+      board.placeAvatar(player, color, coords, position);
+    };
 
-      if (!board.getAvatar(color)) {
-        return [color, ' never played'];
-      } else {
-        board.placeTile(tile, coords);
-        jsonBoard[x][y] = { tileIndex, rotation };
-        return getAvatarResponse(color);
+    const handleIntermediatePlacement = ([color, tileIndex, rotation, x, y]) => {
+      if (board.getAvatar(color)) {
+        placeTile(tileIndex, rotation, x, y);
       }
-    }
-  });
+    };
 
-  return responses;
-};
+    placements.forEach(placement => {
+      if (isInitialPlacement(placement)) {
+        handleInitialPlacement(placement);
+      } else {
+        handleIntermediatePlacement(placement);
+      }
+    });
+  };
 
-const handlePlacements = placements => {
-  const responses = getResponses(placements);
+  const getResponses = () => {
+    const colors = ['white', 'black', 'red', 'green', 'blue'];
+
+    return colors.map(color => {
+      const avatar = board.getAvatar(color);
+      if (!avatar) {
+        return [color, ' never played'];
+      } else if (avatar.hasExited()) {
+        return [color, ' exited'];
+      }
+      const {
+        coords: { x, y },
+        position,
+      } = avatar;
+      const port = getLetterFromPosition(position);
+      const { tileIndex, rotation } = jsonBoard[x][y];
+      return [color, tileIndex, rotation, port, x, y];
+    });
+  };
+
+  usePlacements();
+  const responses = getResponses();
   console.log(JSON.stringify(responses));
 };
 

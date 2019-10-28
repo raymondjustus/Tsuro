@@ -1,4 +1,4 @@
-const { BoardState } = require('.');
+const { Avatar, BoardState } = require('.');
 const { BOARD_SIZE, DIRECTIONS, DIRECTIONS_CLOCKWISE } = require('./utils/constants');
 
 class Board {
@@ -68,7 +68,10 @@ class Board {
    * @param {Position} position the starting position of the avatar
    */
   placeAvatar(player, color, coords, position) {
-    this._state.addAvatar(player, color, coords, position);
+    const tile = this._state.getTile(coords);
+    const endPosition = tile.getEndingPosition(position);
+    const avatar = this._state.addAvatar(player, color, coords, endPosition);
+    this._updateAvatar(avatar);
   }
 
   /**
@@ -147,14 +150,28 @@ class Board {
    * @param {Avatar} avatar the avatar to update
    */
   _updateAvatar(avatar) {
-    const tile = this._state.getTile(avatar.coords);
-    const endPosition = tile.getEndingPosition(avatar.position);
+    const position = avatar.position.copy();
 
-    const neighborCoords = avatar.coords.copy().moveOne(endPosition.direction);
+    let neighborCoords = null;
+    try {
+      neighborCoords = avatar.coords.copy().moveOne(position.direction);
+    } catch (err) {
+      return avatar.exit();
+    }
     const neighborTile = this._state.getTile(neighborCoords);
 
     if (neighborTile) {
-      avatar.move(neighborCoords, endPosition.reflect());
+      const intermediatePosition = position.reflect();
+      const intermediateHash = Avatar.generateHash(neighborCoords, intermediatePosition);
+      const intermediateCollide = this.getAvatarAtHash(intermediateHash);
+      if (intermediateCollide) {
+        // this._state.getAvatar(intermediateCollide).
+        return avatar.collide();
+      }
+
+      const finalPosition = neighborTile.getEndingPosition(intermediatePosition);
+      avatar.move(neighborCoords, finalPosition);
+
       this._updateAvatar(avatar);
     }
   }
@@ -164,7 +181,9 @@ class Board {
    */
   _updateAvatars() {
     this._state.getAvatars().forEach(avatar => {
-      this._updateAvatar(avatar);
+      if (!avatar.hasExited()) {
+        this._updateAvatar(avatar);
+      }
     });
   }
 }

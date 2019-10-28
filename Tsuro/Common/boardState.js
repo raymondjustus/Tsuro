@@ -14,6 +14,8 @@ class BoardState {
       this._tiles = initialState._tiles;
     } else {
       this._avatars = {};
+      this._avatarHashes = {};
+      this._hashAvatars = {};
 
       this._tiles = getEmptyBoardArray();
     }
@@ -26,6 +28,7 @@ class BoardState {
    * @param {string} color the chosen avatar color
    * @param {Coords} coords the starting coordinates of the avatar
    * @param {Position} position the starting position of the avatar
+   * @returns {Avatar} the newly created avatar
    */
   addAvatar(player, color, coords, position) {
     const { id } = player;
@@ -33,6 +36,7 @@ class BoardState {
       throw 'Player already has avatar on board';
     }
     this._avatars[id] = new Avatar(id, color, coords, position);
+    return this._avatars[id];
   }
 
   /**
@@ -97,6 +101,24 @@ class BoardState {
       return this._tiles[x][y];
     }
     return null;
+  }
+
+  getAvatarAtHash(hash) {
+    return this._avatarHashes[hash] || null;
+  }
+
+  moveAvatar(id, coords, position) {
+    const avatar = this.getAvatar(id);
+    avatar.move(coords, position);
+
+    const oldHash = this._hashAvatars[id];
+    if (oldHash) {
+      delete this._avatarHashes[oldHash];
+    }
+
+    const hash = avatar.getHash();
+    this._avatarHashes[hash] = id;
+    this._hashAvatars[id] = hash;
   }
 
   /**
