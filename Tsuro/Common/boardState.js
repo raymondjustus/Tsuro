@@ -14,8 +14,6 @@ class BoardState {
       this._tiles = initialState._tiles;
     } else {
       this._avatars = {};
-      this._avatarHashes = {};
-      this._hashAvatars = {};
 
       this._tiles = getEmptyBoardArray();
     }
@@ -101,24 +99,6 @@ class BoardState {
       return this._tiles[x][y];
     }
     return null;
-  }
-
-  getAvatarAtHash(hash) {
-    return this._avatarHashes[hash] || null;
-  }
-
-  moveAvatar(id, coords, position) {
-    const avatar = this.getAvatar(id);
-    avatar.move(coords, position);
-
-    const oldHash = this._hashAvatars[id];
-    if (oldHash) {
-      delete this._avatarHashes[oldHash];
-    }
-
-    const hash = avatar.getHash();
-    this._avatarHashes[hash] = id;
-    this._hashAvatars[id] = hash;
   }
 
   /**

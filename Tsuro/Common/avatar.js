@@ -16,14 +16,8 @@ class Avatar {
 
     this.coords = coords || new Coords(0, 0);
     this.position = position || new Position(DIRECTIONS.NORTH, PORTS.ZERO);
-    this._updateHash();
 
     this._exited = false;
-    this._collided = false;
-  }
-
-  collide() {
-    this._collided = true;
   }
 
   /**
@@ -36,9 +30,6 @@ class Avatar {
     if (this.hasExited()) {
       avatar.exit();
     }
-    if (this.hasCollided()) {
-      avatar.collide();
-    }
     return avatar;
   }
 
@@ -46,24 +37,8 @@ class Avatar {
     this._exited = true;
   }
 
-  static generateHash(coords, position) {
-    return `${coords.x}${coords.y}${position.direction.slice(0, 1)}${position.port}`;
-  }
-
-  getHash() {
-    return this._hash;
-  }
-
-  hasCollided() {
-    return this._collided;
-  }
-
   hasExited() {
     return this._exited;
-  }
-
-  hasSamePosition(avatar) {
-    return this._hash === avatar._hash;
   }
 
   /**
@@ -75,13 +50,6 @@ class Avatar {
   move(coords, position) {
     this.coords = coords;
     this.position = position;
-    this._updateHash();
-  }
-
-  _updateHash() {
-    this._hash = `${this.coords.x}${this.coords.y}${this.position.direction.slice(0, 1)}${
-      this.position.port
-    }`;
   }
 }
 

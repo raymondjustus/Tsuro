@@ -1,4 +1,4 @@
-const { Avatar, BoardState } = require('.');
+const { BoardState } = require('.');
 const { BOARD_SIZE, DIRECTIONS, DIRECTIONS_CLOCKWISE } = require('./utils/constants');
 
 class Board {
@@ -162,16 +162,8 @@ class Board {
 
     if (neighborTile) {
       const intermediatePosition = position.reflect();
-      const intermediateHash = Avatar.generateHash(neighborCoords, intermediatePosition);
-      const intermediateCollide = this.getAvatarAtHash(intermediateHash);
-      if (intermediateCollide) {
-        // this._state.getAvatar(intermediateCollide).
-        return avatar.collide();
-      }
-
       const finalPosition = neighborTile.getEndingPosition(intermediatePosition);
       avatar.move(neighborCoords, finalPosition);
-
       this._updateAvatar(avatar);
     }
   }
