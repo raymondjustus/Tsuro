@@ -15,3 +15,15 @@
    This is not used to inform any code functionality more than providing the desired responses as outlined in the task.
 
 3. Responses are to be given for every color, in the order in which they are listed in the task description. This is: `"white"`, `"black"`, `"red"`, `"green"`, and `"blue"`.
+
+## Test Descriptions
+
+1. Exit caused by initial placement
+
+2. Exit caused by other player's initial placement
+
+3. Collision
+
+4. Valid singular initial and intermediate placement
+
+5. Valid multiple initial and intermediate placement
