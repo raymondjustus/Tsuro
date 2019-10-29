@@ -18,7 +18,7 @@ class Board {
         throw 'Tile neighbors existing tile';
       } else if (!this._isTileOnBorder(coords)) {
         throw 'Tile must be placed on Border';
-      } else if (!this._isAvatarOnValidInitialPosition(coords, position)) {
+      } else if (!this.isAvatarOnValidInitialPosition(coords, position)) {
         throw 'Avatar must be placed on an inward-facing port';
       }
       this.placeTile(tile, coords, true);
@@ -98,7 +98,7 @@ class Board {
    * @param {Position} position the position of the avatar
    * @returns {boolean} whether the initial position is valid
    */
-  _isAvatarOnValidInitialPosition(coords, position) {
+  static isAvatarOnValidInitialPosition(coords, position) {
     const { x, y } = coords;
     const { direction } = position;
 
