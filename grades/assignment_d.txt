@@ -3,10 +3,9 @@
 * (5/5)   Executable D runs without input without throwing 
 * (5/5)   D takes arguments
 * (12/12) D connecting, sending, printing, disconnecting correctly
-* (0/15)  D hidden passing tests 
-          - Let's chat through email or office hours so I can figure out how to run this then we can fix the grade.
+* (15/15)  D hidden passing tests 
 * (18/18) Task 2
 
-Total: (65/80)
+Total: (80/80)
 
 Graded by Sai.
