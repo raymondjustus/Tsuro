@@ -86,7 +86,7 @@ class Board {
    * @param {Coords} coords the coordinates to check
    * @returns {boolean} whether the tile has any neighbors
    */
-  _hasNeighboringTiles(coords) {
+  hasNeighboringTiles(coords) {
     return DIRECTIONS_CLOCKWISE.some(direction => !!this._getNeighboringTile(coords, direction));
   }
 

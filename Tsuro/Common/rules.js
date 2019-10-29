@@ -1,16 +1,6 @@
 const { Board } = require('./board');
-const { Player } = require('./player');
-// const { TilePlacement } = require('./placement.js');
-// const { InitialPlacement } = require('./placement.js');
-// const { Coords, Position } = require('.positions');
-const { BOARD_SIZE, DIRECTIONS } = require('./utils/constants');
 
 class RuleChecker {
-  constuctor() {
-    console.log('DOES SOME SHIT');
-    this._referee = {};
-  }
-
   /**
    * Takes in the board state (boardState), the player who is sending the action (playerId), and the action itself (action)
    *
@@ -19,7 +9,7 @@ class RuleChecker {
    * @param {Player} player is the player intending on the action
    * @returns {boolean} whether the action is valid
    */
-  canTakeAction(boardState, tilePlacement, player) {
+  static anTakeAction(boardState, tilePlacement, player) {
     // Check if we can put the tile here
     if (this.checkPlacementLegality(boardState, tilePlacement, player)) {
       // Check the death cases of validity for this tile placement
@@ -29,13 +19,13 @@ class RuleChecker {
   }
 
   /**
-   *
+   * Returns whether the tilePlacement is a legal dropping zone for on the given board for the given player
    * @param {BoardState} boardState is a representation of the board and the current state of the game
    * @param {TilePlacement} tilePlacement is what is about to be done (eg. tile placement)
    * @param {Player} player is the player intending on the action
    * @returns {boolean}
    */
-  checkPlacementLegality(boardState, tilePlacement, player) {
+  static checkPlacementLegality(boardState, tilePlacement, player) {
     const avatar = boardState.getAvatar(player.id);
     // Make sure we have our avatar, make sure the tile is empty, and make sure it is adjacent to the player.
     return (
@@ -44,12 +34,15 @@ class RuleChecker {
       this._checkPlayerAdjacency(avatar, tilePlacement)
     );
   }
+
   /**
+   * Returns whether the tilePlacement is a valid move where it does not result in the given player's suicide on the
+   * given board.
    * @param {BoardState} boardState is a representation of the board and the current state of the game
    * @param {TilePlacement} tilePlacement is what is about to be done (eg. tile placement)
    * @param {Player} player is the player intending on the action
    */
-  checkPlacementValidity(boardState, tilePlacement, player) {
+  static checkPlacementValidity(boardState, tilePlacement, player) {
     // Copy the board to test tile placement results
     const bCopy = boardState.copy();
     bCopy.placeTile(tilePlacement.tile, tilePlacement.coords);
@@ -64,8 +57,8 @@ class RuleChecker {
   }
 
   /**
-   *
-   * @param {Avatar} avatar
+   * Returns whether the the given tilePlacement is adjacent to the given avatar
+   * @param {Avatar} avatar The avatar on the board
    * @param {TilePlacement} tilePlacement is what is about to be done (eg. tile placement)
    * @returns {boolean}
    * @private
@@ -81,11 +74,11 @@ class RuleChecker {
   }
 
   /**
-   *
-   * @param {BoardState} board
-   * @param {TilePlacement} tilePlacement
-   * @param {Player} player
-   * @returns {boolean} true if all cards lead to death
+   * Returns whether all tiles in the given player's hand result in death.
+   * @param {BoardState} boardState is a representation of the board and the current state of the game
+   * @param {TilePlacement} tilePlacement is what is about to be done (eg. tile placement)
+   * @param {Player} player is the player intending on the action
+   * @returns {boolean} true if all cards lead to death, false if any one tile keeps the player alive
    */
   _totalFatality(boardState, tilePlacement, player) {
     // For each tile in hand, test for a tile that keeps the player alive
@@ -103,15 +96,13 @@ class RuleChecker {
         }
       }
     }
-
-    //QUESTION: will there be an async problem doing it this way?
     return true;
   }
 
   /**
    * Checks in with the server to see if the player can draw tiles.
    */
-  canDraw(playerId) {
+  static canDraw(playerId) {
     console.log(playerId);
   }
 
@@ -119,9 +110,14 @@ class RuleChecker {
    * Checks whether the given player (playerId) can place their avatar in the given position (position) at the tile (tile)
    * located at the given Coord (coord) at the start of the game.
    */
-  canPlaceAvatar(playerId, coords, tile, position) {
-    console.log(playerId, coords, tile, position);
+  static canPlaceAvatar(boardState, playerId, coords, tile, position) {
+    return (
+      Board.isAvatarOnValidInitialPosition(coords, position) && // On the edge of the board
+      !boardState.getAvatar(playerId) && // The avatar has not been placed
+      !boardState.getTile(coords) && // This tile space is empty
+      !boardState.hasNeighboringTiles(coords) && // There are no neighbors
+      tile.getEndingPosition(position).direction !== position.direction
+    ); // There is no loop back to the same side
   }
 }
-
 module.exports = RuleChecker;
