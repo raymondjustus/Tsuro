@@ -89,8 +89,7 @@ class RuleChecker {
   static _doesPlayerHaveValidMove(boardState, coords, player) {
     const { hand, id } = player;
     // For each tile in hand, test for a tile that keeps the player alive
-    for (let i = 0; i < hand.length; i++) {
-      const tile = hand[i];
+    return hand.some(tile => {
       // Test all four rotations
       for (let j = 0; j < 4; j++) {
         const boardCopy = boardState.copy();
@@ -102,8 +101,8 @@ class RuleChecker {
           return true;
         }
       }
-    }
-    return false;
+      return false;
+    });
   }
 
   /**
