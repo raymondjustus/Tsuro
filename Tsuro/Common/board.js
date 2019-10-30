@@ -14,7 +14,7 @@ class Board {
     this._state = new BoardState(stateOverride);
 
     initialPlacements.forEach(({ tile, coords, player, color, position }) => {
-      if (this.hasNeighboringTiles(coords)) {
+      if (this._hasNeighboringTiles(coords)) {
         throw 'Tile neighbors existing tile';
       } else if (!this._isTileOnBorder(coords)) {
         throw 'Tile must be placed on Border';
@@ -69,7 +69,7 @@ class Board {
    * @param {Coords} coords the coordinates to check
    * @returns {boolean} whether the tile has any neighbors
    */
-  hasNeighboringTiles(coords) {
+  _hasNeighboringTiles(coords) {
     return this._state.hasNeighboringTiles(coords);
   }
 
