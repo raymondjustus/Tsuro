@@ -14,7 +14,7 @@ class Board {
     this._state = new BoardState(stateOverride);
 
     initialPlacements.forEach(({ tile, coords, player, color, position }) => {
-      if (this._hasNeighboringTiles(coords)) {
+      if (this.hasNeighboringTiles(coords)) {
         throw 'Tile neighbors existing tile';
       } else if (!this._isTileOnBorder(coords)) {
         throw 'Tile must be placed on Border';
@@ -63,23 +63,6 @@ class Board {
   }
 
   /**
-   * Gets a tile's neighboring tile in the given direction.
-   *
-   * @param {Coords} coords the coordinates of the tile
-   * @param {string} direction the direction to get the neighbor at
-   * @returns {Tile} the neighboring tile
-   * @returns {null} `null`, if no tile exists in that direction
-   */
-  _getNeighboringTile(coords, direction) {
-    try {
-      const neighborCoords = coords.copy().moveOne(direction);
-      return this._state.getTile(neighborCoords);
-    } catch (err) {
-      return null;
-    }
-  }
-
-  /**
    * Checks whether a tile with the given coordinates has any
    * neighboring tiles.
    *
@@ -87,7 +70,7 @@ class Board {
    * @returns {boolean} whether the tile has any neighbors
    */
   hasNeighboringTiles(coords) {
-    return DIRECTIONS_CLOCKWISE.some(direction => !!this._getNeighboringTile(coords, direction));
+    return this._state.hasNeighboringTiles(coords);
   }
 
   /**

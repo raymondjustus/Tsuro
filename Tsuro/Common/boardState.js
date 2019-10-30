@@ -114,6 +114,34 @@ class BoardState {
   getTiles() {
     return this._tiles;
   }
+
+  /**
+   * Gets a tile's neighboring tile in the given direction.
+   *
+   * @param {Coords} coords the coordinates of the tile
+   * @param {string} direction the direction to get the neighbor at
+   * @returns {Tile} the neighboring tile
+   * @returns {null} `null`, if no tile exists in that direction
+   */
+  _getNeighboringTile(coords, direction) {
+    try {
+      const neighborCoords = coords.copy().moveOne(direction);
+      return this.getTile(neighborCoords);
+    } catch (err) {
+      return null;
+    }
+  }
+
+  /**
+   * Checks whether a tile with the given coordinates has any
+   * neighboring tiles.
+   *
+   * @param {Coords} coords the coordinates to check
+   * @returns {boolean} whether the tile has any neighbors
+   */
+  hasNeighboringTiles(coords) {
+    return DIRECTIONS_CLOCKWISE.some(direction => !!this._getNeighboringTile(coords, direction));
+  }
 }
 
 module.exports = BoardState;
