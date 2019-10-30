@@ -63,10 +63,10 @@ class RuleChecker {
    * @private
    */
   static _checkPlayerAdjacency(avatar, tilePlacement) {
-    const newCoords = tilePlacement.coords.copy();
+    const { coords, position } = avatar;
     try {
-      newCoords.moveOne(avatar.position.direction);
-      return avatar.coords.x === newCoords.x && avatar.coords.y === newCoords.y;
+      const newCoords = tilePlacement.coords.copy().moveOne(position.direction);
+      return coords.x === newCoords.x && coords.y === newCoords.y;
     } catch (e) {
       return false;
     }
