@@ -1,22 +1,40 @@
 # Referee
 
 ```ts
+type Index = number;
+
 interface Referee {
   board: Board;
-  players: Player[];
-  currentPlayerIndex: number;
+  players: Record<Index, Player>;
+  currentPlayerIndex: Index;
 
   /**
-   * Updates the index of the current player, changing whose turn it
-   * currently is.
+   * Adds a player to the current game.
+   *
+   * @throws if a player already exists with given ID or name
+   * @throws if the game has already begun
+   *
+   * @param {Player} player the player to add
+   */
+  addPlayer(player: Player): void;
+
+  /**
+   * Changes the game turn to the next player.
    *
    * This will:
+   * - update current player index (changing turn)
    * - check if the player can move
-   *   - if so, deal tiles to the player
-   *   - poll for player action
-   *   - call appropriate validation and place methods
-   *   - clear player hand
-   * - recurse until all (or all but one) player can't move
+   *   - if so:
+   *     - update player turn status to true
+   *     - deal tiles to the player
+   *     - poll for player action
+   *     - call appropriate validation and place methods
+   *     - clear player hand
+   *     - update player turn status to false
+   *     - update all players' state
+   * - check if game is over
+   *   - if so, notify players of end
+   *   - if not, recurse
    */
   changePlayer(): void;
 
@@ -30,7 +48,19 @@ interface Referee {
    * array
    * @returns {boolean} whether the player can move
    */
-  _canPlayerMove(index: number): boolean;
+  _canPlayerMove(index: Index): boolean;
+
+  /**
+   * Updates the status of the player at the given index to whether
+   * it's currently their turn or not. This uses the `setTurnStatus`
+   * method.
+   *
+   * @param {number} playerIndex the index of the player in the
+   * `players` array
+   * @param {boolean} isCurrentTurn whether it is currently the
+   * player's turn
+   */
+  _updatePlayerStatus(playerIndex: Index, isCurrentTurn: boolean): void;
 
   /**
    * @private
@@ -39,7 +69,7 @@ interface Referee {
    * @param {number} index the index of the player in the `players`
    * array
    */
-  _dealPlayer(index: number): void;
+  _dealPlayer(index: Index): void;
 
   /**
    * @private
@@ -49,19 +79,19 @@ interface Referee {
    * array
    * @returns {Action} the player's action
    */
-  _pollPlayerForAction(index: number): Action;
+  _pollPlayerForAction(index: Index): Action;
 
   /**
    * @private
    * Validates if the given tile exists in the player hand.
    *
-   * @param {number} playerIndex the index of the player in the
-   * `players` array
+   * @param {Tile[]} currentHand the hand of tiles to check
+   * against to validate the tile exists within it
    * @param {Tile} tile the tile to validate
    * @returns {boolean} whether the given tile exists in the
    * player's hand
    */
-  _validateTile(playerIndex: number, tile: Tile): boolean;
+  _validateTile(currentHand: Tile[], tile: Tile): boolean;
 
   /**
    * @private
@@ -74,7 +104,7 @@ interface Referee {
    * @returns {boolean} whether the given action is valid for the
    * given player
    */
-  _validateAction(playerIndex: number, action: Action): boolean;
+  _validateAction(playerIndex: Index, action: Action): boolean;
 
   /**
    * @private
@@ -85,16 +115,30 @@ interface Referee {
    * `players` array
    * @param {Action} action the player's chosen action
    */
-  _useAction(playerIndex: number, action: Action): void;
+  _useAction(playerIndex: Index, action: Action): void;
 
   /**
    * @private
-   * Removes all tiles from the hand of the player with the given
+   * Removes all tiles from the hand of the player at the given
    * index.
    *
    * @param {number} index the index of the player in the `players`
    * array
    */
-  _clearPlayerHand(index: number): void;
+  _clearPlayerHand(index: Index): void;
+
+  /**
+   * @private
+   * Gives all players the most up-to-date version of the board
+   * state. This lets them see what moves have just been played.
+   */
+  _updatePlayersState(): void;
+
+  /**
+   * @private
+   * Notifies all players that the game has ended, and which
+   * player(s) have won.
+   */
+  _notifyPlayersOfGameOver(): void;
 }
 ```
