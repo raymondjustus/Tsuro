@@ -2,7 +2,7 @@ const Board = require('./board');
 
 class RuleChecker {
   /**
-   * Takes in the board state (boardState), the player who is sending the action (playerId), and the action itself (action)
+   * Takes in the board state (boardState), the player who is acting (Player), and the (TilePlacement)
    *
    * @param {BoardState} boardState is a representation of the board and the current state of the game
    * @param {TilePlacement} tilePlacement is what is about to be done (eg. tile placement)
@@ -41,6 +41,7 @@ class RuleChecker {
    * @param {BoardState} boardState is a representation of the board and the current state of the game
    * @param {TilePlacement} tilePlacement is what is about to be done (eg. tile placement)
    * @param {Player} player is the player intending on the action
+   * @returns {boolean} whether the tile placement is valid
    */
   static checkPlacementValidity(boardState, tilePlacement, player) {
     // Copy the board to test tile placement results
@@ -102,12 +103,12 @@ class RuleChecker {
   /**
    * Checks whether the given player (playerId) can place their avatar in the given position (position) at the tile (tile)
    * located at the given Coord (coord) at the start of the game.
-   * @param {BoardState} boardState
-   * @param {String} playerId
-   * @param {Coordinates} coords
-   * @param {Tile} tile
-   * @param {Position} position
-   * @returns {Boolean} whether the player can place their avatar at that initial position at the start of the game
+   * @param {BoardState} boardState is a representation of the board and the current state of the game
+   * @param {string} playerId The player's ID
+   * @param {Coords} coords the coordinates to place the avatar at
+   * @param {Tile} tile the tile the avatar is attempting to be placed on
+   * @param {Position} position the position the avatar is attempting to be set as
+   * @returns {boolean} whether the player can place their avatar at that initial position at the start of the game
    */
   static canPlaceAvatar(boardState, playerId, coords, tile, position) {
     return (
