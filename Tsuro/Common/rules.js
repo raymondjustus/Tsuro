@@ -48,7 +48,7 @@ class RuleChecker {
     boardCopy.placeTile(tilePlacement.tile, tilePlacement.coords);
     const avatarCopy = boardCopy.getAvatar(player.id);
     // If the move causes player death, check if any hand tiles can prevent the death.
-    if (Board.isAvatarOnValidInitialPosition(avatarCopy.coords, avatarCopy.position)) {
+    if (Board.isAvatarOnOutsidePosition(avatarCopy.coords, avatarCopy.position)) {
       // If a non-death move is found, the given action is invalid.
       return this._doesPlayerHaveValidMove(player, boardState, tilePlacement.coords);
     }
@@ -91,7 +91,7 @@ class RuleChecker {
         boardCopy.placeTile(tCopy, coords);
         const avatarCopy = boardCopy.getAvatar(id);
         // If the player ends up at the edge, they are dead. If any tile is not at the edge, they are alive return false
-        if (!Board.isAvatarOnValidInitialPosition(avatarCopy.coords, avatarCopy.position)) {
+        if (!Board.isAvatarOnOutsidePosition(avatarCopy.coords, avatarCopy.position)) {
           return false;
         }
       }
@@ -111,7 +111,7 @@ class RuleChecker {
    */
   static canPlaceAvatar(boardState, playerId, coords, tile, position) {
     return (
-      Board.isAvatarOnValidInitialPosition(coords, position) && // On the edge of the board
+      Board.isAvatarOnOutsidePosition(coords, position) && // On the edge of the board
       !boardState.getAvatar(playerId) && // The avatar has not been placed
       !boardState.getTile(coords) && // This tile space is empty
       !boardState.hasNeighboringTiles(coords) && // There are no neighbors
