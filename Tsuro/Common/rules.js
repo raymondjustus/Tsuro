@@ -20,6 +20,7 @@ class RuleChecker {
 
   /**
    * Returns whether the tilePlacement is a legal dropping zone for on the given board for the given player
+   *
    * @param {BoardState} boardState is a representation of the board and the current state of the game
    * @param {TilePlacement} tilePlacement is what is about to be done (eg. tile placement)
    * @param {Player} player is the player intending on the action
@@ -38,6 +39,7 @@ class RuleChecker {
   /**
    * Returns whether the tilePlacement is a valid move where it does not result in the given player's suicide on the
    * given board.
+   *
    * @param {BoardState} boardState is a representation of the board and the current state of the game
    * @param {TilePlacement} tilePlacement is what is about to be done (eg. tile placement)
    * @param {Player} player is the player intending on the action
@@ -58,6 +60,7 @@ class RuleChecker {
 
   /**
    * Returns whether the the given tilePlacement is adjacent to the given avatar
+   *
    * @param {Avatar} avatar The avatar on the board
    * @param {TilePlacement} tilePlacement is what is about to be done (eg. tile placement)
    * @returns {boolean} whether an avatar is adjacent to the tile placement
@@ -75,6 +78,7 @@ class RuleChecker {
 
   /**
    * Returns whether all tiles in the given player's hand result in death.
+   *
    * @param {BoardState} boardState is a representation of the board and the current state of the game
    * @param {Coordinates} coors is where the tile will be placed
    * @param {Player} player is the player intending on the action
@@ -102,7 +106,8 @@ class RuleChecker {
 
   /**
    * Checks whether the given player (playerId) can place their avatar in the given position (position) at the tile (tile)
-   * located at the given Coord (coord) at the start of the game.
+   * located at the given Coord (coords) at the start of the game.
+   *
    * @param {BoardState} boardState is a representation of the board and the current state of the game
    * @param {string} playerId The player's ID
    * @param {Coords} coords the coordinates to place the avatar at
