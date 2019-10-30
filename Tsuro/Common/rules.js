@@ -9,7 +9,7 @@ class RuleChecker {
    * @param {Player} player is the player intending on the action
    * @returns {boolean} whether the action is valid
    */
-  static anTakeAction(boardState, tilePlacement, player) {
+  static canTakeAction(boardState, tilePlacement, player) {
     // Check if we can put the tile here
     if (this.checkPlacementLegality(boardState, tilePlacement, player)) {
       // Check the death cases of validity for this tile placement
