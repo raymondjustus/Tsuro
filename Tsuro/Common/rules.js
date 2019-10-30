@@ -23,7 +23,7 @@ class RuleChecker {
    * @param {BoardState} boardState is a representation of the board and the current state of the game
    * @param {TilePlacement} tilePlacement is what is about to be done (eg. tile placement)
    * @param {Player} player is the player intending on the action
-   * @returns {boolean}
+   * @returns {boolean} whether the tile placement is legal for that player
    */
   static checkPlacementLegality(boardState, tilePlacement, player) {
     const avatar = boardState.getAvatar(player.id);
@@ -59,7 +59,7 @@ class RuleChecker {
    * Returns whether the the given tilePlacement is adjacent to the given avatar
    * @param {Avatar} avatar The avatar on the board
    * @param {TilePlacement} tilePlacement is what is about to be done (eg. tile placement)
-   * @returns {boolean}
+   * @returns {boolean} whether an avatar is adjacent to the tile placement
    * @private
    */
   static _checkPlayerAdjacency(avatar, tilePlacement) {
@@ -99,11 +99,6 @@ class RuleChecker {
     return true;
   }
 
-  /**
-   * Checks whether the given player (playerId) can place their avatar in the given position (position) at the tile (tile)
-   * located at the given Coord (coord) at the start of the game.
-   *
-   */
   /**
    * Checks whether the given player (playerId) can place their avatar in the given position (position) at the tile (tile)
    * located at the given Coord (coord) at the start of the game.
