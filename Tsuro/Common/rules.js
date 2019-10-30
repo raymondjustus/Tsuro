@@ -2,7 +2,9 @@ const Board = require('./board');
 
 class RuleChecker {
   /**
-   * Takes in the board state (boardState), the player who is acting (Player), and the (TilePlacement)
+   * Takes in the board state (boardState), the player who is acting (Player), and the (TilePlacement) and
+   * checks whether that player can take a tilePlacement action. It must be a legal tilePlacement move and
+   * then must be a valid tilePlacement option.
    *
    * @param {BoardState} boardState is a representation of the board and the current state of the game
    * @param {TilePlacement} tilePlacement is what is about to be done (eg. tile placement)
@@ -53,7 +55,7 @@ class RuleChecker {
     // If the move causes player death, check if any hand tiles can prevent the death.
     if (Board.isAvatarOnOutsidePosition(avatarCopy.coords, avatarCopy.position)) {
       // If a non-death move is found, the given action is invalid.
-      return this._doesPlayerHaveValidMove(player, boardState, tilePlacement.coords);
+      return !this._doesPlayerHaveValidMove(player, boardState, tilePlacement.coords);
     }
     return true;
   }
@@ -77,7 +79,7 @@ class RuleChecker {
   }
 
   /**
-   * Returns whether all tiles in the given player's hand result in death.
+   * Returns whether any tile in the given player's hand keeps the player alive if placed at the given coord.
    *
    * @param {BoardState} boardState is a representation of the board and the current state of the game
    * @param {Coordinates} coors is where the tile will be placed
@@ -92,16 +94,16 @@ class RuleChecker {
       // Test all four rotations
       for (let j = 0; j < 4; j++) {
         const boardCopy = boardState.copy();
-        const tCopy = tile.copy(j);
-        boardCopy.placeTile(tCopy, coords);
+        const tileCopy = tile.copy(j);
+        boardCopy.placeTile(tileCopy, coords);
         const avatarCopy = boardCopy.getAvatar(id);
-        // If the player ends up at the edge, they are dead. If any tile is not at the edge, they are alive return false
+        // If the player does not end up at the edge, they are alive return true
         if (!Board.isAvatarOnOutsidePosition(avatarCopy.coords, avatarCopy.position)) {
-          return false;
+          return true;
         }
       }
     }
-    return true;
+    return false;
   }
 
   /**
