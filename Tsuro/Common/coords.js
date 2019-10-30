@@ -81,6 +81,15 @@ class Coords {
   moveOne(direction) {
     return this.move(direction, 1);
   }
+
+  /**
+   * Checks the equality of this coords and the given one.
+   * @param {Coords} coords the Coords to check equality against
+   * @returns {boolean} whether the given coords is equal to this one
+   */
+  isEqualTo(coords) {
+    return this.x === coords.x && this.y === coords.y;
+  }
 }
 
 module.exports = Coords;

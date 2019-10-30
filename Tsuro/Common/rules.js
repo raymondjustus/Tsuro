@@ -66,7 +66,7 @@ class RuleChecker {
     const { coords, position } = avatar;
     try {
       const newCoords = tilePlacement.coords.copy().moveOne(position.direction);
-      return coords.x === newCoords.x && coords.y === newCoords.y;
+      return coords.isEqualTo(newCoords);
     } catch (e) {
       return false;
     }
