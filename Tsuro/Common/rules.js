@@ -1,4 +1,4 @@
-const { Board } = require('./board');
+const Board = require('./board');
 
 class RuleChecker {
   /**
@@ -44,16 +44,15 @@ class RuleChecker {
    */
   static checkPlacementValidity(boardState, tilePlacement, player) {
     // Copy the board to test tile placement results
-    const bCopy = boardState.copy();
-    bCopy.placeTile(tilePlacement.tile, tilePlacement.coords);
-    const avatarCopy = bCopy.getAvatar(player.id);
+    const boardCopy = new Board([], boardState);
+    boardCopy.placeTile(tilePlacement.tile, tilePlacement.coords);
+    const avatarCopy = boardCopy.getAvatar(player.id);
     // If the move causes player death, check if any hand tiles can prevent the death.
     if (Board.isAvatarOnValidInitialPosition(avatarCopy.coords, avatarCopy.position)) {
       // If a non-death move is found, the given action is invalid.
-      return this._totalFatality(player, boardState, tilePlacement);
-    } else {
-      return true;
+      return this._doesPlayerHaveValidMove(player, boardState, tilePlacement.coords);
     }
+    return true;
   }
 
   /**
@@ -63,7 +62,7 @@ class RuleChecker {
    * @returns {boolean}
    * @private
    */
-  _checkPlayerAdjacency(avatar, tilePlacement) {
+  static _checkPlayerAdjacency(avatar, tilePlacement) {
     const newCoords = tilePlacement.coords.copy();
     try {
       newCoords.moveOne(avatar.position.direction);
@@ -76,20 +75,21 @@ class RuleChecker {
   /**
    * Returns whether all tiles in the given player's hand result in death.
    * @param {BoardState} boardState is a representation of the board and the current state of the game
-   * @param {TilePlacement} tilePlacement is what is about to be done (eg. tile placement)
+   * @param {Coordinates} coors is where the tile will be placed
    * @param {Player} player is the player intending on the action
    * @returns {boolean} true if all cards lead to death, false if any one tile keeps the player alive
    */
-  _totalFatality(boardState, tilePlacement, player) {
+  static _doesPlayerHaveValidMove(boardState, coords, player) {
+    const { hand, id } = player;
     // For each tile in hand, test for a tile that keeps the player alive
-    for (let i = 0; i < player.hand.length; i++) {
-      const tile = player.hand[i];
+    for (let i = 0; i < hand.length; i++) {
+      const tile = hand[i];
       // Test all four rotations
       for (let j = 0; j < 4; j++) {
-        const bCopy = boardState.copy();
+        const boardCopy = boardState.copy();
         const tCopy = tile.copy(j);
-        bCopy.placeTile(tCopy, tilePlacement.coords);
-        const avatarCopy = bCopy.getAvatar(player.id);
+        boardCopy.placeTile(tCopy, coords);
+        const avatarCopy = boardCopy.getAvatar(id);
         // If the player ends up at the edge, they are dead. If any tile is not at the edge, they are alive return false
         if (!Board.isAvatarOnValidInitialPosition(avatarCopy.coords, avatarCopy.position)) {
           return false;
@@ -100,15 +100,19 @@ class RuleChecker {
   }
 
   /**
-   * Checks in with the server to see if the player can draw tiles.
+   * Checks whether the given player (playerId) can place their avatar in the given position (position) at the tile (tile)
+   * located at the given Coord (coord) at the start of the game.
+   *
    */
-  static canDraw(playerId) {
-    console.log(playerId);
-  }
-
   /**
    * Checks whether the given player (playerId) can place their avatar in the given position (position) at the tile (tile)
    * located at the given Coord (coord) at the start of the game.
+   * @param {BoardState} boardState
+   * @param {String} playerId
+   * @param {Coordinates} coords
+   * @param {Tile} tile
+   * @param {Position} position
+   * @returns {Boolean} whether the player can place their avatar at that initial position at the start of the game
    */
   static canPlaceAvatar(boardState, playerId, coords, tile, position) {
     return (
