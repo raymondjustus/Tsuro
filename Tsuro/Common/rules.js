@@ -82,9 +82,9 @@ class RuleChecker {
    * Returns whether any tile in the given player's hand keeps the player alive if placed at the given coord.
    *
    * @param {BoardState} boardState is a representation of the board and the current state of the game
-   * @param {Coordinates} coors is where the tile will be placed
+   * @param {Coordinates} coords where the tile will be placed
    * @param {Player} player is the player intending on the action
-   * @returns {boolean} true if all cards lead to death, false if any one tile keeps the player alive
+   * @returns {boolean} true if any one tile keeps the player alive, false if all cards lead to death
    */
   static _doesPlayerHaveValidMove(boardState, coords, player) {
     const { hand, id } = player;
