@@ -10,6 +10,7 @@ class Coords {
   constructor(x, y) {
     this.x = x;
     this.y = y;
+    this._updateHash();
   }
 
   /**
@@ -22,6 +23,16 @@ class Coords {
   }
 
   /**
+   * Gets the hash for this Coords.
+   *
+   * @returns {string} the hash for this Coords
+   */
+  getHash() {
+    return this._hash;
+  }
+
+  /**
+   * @private
    * Checks whether the given value is valid as a single
    * coordinate value.
    *
@@ -29,10 +40,11 @@ class Coords {
    * @returns {boolean} whether the coordinate value is valid
    */
   _isValidCoordinate(value) {
-    return value > 0 && value < BOARD_SIZE;
+    return value >= 0 && value < BOARD_SIZE;
   }
 
   /**
+   * @private
    * Moves the coordinates along a single axis by the given value.
    *
    * @param {number} value the value to move by
@@ -69,6 +81,7 @@ class Coords {
         throw 'Invalid direction';
       }
     }
+    this._updateHash();
     return this;
   }
 
@@ -90,6 +103,15 @@ class Coords {
    */
   isEqualTo(coords) {
     return this.x === coords.x && this.y === coords.y;
+  }
+  
+  /**
+   * @private
+   * Updates the hash for this Coords when the x and/or
+   * y position changes.
+   */
+  _updateHash() {
+    this._hash = `${this.x}${this.y}`;
   }
 }
 

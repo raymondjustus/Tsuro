@@ -10,6 +10,7 @@ class Position {
   constructor(direction, port) {
     this.direction = direction;
     this.port = port;
+    this._updateHash();
   }
 
   /**
@@ -19,6 +20,15 @@ class Position {
    */
   copy() {
     return new Position(this.direction, this.port);
+  }
+
+  /**
+   * Gets the hash for this Position.
+   *
+   * @returns {string} the hash for this Position
+   */
+  getHash() {
+    return this._hash;
   }
 
   /**
@@ -38,6 +48,7 @@ class Position {
       this.direction = DIRECTIONS.EAST;
     }
     this.port = this.port === PORTS.ZERO ? PORTS.ONE : PORTS.ZERO;
+    this._updateHash();
     return this;
   }
 
@@ -63,7 +74,16 @@ class Position {
     const idx = DIRECTIONS_CLOCKWISE.indexOf(this.direction);
     const newIdx = (idx + rotations) % DIRECTIONS_CLOCKWISE.length;
     this.direction = DIRECTIONS_CLOCKWISE[newIdx];
+    this._updateHash();
     return this;
+  }
+
+  /**
+   * @private
+   * Updates the hash for this Position when the direction and/or port changes.
+   */
+  _updateHash() {
+    this._hash = `${this.direction}${this.port}`;
   }
 }
 

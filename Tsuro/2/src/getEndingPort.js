@@ -1,7 +1,7 @@
 const { Path, Tile } = require('../../Common');
 const { getLetterFromPosition, getPositionFromLetter } = require('../../Common/utils');
 const printMessage = require('./printMessage');
-const tiles = require('./tiles');
+const { tiles } = require('../../Common/__tests__');
 
 const VALID_DEGREES = new Set([0, 90, 180, 270]);
 
