@@ -1,5 +1,5 @@
 const { BoardState } = require('.');
-const { BOARD_SIZE, DIRECTIONS, DIRECTIONS_CLOCKWISE } = require('./utils/constants');
+const { BOARD_SIZE, DIRECTIONS } = require('./utils/constants');
 
 class Board {
   /**
@@ -18,11 +18,11 @@ class Board {
         throw 'Tile neighbors existing tile';
       } else if (!this._isTileOnBorder(coords)) {
         throw 'Tile must be placed on Border';
-      } else if (!this._isAvatarOnValidInitialPosition(coords, position)) {
+      } else if (!this.isAvatarOnOutsidePosition(coords, position)) {
         throw 'Avatar must be placed on an inward-facing port';
       }
       this.placeTile(tile, coords, true);
-      this._state.addAvatar(player, color, coords, position);
+      this.placeAvatar(player, color, coords, position);
     });
   }
 
@@ -37,12 +37,40 @@ class Board {
   }
 
   /**
+   * Gets a copy of an avatar with the given ID.
+   *
+   * @returns {Avatar} the copy of the avatar with the given ID
+   * @returns {null} `null`, if the avatar doesn't exist
+   */
+  getAvatar(id) {
+    const avatar = this._state.getAvatar(id);
+    if (avatar) {
+      return avatar.copy();
+    }
+    return avatar;
+  }
+
+  /**
    * Gets the current state of the board, via a copy.
    *
-   * @returns {Board} the current state of the board
+   * @returns {BoardState} the current state of the board
    */
   getState() {
     return this._state.copy();
+  }
+
+  /**
+   * Places an avatar on the board. Then, updates the board state with the
+   * new avatar.
+   *
+   * @param {Player} player the player to attach to the avatar
+   * @param {string} color the chosen avatar color
+   * @param {Coords} coords the starting coordinates of the avatar
+   * @param {Position} position the starting position of the avatar
+   */
+  placeAvatar(player, color, coords, position) {
+    this._state.addAvatar(player, color, coords, position);
+    this._updateAvatars();
   }
 
   /**
@@ -63,23 +91,6 @@ class Board {
   }
 
   /**
-   * Gets a tile's neighboring tile in the given direction.
-   *
-   * @param {Coords} coords the coordinates of the tile
-   * @param {string} direction the direction to get the neighbor at
-   * @returns {Tile} the neighboring tile
-   * @returns {null} `null`, if no tile exists in that direction
-   */
-  _getNeighboringTile(coords, direction) {
-    try {
-      const neighborCoords = coords.copy().moveOne(direction);
-      return this._state.getTile(neighborCoords);
-    } catch (err) {
-      return null;
-    }
-  }
-
-  /**
    * Checks whether a tile with the given coordinates has any
    * neighboring tiles.
    *
@@ -87,10 +98,11 @@ class Board {
    * @returns {boolean} whether the tile has any neighbors
    */
   _hasNeighboringTiles(coords) {
-    return DIRECTIONS_CLOCKWISE.some(direction => !!this._getNeighboringTile(coords, direction));
+    return this._state.hasNeighboringTiles(coords);
   }
 
   /**
+   * @private
    * Whether an avatar is to be placed on a valid initial position
    * on a tile at the given coordinates.
    *
@@ -98,7 +110,7 @@ class Board {
    * @param {Position} position the position of the avatar
    * @returns {boolean} whether the initial position is valid
    */
-  _isAvatarOnValidInitialPosition(coords, position) {
+  static isAvatarOnOutsidePosition(coords, position) {
     const { x, y } = coords;
     const { direction } = position;
 
@@ -120,6 +132,7 @@ class Board {
   }
 
   /**
+   * @private
    * Checks whether the given coordinates of a tile are along
    * the board's border.
    *
@@ -132,25 +145,36 @@ class Board {
   }
 
   /**
-   * Updates the coordinates and position of the given avatar.
-   * Moves the avatar along the board based on board paths.
+   * @private
+   * Updates the coordinates and position of the given avatar, given that
+   * the avatar has not yet exited the board. Moves the avatar along the board
+   * based on board paths. Marks the avatar as exited if it cannot move further.
    *
    * @param {Avatar} avatar the avatar to update
    */
   _updateAvatar(avatar) {
-    const tile = this._state.getTile(avatar.coords);
-    const endPosition = tile.getEndingPosition(avatar.position);
+    if (!avatar.hasExited()) {
+      const position = avatar.position.copy();
 
-    const neighborCoords = avatar.coords.copy().moveOne(endPosition.direction);
-    const neighborTile = this._state.getTile(neighborCoords);
+      let neighborCoords = null;
+      try {
+        neighborCoords = avatar.coords.copy().moveOne(position.direction);
+      } catch (err) {
+        return avatar.exit();
+      }
+      const neighborTile = this._state.getTile(neighborCoords);
 
-    if (neighborTile) {
-      avatar.move(neighborCoords, endPosition.reflect());
-      this._updateAvatar(avatar);
+      if (neighborTile) {
+        const intermediatePosition = position.reflect();
+        const finalPosition = neighborTile.getEndingPosition(intermediatePosition);
+        this._state.moveAvatar(avatar.id, neighborCoords, finalPosition);
+        this._updateAvatar(avatar);
+      }
     }
   }
 
   /**
+   * @private
    * Updates the coordinates and positions of all avatars.
    */
   _updateAvatars() {

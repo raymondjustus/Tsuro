@@ -1,4 +1,6 @@
 const { getPositionFromLetter, getLetterFromPosition } = require('./getPosition');
 
+exports.getEmptyBoardArray = require('./getEmptyBoardArray');
 exports.getLetterFromPosition = getLetterFromPosition;
 exports.getPositionFromLetter = getPositionFromLetter;
+exports.getTileFromLetters = require('./getTileFromLetters');

@@ -1,5 +1,6 @@
 const { Avatar } = require('.');
-const { BOARD_SIZE } = require('./utils/constants');
+const { getEmptyBoardArray } = require('./utils');
+const { DIRECTIONS_CLOCKWISE } = require('./utils/constants');
 require('./utils/polyfills');
 
 class BoardState {
@@ -11,17 +12,12 @@ class BoardState {
   constructor(initialState) {
     if (initialState) {
       this._avatars = initialState._avatars;
+      this._initialAvatarHashes = initialState._initialAvatarHashes;
       this._tiles = initialState._tiles;
     } else {
       this._avatars = {};
-
-      this._tiles = [];
-      for (let x = 0; x < BOARD_SIZE; x++) {
-        this._tiles[x] = [];
-        for (let y = 0; y < BOARD_SIZE; y++) {
-          this._tiles[x][y] = null;
-        }
-      }
+      this._initialAvatarHashes = {};
+      this._tiles = getEmptyBoardArray();
     }
   }
 
@@ -32,13 +28,21 @@ class BoardState {
    * @param {string} color the chosen avatar color
    * @param {Coords} coords the starting coordinates of the avatar
    * @param {Position} position the starting position of the avatar
+   * @returns {Avatar} the newly created avatar
    */
   addAvatar(player, color, coords, position) {
     const { id } = player;
     if (this._avatars[id]) {
       throw 'Player already has avatar on board';
     }
-    this._avatars[id] = new Avatar(id, color, coords, position);
+    const tile = this.getTile(coords);
+    const avatar = new Avatar(id, color, coords, position);
+    this._initialAvatarHashes[avatar.getHash(coords, position)] = id;
+    this._avatars[id] = avatar;
+
+    const endPosition = tile.getEndingPosition(position);
+    this.moveAvatar(id, coords, endPosition);
+    return avatar;
   }
 
   /**
@@ -64,6 +68,13 @@ class BoardState {
   copy() {
     const newState = new BoardState();
     newState._avatars = Object.keys(this._avatars).map(key => this._avatars[key].copy());
+    newState._initialAvatarHashes = Object.keys(this._initialAvatarHashes).reduce(
+      (acc, key) =>
+        Object.assign(acc, {
+          [key]: this._initialAvatarHashes[key],
+        }),
+      {}
+    );
     newState._tiles = this._tiles.map(row => row.map(tile => (tile ? tile.copy() : null)));
     return newState;
   }
@@ -113,6 +124,54 @@ class BoardState {
    */
   getTiles() {
     return this._tiles;
+  }
+
+  /**
+   * Gets a tile's neighboring tile in the given direction.
+   *
+   * @param {Coords} coords the coordinates of the tile
+   * @param {string} direction the direction to get the neighbor at
+   * @returns {Tile} the neighboring tile
+   * @returns {null} `null`, if no tile exists in that direction
+   */
+  _getNeighboringTile(coords, direction) {
+    try {
+      const neighborCoords = coords.copy().moveOne(direction);
+      return this.getTile(neighborCoords);
+    } catch (err) {
+      return null;
+    }
+  }
+
+  /**
+   * Checks whether a tile with the given coordinates has any
+   * neighboring tiles.
+   *
+   * @param {Coords} coords the coordinates to check
+   * @returns {boolean} whether the tile has any neighbors
+   */
+  hasNeighboringTiles(coords) {
+    return DIRECTIONS_CLOCKWISE.some(direction => !!this._getNeighboringTile(coords, direction));
+  }
+
+  /**
+   * Moves an avatar with the given ID to the given coordinates and
+   * position. Marks an avatar as collided if it lands on another
+   * avatar's initial starting place.
+   *
+   * @param {string} id the ID of the avatar
+   * @param {Coords} coords the new coords of the avatar
+   * @param {Position} position the new position of the avatar
+   */
+  moveAvatar(id, coords, position) {
+    const avatar = this.getAvatar(id);
+    if (!avatar) {
+      throw 'Avatar does not exist.';
+    }
+    avatar.move(coords, position);
+    if (this._initialAvatarHashes[avatar.getHash()]) {
+      avatar.collide();
+    }
   }
 }
 

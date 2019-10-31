@@ -25,6 +25,17 @@ exports.DIRECTIONS_CLOCKWISE = [
   DIRECTIONS.WEST,
 ];
 
+const LETTERS = 'ABCDEFGH'.split('');
+exports.LETTERS = LETTERS;
+
+exports.LETTERS_MAP = LETTERS.reduce(
+  (acc, letter, i) =>
+    Object.assign(acc, {
+      [letter]: i,
+    }),
+  {}
+);
+
 exports.PORTS = {
   ZERO: 0,
   ONE: 1,
