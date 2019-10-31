@@ -18,7 +18,7 @@ class Board {
         throw 'Tile neighbors existing tile';
       } else if (!this._isTileOnBorder(coords)) {
         throw 'Tile must be placed on Border';
-      } else if (!this._isAvatarOnValidInitialPosition(coords, position)) {
+      } else if (!this.isAvatarOnOutsidePosition(coords, position)) {
         throw 'Avatar must be placed on an inward-facing port';
       }
       this.placeTile(tile, coords, true);
@@ -63,23 +63,6 @@ class Board {
   }
 
   /**
-   * Gets a tile's neighboring tile in the given direction.
-   *
-   * @param {Coords} coords the coordinates of the tile
-   * @param {string} direction the direction to get the neighbor at
-   * @returns {Tile} the neighboring tile
-   * @returns {null} `null`, if no tile exists in that direction
-   */
-  _getNeighboringTile(coords, direction) {
-    try {
-      const neighborCoords = coords.copy().moveOne(direction);
-      return this._state.getTile(neighborCoords);
-    } catch (err) {
-      return null;
-    }
-  }
-
-  /**
    * Checks whether a tile with the given coordinates has any
    * neighboring tiles.
    *
@@ -87,7 +70,7 @@ class Board {
    * @returns {boolean} whether the tile has any neighbors
    */
   _hasNeighboringTiles(coords) {
-    return DIRECTIONS_CLOCKWISE.some(direction => !!this._getNeighboringTile(coords, direction));
+    return this._state.hasNeighboringTiles(coords);
   }
 
   /**
@@ -98,7 +81,7 @@ class Board {
    * @param {Position} position the position of the avatar
    * @returns {boolean} whether the initial position is valid
    */
-  _isAvatarOnValidInitialPosition(coords, position) {
+  static isAvatarOnOutsidePosition(coords, position) {
     const { x, y } = coords;
     const { direction } = position;
 
