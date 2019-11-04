@@ -40,3 +40,10 @@ exports.PORTS = {
   ZERO: 0,
   ONE: 1,
 };
+
+const GAMESTATUS = {
+  WAITING: 'waiting',
+  CURRENT_TURN: 'current turn',
+  GAMEOVER: 'game over',
+};
+exports.GAMESTATUS = GAMESTATUS;
