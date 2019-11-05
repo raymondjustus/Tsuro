@@ -8,21 +8,26 @@ const { tiles } = require('../Common/__tests__');
 const COLOR_SET = [COLORS.WHITE, COLORS.BLACK, COLORS.RED, COLORS.GREEN, COLORS.BLUE];
 
 class Referee {
+  /**
+   * Creates a new Referee with a new board and no players.
+   */
   constructor() {
     this.board = new Board();
     this.currentPlayerIdx = -1;
     this.deckIdx = 0;
-    this.turns = 0;
+    this.currentTurn = 0;
 
     this.playerMap = {};
     this.currentPlayers = {};
     this.playerIds = [];
+
+    this.removedPlayersForTurn = {};
   }
 
   /**
-   * Adds a player to the current game.
+   * Adds a player to the current game, and sets their color.
    *
-   * @param {Player} player
+   * @param {Player} player the player to add to the game
    */
   addPlayer(player) {
     const playerIdx = this.playerIds.length;
@@ -55,18 +60,21 @@ class Referee {
    * Checks whether the given player has an avatar currently on
    * the board.
    *
-   * @param {Player} player
-   * @returns {boolean}
+   * @param {Player} player the player to check for
+   * @returns {boolean} whether the given player has an avatar
+   * currently on the baord
    */
   _hasAvatar(player) {
     return !!this.board.getAvatar(player.id);
   }
 
   /**
-   * Checks whether the given player can move.
+   * Checks whether the given player can move, ala if they have
+   * lost or not.
    *
-   * @param {Player} player
-   * @returns {boolean}
+   * @param {Player} player the player to check for
+   * @returns {boolean} whether the given player has lost the
+   * game
    */
   _canPlayerMove(player) {
     const avatar = this.board.getAvatar(player.id);
@@ -76,8 +84,8 @@ class Referee {
   /**
    * Gets a hand of the given size to give to the player.
    *
-   * @param {number} size
-   * @returns {Tile[]}
+   * @param {number} size the preferred size of the hand
+   * @returns {Tile[]} the hand of tiles
    */
   _getHand(size) {
     const hand = [];
@@ -93,14 +101,12 @@ class Referee {
    * Starts a player's turn by updating their board state, setting their
    * turn status to current, and giving them their hand.
    *
-   * @param {Player} player
-   * @param {number} handSize
+   * @param {Player} player the player to start-up
+   * @param {number} handSize the size of the player's hand
    * @returns {BoardState} the current board state
    */
   _startPlayerTurn(player, handSize) {
-    this.turns += 1;
-    console.log(`Turn ${this.turns}:`, player.id);
-
+    this.currentTurn += 1;
     const boardState = this.board.getState();
     player.updateState(boardState);
     player.setTurnStatus(true);
@@ -109,13 +115,16 @@ class Referee {
   }
 
   /**
-   * Checks if the given action is valid for the given player.
+   * Checks if the given action is legal for the given player, that is it
+   * can be placed on the board at all.
    *
-   * @param {BoardState} boardState
-   * @param {Player} player
-   * @param {Action} action
-   * @param {boolean} [isInitial=false]
-   * @returns {boolean}
+   * @param {BoardState} boardState the current state of the board
+   * @param {Player} player the player to check legality for
+   * @param {Action} action the action to check legality for
+   * @param {boolean} [isInitial=false] whether the given action is
+   * initial or intermediate
+   * @returns {boolean} whether the given action is legal for the
+   * given player
    */
   _checkForActionLegality(boardState, player, action, isInitial = false) {
     const isLegal = RuleChecker.checkPlacementLegality(boardState, action, player);
@@ -134,6 +143,18 @@ class Referee {
     return isLegal;
   }
 
+  /**
+   * Checks if the given action is valid for the given player, that is it
+   * doesn't result in player suicide.
+   *
+   * @param {BoardState} boardState the current state of the board
+   * @param {Player} player the player to check validity for
+   * @param {Action} action the action to check validity for
+   * @param {boolean} [isInitial=false] whether the given action is
+   * initial or intermediate
+   * @returns {boolean} whether the given action is valid for the
+   * given player
+   */
   _checkForActionValidity(boardState, player, action, isInitial = false) {
     if (isInitial) {
       return true;
@@ -145,7 +166,7 @@ class Referee {
    * Ends a player's turn by clearing their hand, setting their turn status
    * to waiting, and updating all players' board states.
    *
-   * @param {Player} player
+   * @param {Player} player the player to close out
    */
   _endPlayerTurn(player) {
     player.clearHand();
@@ -160,9 +181,9 @@ class Referee {
    * Places a tile on the board at the player's given discression. Also places the player's
    * avatar if the action is initial. Then ends player's turn.
    *
-   * @param {Player} player
-   * @param {Action} action
-   * @param {boolean} [isInitial=false]
+   * @param {Player} player the player to use the action for
+   * @param {Action} action the action to use
+   * @param {boolean} [isInitial=false] whether the action is initial or intermediate
    */
   _usePlayerAction(player, action, isInitial = false) {
     const { coords, position, tile } = action;
@@ -174,25 +195,28 @@ class Referee {
   }
 
   /**
-   * Removes a player from play
+   * Removes a player from the baord and play.
    *
-   * @param {number} playerIdx
+   * @param {string} id the ID of the player to remove from play
    */
-  _removePlayer(player) {
-    // TODO: being able to track players removed from a single tile placement
-    const { id } = player;
+  _removePlayer(id) {
     delete this.currentPlayers[id];
+    this.removedPlayersForTurn[this.currentTurn] = [
+      ...(this.removedPlayersForTurn[this.currentTurn] || []),
+      id,
+    ];
     this.board.removeAvatar(id);
   }
 
   /**
    * Plays through an entire player's turn, from start to end. This will start
-   * the player's turn, prompt them for action, and check for legality. If the
-   * action is legal, the action will be used; otherwise, the player is removed
-   * from play.
+   * the player's turn, prompt them for action, and check for legality and
+   * validity. If the action isn't legal or valid, the player will be removed
+   * from play. Regardless, if the action is legal, the action will be played.
    *
-   * @param {Player} player
-   * @param {boolean} [isInitial=false]
+   * @param {Player} player the player to prompt for action
+   * @param {boolean} [isInitial=false] whether to prompt for an initial or
+   * intermediate action
    */
   _promptPlayerForAction(player, isInitial = false) {
     const handSize = isInitial ? 3 : 2;
@@ -209,30 +233,37 @@ class Referee {
   }
 
   /**
-   * Checks whether the game is over yet.
+   * Checks whether the game is over yet, that is if one or no players
+   * are left on the board.
    *
-   * @returns {boolean}
+   * @returns {boolean} whether the game is over yet
    */
   _isGameOver() {
     return Object.keys(this.currentPlayers).length <= 1;
   }
 
   /**
-   * Gets the current winners of the game, that is those are still in play.
+   * Gets the current winners of the game, that is those are still in play. If
+   * none are left in play, it will check for the last turn in which players
+   * have been removed and award those players.
    *
    * @returns {string[]} an array of player IDs
    */
   _getWinners() {
-    return Object.keys(this.currentPlayers);
+    const currentPlayers = Object.keys(this.currentPlayers);
+    if (currentPlayers.length > 0) {
+      return currentPlayers;
+    }
+    const lastTurn = Math.max(...Object.keys(this.removedPlayersForTurn));
+    return this.removedPlayersForTurn[lastTurn];
   }
 
   /**
    * Notifies all players that the game is now over, and which players have
    * won the game.
-   *
-   * @param {string[]} winners
    */
-  _notifyPlayersOfGameOver(winners) {
+  _notifyPlayersOfGameOver() {
+    const winners = this._getWinners();
     this.playerIds.forEach(id => {
       this.playerMap[id].endGame(winners);
     });
@@ -241,9 +272,13 @@ class Referee {
   /**
    * Changes the current player, and prompts them for action. This function
    * will loop until the game is over, at which point all players will
-   * be notified of game over.
+   * be notified of game over and who won.
    */
   changePlayer() {
+    if (this.playerIds.length === 0) {
+      throw 'No players added to game yet';
+    }
+
     while (!this._isGameOver()) {
       this.currentPlayerIdx = (this.currentPlayerIdx + 1) % this.playerIds.length;
       const id = this.playerIds[this.currentPlayerIdx];
@@ -254,13 +289,14 @@ class Referee {
           this._promptPlayerForAction(player, true);
         } else if (this._canPlayerMove(player)) {
           this._promptPlayerForAction(player);
+        } else {
+          this._removePlayer(player);
         }
       }
     }
 
-    const winners = this._getWinners();
     console.log(this.board.getState());
-    this._notifyPlayersOfGameOver(winners);
+    this._notifyPlayersOfGameOver();
   }
 }
 

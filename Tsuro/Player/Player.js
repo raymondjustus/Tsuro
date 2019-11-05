@@ -83,6 +83,13 @@ class Player {
     this.hand = hand;
   }
 
+  /**
+   * Gets either a player's initial or intermediate action, as determined
+   * by the strategy.
+   *
+   * @param {boolean} [isInitial=false] whether the action to retrieve
+   * should be the player's initial action
+   */
   getAction(isInitial = false) {
     if (isInitial) {
       return this.getInitialAction();
@@ -124,8 +131,6 @@ class Player {
    */
   endGame(winners) {
     this.gameStatus = GAME_STATUS.GAME_OVER;
-
-    //TODO: Do something with winners here? Right now, logging them.
     console.log(winners);
   }
 }

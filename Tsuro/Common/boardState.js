@@ -177,6 +177,11 @@ class BoardState {
     }
   }
 
+  /**
+   * Removes the avatar of the given ID from the board.
+   *
+   * @param {string} id the avatar's associated player ID
+   */
   removeAvatar(id) {
     delete this._avatars[id];
   }

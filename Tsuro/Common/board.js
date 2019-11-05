@@ -57,6 +57,15 @@ class Board {
   }
 
   /**
+   * Gets a copy of all avatars on the board.
+   *
+   * @returns {Avatar[]} the copy of all avatars on the board
+   */
+  getAvatars() {
+    return this._state.getAvatars().map(avatar => avatar.copy());
+  }
+
+  /**
    * Gets the current state of the board, via a copy.
    *
    * @returns {BoardState} the current state of the board
@@ -96,6 +105,11 @@ class Board {
     }
   }
 
+  /**
+   * Removes an avatar from the board state.
+   *
+   * @param {string} id the avatar's associated player ID
+   */
   removeAvatar(id) {
     this._state.removeAvatar(id);
   }
