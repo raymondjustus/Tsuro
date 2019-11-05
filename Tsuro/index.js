@@ -15,4 +15,4 @@ referee.addPlayer(harry);
 referee.notifyPlayersOfColors();
 referee.changePlayer();
 
-referee.board.renderToFile(path.resolve(__dirname, 'final.svg'), 1000);
+referee.board.renderToFile(path.resolve(__dirname, 'final.svg'));

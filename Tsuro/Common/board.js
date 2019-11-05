@@ -1,6 +1,7 @@
 const fs = require('fs');
 const D3Node = require('d3-node');
-const { BoardState } = require('.');
+const BoardState = require('./boardState');
+const Tile = require('./tiles');
 const { BOARD_SIZE, DIRECTIONS, RENDER_STYLES } = require('./utils/constants');
 
 class Board {
@@ -192,6 +193,10 @@ class Board {
     });
   }
 
+  ///////////////////////////////////
+  // RENDER FUNCTIONS
+  ///////////////////////////////////
+
   /**
    * Renders a board to the given selection.
    *
@@ -203,11 +208,13 @@ class Board {
   render(selection, xStart, yStart, size) {
     const tileSize = size / BOARD_SIZE;
 
+    const emptyTile = new Tile();
     this._state.getTiles().forEach((column, x) => {
       column.forEach((tile, y) => {
-        if (tile) {
-          tile.render(selection, xStart + x * tileSize, yStart + y * tileSize, tileSize);
-        }
+        const tileToRender = tile || emptyTile;
+        const tileX = xStart + x * tileSize;
+        const tileY = yStart + y * tileSize;
+        tileToRender.render(selection, tileX, tileY, tileSize);
       });
     });
   }
@@ -218,7 +225,7 @@ class Board {
    * @param {string} path the path of the file (with extension)
    * @param {string} size the size of the image
    */
-  renderToFile(path, size = 1000) {
+  renderToFile(path, size = 800) {
     const svg = this.d3Node.createSVG(size, size);
 
     this.render(svg, 0, 0, size);
