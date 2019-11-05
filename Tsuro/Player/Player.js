@@ -86,19 +86,19 @@ class Player {
   /**
    * Gets the initial action of this player, as determined by the strategy,
    *
-   * @returns {InitialPlacement} the player's initial action
+   * @returns {InitialAction} the player's initial action
    */
   getInitialAction() {
-    return this.strategy.getInitialPlacement(this.id, this.hand, this.boardState);
+    return this.strategy.getInitialAction(this.id, this.hand, this.boardState);
   }
 
   /**
    * Gets the next intermediate action for the player, as determined by the strategy.
    *
-   * @returns {TilePlacement} the player's next action
+   * @returns {IntermediateAction} the player's next action
    */
-  getAction() {
-    return this.strategy.getTilePlacement(this.id, this.hand, this.boardState);
+  getIntermediateAction() {
+    return this.strategy.getIntermediateAction(this.id, this.hand, this.boardState);
   }
 
   /**
