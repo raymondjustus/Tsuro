@@ -25,6 +25,12 @@ exports.DIRECTIONS_CLOCKWISE = [
   DIRECTIONS.WEST,
 ];
 
+exports.GAME_STATUS = {
+  WAITING: 0,
+  CURRENT_TURN: 1,
+  GAME_OVER: 2,
+};
+
 const LETTERS = 'ABCDEFGH'.split('');
 exports.LETTERS = LETTERS;
 
@@ -40,10 +46,3 @@ exports.PORTS = {
   ZERO: 0,
   ONE: 1,
 };
-
-const GAMESTATUS = {
-  WAITING: 'waiting',
-  CURRENT_TURN: 'current turn',
-  GAMEOVER: 'game over',
-};
-exports.GAMESTATUS = GAMESTATUS;
