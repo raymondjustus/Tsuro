@@ -45,8 +45,30 @@ exports.PORTS = {
   ONE: 1,
 };
 
-exports.RENDER_COLORS = {
+const RENDER_COLORS = {
   BLACK: '#000000',
   GRAY: '#eeeeee',
   WHITE: '#ffffff',
 };
+exports.RENDER_COLORS = RENDER_COLORS;
+
+exports.RENDER_STYLES = `
+  .background, .port {
+    stroke: ${RENDER_COLORS.BLACK};
+    stroke-width: 1;
+  }
+
+  .background {
+    fill: ${RENDER_COLORS.GRAY};
+  }
+
+  .port {
+    fill: ${RENDER_COLORS.WHITE};
+  }
+
+  .path {
+    fill: none;
+    stroke: ${RENDER_COLORS.BLACK};
+    stroke-width: 3;
+  }
+`;
