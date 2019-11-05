@@ -1,11 +1,5 @@
 # Observer
 
-```js
-Design an interface for an “observing component” which should get updated by the game system and
-provide renderings of the current game state. You can also include mock-ups of the user interface/
-renderings for different stages of the game
-```
-
 ```ts
 interface Observer {
   id: string;
