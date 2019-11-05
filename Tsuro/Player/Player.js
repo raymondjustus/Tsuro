@@ -8,16 +8,30 @@ class Player {
    *
    * @param {string} id the unique ID of the player
    * @param {string} name the name of the player
-   * @param {IStrategy} strategy an implementation of the strategy
-   * interface to be used to make moves for the player
+   * @param {Strategy} strategy a strategy implementation to be used
+   * to make moves for the player
    */
   constructor(id, name, strategy) {
     this.id = id;
     this.name = name;
     this.strategy = strategy;
+
+    this.colors = {};
     this.hand = [];
     this.gameStatus = GAME_STATUS.WAITING;
     this.boardState = new BoardState();
+  }
+
+  /**
+   * Updates the game status to either be `Current Turn` if the referee
+   * is waiting on the player for action, or `Waiting` if the player's
+   * turn is now over.
+   *
+   * @param {boolean} isCurrentTurn whether it's currently the player's turn
+   */
+  setTurnStatus(isCurrentTurn) {
+    const gameStatus = isCurrentTurn ? GAME_STATUS.CURRENT_TURN : GAME_STATUS.WAITING;
+    this.gameStatus = gameStatus;
   }
 
   /**
@@ -31,24 +45,32 @@ class Player {
   }
 
   /**
-   * Updates the game status to either be `Current Turn` if the referee
-   * is waiting on the player for action, or `Waiting` if the player's
-   * turn is now over.
+   * Sets this player's color to the referee-assigned color.
    *
-   * @param {boolean} isCurrentTurn
+   * @param {string} color this player's avatar's color
    */
-  setTurnStatus(isCurrentTurn) {
-    const gameStatus = isCurrentTurn ? GAME_STATUS.CURRENT_TURN : GAME_STATUS.WAITING;
-    this.gameStatus = gameStatus;
+  setColor(color) {
+    this.colors[this.id] = color;
   }
 
   /**
-   * Gets the currently set action for this player.
+   * Gets the player's avatar's color.
    *
-   * @returns {TilePlacement} the currently set action
+   * @returns {string} the player's avatar's color
    */
-  getAction() {
-    return this.strategy.determineAction(this.id, this.hand, this.boardState);
+  getColor() {
+    return this.colors[this.id];
+  }
+
+  /**
+   * Adds a map of player IDs to colors, so this player knows which player
+   * is which color in the game.
+   *
+   * @param {{ [id: string]: string }} colorMap a map of player's ID to their
+   * associated avatar color
+   */
+  setPlayerColors(colorMap) {
+    this.colors = Object.assign(this.colors, colorMap);
   }
 
   /**
@@ -62,6 +84,24 @@ class Player {
   }
 
   /**
+   * Gets the initial action of this player, as determined by the strategy,
+   *
+   * @returns {InitialPlacement} the player's initial action
+   */
+  getInitialAction() {
+    return this.strategy.getInitialPlacement(this.id, this.hand, this.boardState);
+  }
+
+  /**
+   * Gets the next intermediate action for the player, as determined by the strategy.
+   *
+   * @returns {TilePlacement} the player's next action
+   */
+  getAction() {
+    return this.strategy.getTilePlacement(this.id, this.hand, this.boardState);
+  }
+
+  /**
    * Removes all tiles from the current hand.
    */
   clearHand() {
@@ -72,13 +112,12 @@ class Player {
    * Sets the `gameStatus` to `GameOver`. This signals to the player
    * that the game is now over, and which player(s) won.
    *
-   * Kills Thanos.
-   *
    * @param {string[]} winners the player ID(s) of the winner(s)
    * of the game
    */
-  ñ(winners) {
+  endGame(winners) {
     this.gameStatus = GAME_STATUS.GAME_OVER;
+
     //TODO: Do something with winners here? Right now, logging them.
     console.log(winners.toString);
   }

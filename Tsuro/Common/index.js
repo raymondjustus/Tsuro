@@ -8,5 +8,6 @@ exports.Coords = require('./coords');
 exports.InitialPlacement = InitialPlacement;
 exports.Path = require('./path');
 exports.Position = require('./position');
+exports.RuleChecker = require('./rules');
 exports.Tile = require('./tiles');
 exports.TilePlacement = TilePlacement;
