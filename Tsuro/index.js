@@ -1,9 +1,13 @@
-const { BoardState } = require('./Common');
-const { getTileFromLetters } = require('./Common/utils');
-const { tiles } = require('./Common/__tests__');
+const Referee = require('./Admin/Referee');
+const Player = require('./Player/Player');
 const DumbStrategy = require('./Player/Strategy/DumbStrategy');
 
-const boardState = new BoardState();
-const hand = [0, 1, 2].map(idx => getTileFromLetters(tiles[idx]));
+const jack = new Player('jack', 'Jack', DumbStrategy);
+const jill = new Player('jill', 'Jill', DumbStrategy);
 
-console.log(DumbStrategy.getInitialAction('a', hand, boardState));
+const referee = new Referee();
+
+referee.addPlayer(jack);
+referee.addPlayer(jill);
+referee.notifyPlayersOfColors();
+referee.changePlayer();

@@ -67,7 +67,10 @@ class BoardState {
    */
   copy() {
     const newState = new BoardState();
-    newState._avatars = Object.keys(this._avatars).map(key => this._avatars[key].copy());
+    newState._avatars = Object.keys(this._avatars).reduce(
+      (acc, id) => Object.assign(acc, { [id]: this._avatars[id].copy() }),
+      {}
+    );
     newState._initialAvatarHashes = Object.keys(this._initialAvatarHashes).reduce(
       (acc, key) =>
         Object.assign(acc, {
@@ -172,6 +175,10 @@ class BoardState {
     if (this._initialAvatarHashes[avatar.getHash()]) {
       avatar.collide();
     }
+  }
+
+  removeAvatar(id) {
+    delete this._avatars[id];
   }
 }
 

@@ -10,9 +10,13 @@ const COLOR_SET = [COLORS.WHITE, COLORS.BLACK, COLORS.RED, COLORS.GREEN, COLORS.
 class Referee {
   constructor() {
     this.board = new Board();
-    this.players = [];
     this.currentPlayerIdx = -1;
     this.deckIdx = 0;
+    this.turns = 0;
+
+    this.playerMap = {};
+    this.currentPlayers = {};
+    this.playerIds = [];
   }
 
   /**
@@ -21,11 +25,14 @@ class Referee {
    * @param {Player} player
    */
   addPlayer(player) {
-    const playerIdx = this.players.length;
+    const playerIdx = this.playerIds.length;
     if (playerIdx >= COLOR_SET.length) {
       throw 'Max players already added.';
     }
-    this.players.push(player);
+    const { id } = player;
+    this.playerMap[id] = player;
+    this.currentPlayers[id] = player;
+    this.playerIds.push(id);
     player.setColor(COLOR_SET[playerIdx]);
   }
 
@@ -33,14 +40,14 @@ class Referee {
    * Notifies all players of the other players' colors.
    */
   notifyPlayersOfColors() {
-    const idToColorMap = this.players.reduce((acc, player) => {
-      const color = player.getColor();
+    const idToColorMap = this.playerIds.reduce((acc, id) => {
+      const color = this.playerMap[id].getColor();
       return Object.assign(acc, {
-        [player.id]: color,
+        [id]: color,
       });
     }, {});
-    this.players.forEach(player => {
-      player.setPlayerColors(idToColorMap);
+    this.playerIds.forEach(id => {
+      this.playerMap[id].setPlayerColors(idToColorMap);
     });
   }
 
@@ -91,6 +98,9 @@ class Referee {
    * @returns {BoardState} the current board state
    */
   _startPlayerTurn(player, handSize) {
+    this.turns += 1;
+    console.log(`Turn ${this.turns}:`, player.id);
+
     const boardState = this.board.getState();
     player.updateState(boardState);
     player.setTurnStatus(true);
@@ -124,6 +134,13 @@ class Referee {
     return isLegal;
   }
 
+  _checkForActionValidity(boardState, player, action, isInitial = false) {
+    if (isInitial) {
+      return true;
+    }
+    return RuleChecker.checkPlacementValidity(boardState, action, player);
+  }
+
   /**
    * Ends a player's turn by clearing their hand, setting their turn status
    * to waiting, and updating all players' board states.
@@ -134,8 +151,8 @@ class Referee {
     player.clearHand();
     player.setTurnStatus(false);
     const boardState = this.board.getState();
-    this.players.forEach(player => {
-      player.updateState(boardState);
+    this.playerIds.forEach(id => {
+      this.playerMap[id].updateState(boardState);
     });
   }
 
@@ -161,9 +178,11 @@ class Referee {
    *
    * @param {number} playerIdx
    */
-  _removePlayer(playerIdx) {
-    // TODO: implement remove logic
-    console.log('remove', playerIdx);
+  _removePlayer(player) {
+    // TODO: being able to track players removed from a single tile placement
+    const { id } = player;
+    delete this.currentPlayers[id];
+    this.board.removeAvatar(id);
   }
 
   /**
@@ -180,10 +199,12 @@ class Referee {
     const boardState = this._startPlayerTurn(player, handSize);
     const action = player.getAction(isInitial);
     const isLegal = this._checkForActionLegality(boardState, player, action, isInitial);
+    const isValid = this._checkForActionValidity(boardState, player, action, isInitial);
+    if (!isValid || !isLegal) {
+      this._removePlayer(player);
+    }
     if (isLegal) {
       this._usePlayerAction(player, action, isInitial);
-    } else {
-      this._removePlayer(this.currentPlayerIdx);
     }
   }
 
@@ -193,8 +214,7 @@ class Referee {
    * @returns {boolean}
    */
   _isGameOver() {
-    // TODO: add logic for checking for game over
-    return false;
+    return Object.keys(this.currentPlayers).length <= 1;
   }
 
   /**
@@ -203,8 +223,7 @@ class Referee {
    * @returns {string[]} an array of player IDs
    */
   _getWinners() {
-    // TODO: implement winner logic
-    return [];
+    return Object.keys(this.currentPlayers);
   }
 
   /**
@@ -214,32 +233,34 @@ class Referee {
    * @param {string[]} winners
    */
   _notifyPlayersOfGameOver(winners) {
-    this.players.forEach(player => {
-      player.endGame(winners);
+    this.playerIds.forEach(id => {
+      this.playerMap[id].endGame(winners);
     });
   }
 
   /**
    * Changes the current player, and prompts them for action. This function
-   * will recurse until the game is over, at which point all players will
+   * will loop until the game is over, at which point all players will
    * be notified of game over.
    */
   changePlayer() {
-    this.currentPlayerIdx += 1;
-    const player = this.players[this.currentPlayerIdx];
+    while (!this._isGameOver()) {
+      this.currentPlayerIdx = (this.currentPlayerIdx + 1) % this.playerIds.length;
+      const id = this.playerIds[this.currentPlayerIdx];
+      const player = this.currentPlayers[id];
 
-    if (!this._hasAvatar(player)) {
-      this._promptPlayerForAction(player, true);
-    } else if (this._canPlayerMove(player)) {
-      this._promptPlayerForAction(player);
+      if (player) {
+        if (!this._hasAvatar(player)) {
+          this._promptPlayerForAction(player, true);
+        } else if (this._canPlayerMove(player)) {
+          this._promptPlayerForAction(player);
+        }
+      }
     }
 
-    if (this._isGameOver()) {
-      const winners = this._getWinners();
-      this._notifyPlayersOfGameOver(winners);
-    } else {
-      this.changePlayer();
-    }
+    const winners = this._getWinners();
+    console.log(this.board.getState());
+    this._notifyPlayersOfGameOver(winners);
   }
 }
 

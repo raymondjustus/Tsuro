@@ -1,5 +1,5 @@
 const { BoardState } = require('../Common');
-const { GAME_STATUS } = require('./utils/constants');
+const { GAME_STATUS } = require('../Common/utils/constants');
 
 class Player {
   /**
@@ -126,7 +126,7 @@ class Player {
     this.gameStatus = GAME_STATUS.GAME_OVER;
 
     //TODO: Do something with winners here? Right now, logging them.
-    console.log(winners.toString);
+    console.log(winners);
   }
 }
 

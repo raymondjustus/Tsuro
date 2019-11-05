@@ -90,6 +90,10 @@ class Board {
     }
   }
 
+  removeAvatar(id) {
+    this._state.removeAvatar(id);
+  }
+
   /**
    * Checks whether a tile with the given coordinates has any
    * neighboring tiles.

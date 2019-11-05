@@ -30,10 +30,13 @@ class DumbStrategy extends Strategy {
     const tile = hand[2];
     const coords = new Coords(0, 0);
 
+    let position = this._getPosition(id, tile, coords, boardState);
+
     let directionIdx = 0;
-    while (boardState.getTile(coords) && directionIdx < DIRECTIONS_CHECK.length) {
+    while (!position && directionIdx < DIRECTIONS_CHECK.length) {
       try {
         coords.moveOne(DIRECTIONS_CHECK[directionIdx]);
+        position = this._getPosition(id, tile, coords, boardState);
       } catch (err) {
         directionIdx += 1;
       }
@@ -41,14 +44,27 @@ class DumbStrategy extends Strategy {
     if (directionIdx === DIRECTIONS_CHECK.length) {
       throw 'Too many players on the board';
     }
-
-    const position = POSITIONS_CHECK.find(position =>
-      RuleChecker.canPlaceAvatar(boardState, id, coords, tile, position)
-    );
-    if (!position) {
-      throw 'No valid positions on this tile';
-    }
     return new InitialAction(tile, coords, position);
+  }
+
+  /**
+   * Gets a valid position to place an avatar on, at the given coords and
+   * tile. If no such position exists, it will return null.
+   *
+   * @param {string} id
+   * @param {Tile} tile
+   * @param {Coords} coords
+   * @param {BoardState} boardState
+   * @returns {Position|null}
+   */
+  static _getPosition(id, tile, coords, boardState) {
+    let position;
+    if (!boardState.getTile(coords)) {
+      position = POSITIONS_CHECK.find(position =>
+        RuleChecker.canPlaceAvatar(boardState, id, coords, tile, position)
+      );
+    }
+    return position || null;
   }
 
   /**
