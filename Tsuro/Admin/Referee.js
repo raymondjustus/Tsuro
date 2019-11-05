@@ -178,6 +178,21 @@ class Referee {
   }
 
   /**
+   * Removes a player from the board and play.
+   *
+   * @param {Player} player the player to remove from play
+   */
+  _removePlayer(player) {
+    const { id } = player;
+    delete this.currentPlayers[id];
+    this.removedPlayersForTurn[this.currentTurn] = [
+      ...(this.removedPlayersForTurn[this.currentTurn] || []),
+      id,
+    ];
+    this.board.removeAvatar(id);
+  }
+
+  /**
    * Places a tile on the board at the player's given discression. Also places the player's
    * avatar if the action is initial. Then ends player's turn.
    *
@@ -187,25 +202,16 @@ class Referee {
    */
   _usePlayerAction(player, action, isInitial = false) {
     const { coords, position, tile } = action;
-    this.board.placeTile(tile, coords, isInitial);
     if (isInitial) {
-      this.board.placeAvatar(player, player.getColor(), coords, position);
+      try {
+        this.board.placeInitialTileAvatar(player, tile, coords, position);
+      } catch (err) {
+        this._removePlayer(player);
+      }
+    } else {
+      this.board.placeTile(tile, coords);
     }
     this._endPlayerTurn(player);
-  }
-
-  /**
-   * Removes a player from the baord and play.
-   *
-   * @param {string} id the ID of the player to remove from play
-   */
-  _removePlayer(id) {
-    delete this.currentPlayers[id];
-    this.removedPlayersForTurn[this.currentTurn] = [
-      ...(this.removedPlayersForTurn[this.currentTurn] || []),
-      id,
-    ];
-    this.board.removeAvatar(id);
   }
 
   /**
@@ -239,6 +245,7 @@ class Referee {
    * @returns {boolean} whether the game is over yet
    */
   _isGameOver() {
+    // console.log(Object.keys(this.currentPlayers).length);
     return Object.keys(this.currentPlayers).length <= 1;
   }
 
@@ -295,7 +302,6 @@ class Referee {
       }
     }
 
-    console.log(this.board.getState());
     this._notifyPlayersOfGameOver();
   }
 }
