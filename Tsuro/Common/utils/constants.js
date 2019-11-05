@@ -1,13 +1,11 @@
 exports.BOARD_SIZE = 10;
 
 exports.COLORS = {
-  BLACK: '#000000',
-  BROWN: '#7b2a26',
-  GRAY: '#eeeeee',
-  GREEN: '#63af33',
-  RED: '#bf2952',
-  WHITE: '#ffffff',
-  YELLOW: '#d2b53c',
+  BLACK: 'black',
+  BLUE: 'blue',
+  GREEN: 'green',
+  RED: 'red',
+  WHITE: 'white',
 };
 
 const DIRECTIONS = {
@@ -45,4 +43,10 @@ exports.LETTERS_MAP = LETTERS.reduce(
 exports.PORTS = {
   ZERO: 0,
   ONE: 1,
+};
+
+exports.RENDER_COLORS = {
+  BLACK: '#000000',
+  GRAY: '#eeeeee',
+  WHITE: '#ffffff',
 };

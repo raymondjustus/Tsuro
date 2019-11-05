@@ -83,6 +83,13 @@ class Player {
     this.hand = hand;
   }
 
+  getAction(isInitial = false) {
+    if (isInitial) {
+      return this.getInitialAction();
+    }
+    return this.getIntermediateAction();
+  }
+
   /**
    * Gets the initial action of this player, as determined by the strategy,
    *

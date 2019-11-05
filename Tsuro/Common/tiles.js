@@ -1,26 +1,26 @@
 const fs = require('fs');
 const path = require('path');
 const D3Node = require('d3-node');
-const { COLORS, DIRECTIONS, DIRECTIONS_CLOCKWISE } = require('./utils/constants');
+const { DIRECTIONS, DIRECTIONS_CLOCKWISE, RENDER_COLORS } = require('./utils/constants');
 require('./utils/polyfills');
 
 const STYLES = `
   .background, .port {
-    stroke: ${COLORS.BLACK};
+    stroke: ${RENDER_COLORS.BLACK};
     stroke-width: 1;
   }
 
   .background {
-    fill: ${COLORS.GRAY};
+    fill: ${RENDER_COLORS.GRAY};
   }
 
   .port {
-    fill: ${COLORS.WHITE};
+    fill: ${RENDER_COLORS.WHITE};
   }
 
   .path {
     fill: none;
-    stroke: ${COLORS.BLACK};
+    stroke: ${RENDER_COLORS.BLACK};
     stroke-width: 3;
   }
 `;
