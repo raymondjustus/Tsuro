@@ -51,7 +51,7 @@ class RuleChecker {
    */
   static checkPlacementValidity(boardState, tilePlacement, player) {
     // Copy the board to test tile placement results
-    const boardCopy = new Board([], boardState);
+    const boardCopy = new Board([], boardState.copy());
     boardCopy.placeTile(tilePlacement.tile, tilePlacement.coords);
     const avatarCopy = boardCopy.getAvatar(player.id);
     // If the move causes player death, check if any hand tiles can prevent the death.
@@ -94,7 +94,7 @@ class RuleChecker {
     return hand.some(tile => {
       // Test all four rotations
       for (let j = 0; j < 4; j++) {
-        const boardCopy = new Board([], boardState);
+        const boardCopy = new Board([], boardState.copy());
         const tileCopy = tile.copy(j);
         boardCopy.placeTile(tileCopy, coords);
         const avatarCopy = boardCopy.getAvatar(id);
