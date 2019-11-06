@@ -6,20 +6,20 @@ const {
   getTileFromLetters,
 } = require('../utils');
 const { tiles } = require('.');
-const getMessage = require('../../3/src/getMessage');
-const isValidPlacement = require('../../3/src/isValidPlacement');
-const { COLORS } = require('../../3/src/constants');
+const getMessage = require('./getMessage');
+const isValidPlacement = require('./isValidPlacement');
+const { COLORS } = require('./constants');
 
 /**
  * Handles parsing the placements as directed by the user, and using them on
  * a board. Then, prints responses for each available avatar color.
  *
  * @param {array[]} placements the array of placement instructions
- * @param {boolean} printResponses is a flag whether this will print out the board's response to those moves
+ * @param {boolean} [printResponses = true] is a flag whether this will print out the board's response to those moves
  *
  * @returns {Board} once all the given placements have taken place.
  */
-const handlePlacements = (placements, printResponses = false) => {
+const handlePlacements = (placements, printResponses = true) => {
   const board = new Board();
   // for keeping track of tile index and rotation (only pertinent to testing suite)
   const jsonBoard = getEmptyBoardArray();

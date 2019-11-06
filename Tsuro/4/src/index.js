@@ -1,4 +1,4 @@
-const { getInput, handlePlacements } = require('../../Common/__tests__');
+const { getInput, handlePlacements } = require('../../Common/__tests__/index');
 const handleTurns = require('./handleTurns');
 
 const main = () => {
