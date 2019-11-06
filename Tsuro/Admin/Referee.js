@@ -1,7 +1,5 @@
-// eslint-disable-next-line no-unused-vars
-const Player = require('../Player/Player');
 const { Board, RuleChecker } = require('../Common');
-const { getTileFromLetters } = require('../Common/utils');
+const { getTileFromLetters, incrementIndex } = require('../Common/utils');
 const { COLORS } = require('../Common/utils/constants');
 const { tiles } = require('../Common/__tests__');
 
@@ -92,7 +90,7 @@ class Referee {
     for (let i = 0; i < size; i++) {
       const tile = getTileFromLetters(tiles[this.deckIdx]);
       hand.push(tile);
-      this.deckIdx = (this.deckIdx + 1) % tiles.length;
+      this.deckIdx = incrementIndex(this.deckIdx, tiles);
     }
     return hand;
   }
@@ -245,7 +243,6 @@ class Referee {
    * @returns {boolean} whether the game is over yet
    */
   _isGameOver() {
-    // console.log(Object.keys(this.currentPlayers).length);
     return Object.keys(this.currentPlayers).length <= 1;
   }
 
@@ -287,7 +284,7 @@ class Referee {
     }
 
     while (!this._isGameOver()) {
-      this.currentPlayerIdx = (this.currentPlayerIdx + 1) % this.playerIds.length;
+      this.currentPlayerIdx = incrementIndex(this.currentPlayerIdx, this.playerIds);
       const id = this.playerIds[this.currentPlayerIdx];
       const player = this.currentPlayers[id];
 
