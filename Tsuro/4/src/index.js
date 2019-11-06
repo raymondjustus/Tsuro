@@ -5,7 +5,7 @@ const handleTurns = require('./handleTurns');
 const main = () => {
   getInput().then(moves => {
     const command = moves.pop();
-    const board = handlePlacements(moves, true);
+    const board = handlePlacements(moves, false);
     handleTurns(board.getState(), command);
   });
 };
