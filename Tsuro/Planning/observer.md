@@ -1,9 +1,16 @@
 # Observer
 
-The role of the Observer is to be able to watch a game that is currenlty in progress. Player will extend this class so that players can watch the game they are participating in.
+The role of the Observer is to be able to watch a game that is currenlty in progress.
+Player will extend this class so that players can watch the game they are participating in.
 
 ```ts
 type Id = string;
+type IP = string;
+
+interface connectionOptions {
+  ip: IP;
+  port: int;
+}
 
 interface Observer {
   id: Id;
@@ -26,8 +33,7 @@ interface Observer {
    * `gameConnection`. This might include IP, port, login credentials,
    * or any other connection specifications.
    *
-   * @param {JSON} gameConnection the JSON options
-   *                   object for connection information
+   * @param {JSON} gameConnection the JSON options object for connection information
    *
    * @returns {boolean} whether the connection was successful
    */
@@ -48,7 +54,8 @@ interface Observer {
   update(state: BoardState): void;
 
   /**
-   * Is this object a player or not. It will default to false and be overridden in the Player.
+   * Is this object a player or not. It will default to false and
+   * be overridden in the Player.
    *
    * @returns {boolean} if this is a player
    */
