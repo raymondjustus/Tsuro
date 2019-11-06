@@ -26,7 +26,8 @@ interface Observer {
    *  `gameConnection`. This might include IP, port, login credentials,
    *  or any other connection specifications.
    *
-   * @param {JSON} gameConnection the JSON options object for connection information
+   * @param {JSON} gameConnection the JSON options
+   *                   object for connection information
    *
    * @returns {boolean} whether the connection was successful
    */
@@ -39,7 +40,9 @@ interface Observer {
   disconnect(): void;
 
   /**
-   * Updates the boardstate of this observer. Will validate that it only mutates when given a board state from the server (via the 'conn')
+   * Updates the boardstate of this observer. Will validate
+   *  that it only mutates when given a board state from the server
+   *   (via the 'conn')
    *
    * @param {BoardState} state the current state of the baord
    */
