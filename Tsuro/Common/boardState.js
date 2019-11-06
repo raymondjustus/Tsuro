@@ -1,6 +1,7 @@
 const { Avatar } = require('.');
 const { getEmptyBoardArray } = require('./utils');
 const { DIRECTIONS_CLOCKWISE } = require('./utils/constants');
+const util = require('util');
 require('./utils/polyfills');
 
 class BoardState {
@@ -11,9 +12,26 @@ class BoardState {
    */
   constructor(initialState) {
     if (initialState) {
-      this._avatars = initialState._avatars;
-      this._initialAvatarHashes = initialState._initialAvatarHashes;
-      this._tiles = initialState._tiles;
+      this._avatars = {};
+      Object.keys(initialState._avatars).forEach(key => {
+        this._avatars[key] = initialState._avatars[key].copy();
+      });
+      this._initialAvatarHashes = {};
+      Object.keys(initialState._initialAvatarHashes).forEach(key => {
+        this._initialAvatarHashes[key] = initialState._initialAvatarHashes[key];
+      });
+      this._tiles = [];
+      for (let x = 0; x < initialState._tiles.length; x++) {
+        const row = [];
+        for (let y = 0; y < initialState._tiles[0].length; y++) {
+          if (initialState._tiles[x][y]) {
+            row.push(initialState._tiles[x][y].copy());
+          } else {
+            row.push(null);
+          }
+        }
+        this._tiles.push(row);
+      }
     } else {
       this._avatars = {};
       this._initialAvatarHashes = {};
@@ -67,7 +85,9 @@ class BoardState {
    */
   copy() {
     const newState = new BoardState();
-    newState._avatars = Object.keys(this._avatars).map(key => this._avatars[key].copy());
+    Object.keys(this._avatars).forEach(key => {
+      newState._avatars[key] = this._avatars[key].copy();
+    });
     newState._initialAvatarHashes = Object.keys(this._initialAvatarHashes).reduce(
       (acc, key) =>
         Object.assign(acc, {

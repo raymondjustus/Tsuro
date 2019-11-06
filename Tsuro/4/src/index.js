@@ -3,14 +3,11 @@ const handlePlacements = require('../../3/src/handlePlacements');
 const handleTurns = require('./handleTurns.js');
 
 const main = () => {
-  // getInput().then(handlePlacements);
-
   getInput().then(placement => {
     const moves = placement.slice(0, placement.length - 1);
     const command = placement[placement.length - 1];
-    // console.log(`this ->${moves}`);
     const board = handlePlacements(moves, true);
-    console.log(`ASKHJD: ${typeof board}`);
+    console.log(` ---- ${Object.keys(board.getState()._avatars)}`);
     handleTurns(board.getState(), command);
   });
 };

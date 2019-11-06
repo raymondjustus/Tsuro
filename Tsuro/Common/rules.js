@@ -1,4 +1,5 @@
 const Board = require('./board');
+const util = require('util');
 
 class RuleChecker {
   /**
@@ -15,8 +16,10 @@ class RuleChecker {
     // Check if we can put the tile here
     if (this.checkPlacementLegality(boardState, tilePlacement, player)) {
       // Check the death cases of validity for this tile placement
-      return this.checkPlacementValidity(boardState, tilePlacement, player);
+      const f = this.checkPlacementValidity(boardState, tilePlacement, player);
+      return f;
     }
+
     return false;
   }
 
@@ -30,11 +33,17 @@ class RuleChecker {
    */
   static checkPlacementLegality(boardState, tilePlacement, player) {
     const avatar = boardState.getAvatar(player.id);
+    // console.log(`All abbas: ${boardState.getAvatars()[0].id}`);
+    // console.log(`Player id is ${player.id} `);
+    // console.log(`AVATAR IS : ${avatar}`);
+    // console.log(`SHould be null - ${boardState.getTile(tilePlacement.coords)}`);
+    // console.log(`Adjacency check: ${this._checkPlayerAdjacency(avatar, tilePlacement)}`);
     // Make sure we have our avatar, make sure the tile is empty, and make sure it is adjacent to the player.
     return (
       avatar &&
       !boardState.getTile(tilePlacement.coords) &&
-      this._checkPlayerAdjacency(avatar, tilePlacement)
+      this._checkPlayerAdjacency(avatar, tilePlacement) &&
+      player.hand.some(tile => tile.isEqualToRotated(tilePlacement.tile))
     );
   }
 
@@ -54,8 +63,9 @@ class RuleChecker {
     const avatarCopy = boardCopy.getAvatar(player.id);
     // If the move causes player death, check if any hand tiles can prevent the death.
     if (Board.isAvatarOnOutsidePosition(avatarCopy.coords, avatarCopy.position)) {
+      console.log('PLEASE GET HERE');
       // If a non-death move is found, the given action is invalid.
-      return !this._doesPlayerHaveValidMove(player, boardState, tilePlacement.coords);
+      return !this._doesPlayerHaveValidMove(boardState, tilePlacement.coords, player);
     }
     return true;
   }
@@ -71,8 +81,8 @@ class RuleChecker {
   static _checkPlayerAdjacency(avatar, tilePlacement) {
     const { coords, position } = avatar;
     try {
-      const newCoords = tilePlacement.coords.copy().moveOne(position.direction);
-      return coords.isEqualTo(newCoords);
+      const newCoords = coords.copy().moveOne(position.direction);
+      return tilePlacement.coords.isEqualTo(newCoords);
     } catch (e) {
       return false;
     }
@@ -89,15 +99,22 @@ class RuleChecker {
   static _doesPlayerHaveValidMove(boardState, coords, player) {
     const { hand, id } = player;
     // For each tile in hand, test for a tile that keeps the player alive
+    // console.log(`len${hand}`);
     return hand.some(tile => {
       // Test all four rotations
       for (let j = 0; j < 4; j++) {
-        const boardCopy = boardState.copy();
+        const boardCopy = new Board([], boardState);
         const tileCopy = tile.copy(j);
         boardCopy.placeTile(tileCopy, coords);
         const avatarCopy = boardCopy.getAvatar(id);
         // If the player does not end up at the edge, they are alive return true
         if (!Board.isAvatarOnOutsidePosition(avatarCopy.coords, avatarCopy.position)) {
+          console.log(
+            `av pos: ${util.inspect(avatarCopy.coords, false)} <><> ${util.inspect(
+              avatarCopy.position,
+              false
+            )}`
+          );
           return true;
         }
       }
