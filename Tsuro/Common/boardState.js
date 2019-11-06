@@ -1,7 +1,7 @@
 const { Avatar } = require('.');
 const { getEmptyBoardArray } = require('./utils');
 const { DIRECTIONS_CLOCKWISE } = require('./utils/constants');
-const util = require('util');
+
 require('./utils/polyfills');
 
 class BoardState {
