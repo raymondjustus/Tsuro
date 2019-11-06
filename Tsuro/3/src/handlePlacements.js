@@ -17,7 +17,7 @@ const { COLORS } = require('./constants');
  * @param {array[]} placements the array of placement instructions
  * @param {boolean} returnBoard is a flag whether this will return a board or the conclusory state of the turns
  */
-const handlePlacements = (placements, returnBoard = false) => {
+const handlePlacements = placements => {
   const board = new Board();
   // for keeping track of tile index and rotation (only pertinent to testing suite)
   const jsonBoard = getEmptyBoardArray();
@@ -113,10 +113,7 @@ const handlePlacements = (placements, returnBoard = false) => {
 
   try {
     usePlacements(placements);
-    const responses = returnBoard ? board : getResponses();
-    if (returnBoard) {
-      return responses;
-    }
+    const responses = getResponses();
     console.log(JSON.stringify(responses));
   } catch (err) {
     console.log(getMessage('Invalid JSON ', placements));
