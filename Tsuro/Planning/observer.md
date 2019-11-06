@@ -5,10 +5,10 @@ Player will extend this class so that players can watch the game they are partic
 
 ```ts
 type Id = string;
-type IP = string;
+type Ip = string;
 
-interface connectionOptions {
-  ip: IP;
+interface ConnectionOptions {
+  ip: Ip;
   port: number;
 }
 
@@ -30,14 +30,14 @@ interface Observer {
 
   /**
    * Connects to a game via TCP using the information in the
-   * `gameConnection`. This might include IP, port, login credentials,
+   * `ConnectionOptions`. This might include IP, port, login credentials,
    * or any other connection specifications.
    *
-   * @param {JSON} gameConnection the JSON options object for connection information
+   * @param {JSON} ConnectionOptions the JSON options object for connection information
    *
    * @returns {boolean} whether the connection was successful
    */
-  connectToGame(gameConnection: JSON): boolean;
+  connectToGame(ConnectionOptions: JSON): boolean;
 
   /**
    * Disconnects this observer from that socket connection
