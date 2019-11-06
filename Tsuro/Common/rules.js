@@ -1,5 +1,4 @@
 const Board = require('./board');
-const util = require('util');
 
 class RuleChecker {
   /**
@@ -92,7 +91,6 @@ class RuleChecker {
   static _doesPlayerHaveValidMove(boardState, coords, player) {
     const { hand, id } = player;
     // For each tile in hand, test for a tile that keeps the player alive
-    // console.log(`len${hand}`);
     return hand.some(tile => {
       // Test all four rotations
       for (let j = 0; j < 4; j++) {

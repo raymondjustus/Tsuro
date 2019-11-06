@@ -1,13 +1,11 @@
-const getInput = require('../../3/src/getInput.js');
-const handlePlacements = require('../../3/src/handlePlacements');
-const handleTurns = require('./handleTurns.js');
+const getInput = require('../../Common/__tests__/getInput');
+const handlePlacements = require('../../Common/__tests__/handlePlacements');
+const handleTurns = require('./handleTurns');
 
 const main = () => {
-  getInput().then(placement => {
-    const moves = placement.slice(0, placement.length - 1);
-    const command = placement[placement.length - 1];
+  getInput().then(moves => {
+    const command = moves.pop();
     const board = handlePlacements(moves, true);
-
     handleTurns(board.getState(), command);
   });
 };

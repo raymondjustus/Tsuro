@@ -1,14 +1,14 @@
-const { Board, Coords, Player } = require('../../Common');
+const { Board, Coords, Player } = require('..');
 const {
   getEmptyBoardArray,
   getLetterFromPosition,
   getPositionFromLetter,
   getTileFromLetters,
-} = require('../../Common/utils');
-const { tiles } = require('../../Common/__tests__');
-const getMessage = require('./getMessage');
-const isValidPlacement = require('./isValidPlacement');
-const { COLORS } = require('./constants');
+} = require('../utils');
+const { tiles } = require('.');
+const getMessage = require('../../3/src/getMessage');
+const isValidPlacement = require('../../3/src/isValidPlacement');
+const { COLORS } = require('../../3/src/constants');
 
 /**
  * Handles parsing the placements as directed by the user, and using them on

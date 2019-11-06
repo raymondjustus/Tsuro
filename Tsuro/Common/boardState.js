@@ -12,26 +12,10 @@ class BoardState {
    */
   constructor(initialState) {
     if (initialState) {
-      this._avatars = {};
-      Object.keys(initialState._avatars).forEach(key => {
-        this._avatars[key] = initialState._avatars[key].copy();
-      });
-      this._initialAvatarHashes = {};
-      Object.keys(initialState._initialAvatarHashes).forEach(key => {
-        this._initialAvatarHashes[key] = initialState._initialAvatarHashes[key];
-      });
-      this._tiles = [];
-      for (let x = 0; x < initialState._tiles.length; x++) {
-        const row = [];
-        for (let y = 0; y < initialState._tiles[0].length; y++) {
-          if (initialState._tiles[x][y]) {
-            row.push(initialState._tiles[x][y].copy());
-          } else {
-            row.push(null);
-          }
-        }
-        this._tiles.push(row);
-      }
+      const boardState = initialState.copy();
+      this._avatars = boardState._avatars;
+      this._initialAvatarHashes = boardState._initialAvatarHashes;
+      this._tiles = boardState._tiles;
     } else {
       this._avatars = {};
       this._initialAvatarHashes = {};

@@ -1,5 +1,5 @@
-const getMessage = require('./getMessage');
-const Ref = require('./Ref');
+const getMessage = require('../../3/src/getMessage');
+const Ref = require('../../3/src/Ref');
 
 /**
  * Returns an event handler for handling new data from STDIN.
