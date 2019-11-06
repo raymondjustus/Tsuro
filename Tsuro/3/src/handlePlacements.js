@@ -15,7 +15,6 @@ const { COLORS } = require('./constants');
  * a board. Then, prints responses for each available avatar color.
  *
  * @param {array[]} placements the array of placement instructions
- * @param {boolean} returnBoard is a flag whether this will return a board or the conclusory state of the turns
  */
 const handlePlacements = placements => {
   const board = new Board();
