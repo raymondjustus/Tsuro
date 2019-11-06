@@ -16,8 +16,7 @@ class RuleChecker {
     // Check if we can put the tile here
     if (this.checkPlacementLegality(boardState, tilePlacement, player)) {
       // Check the death cases of validity for this tile placement
-      const f = this.checkPlacementValidity(boardState, tilePlacement, player);
-      return f;
+      return this.checkPlacementValidity(boardState, tilePlacement, player);
     }
 
     return false;
@@ -33,11 +32,6 @@ class RuleChecker {
    */
   static checkPlacementLegality(boardState, tilePlacement, player) {
     const avatar = boardState.getAvatar(player.id);
-    // console.log(`All abbas: ${boardState.getAvatars()[0].id}`);
-    // console.log(`Player id is ${player.id} `);
-    // console.log(`AVATAR IS : ${avatar}`);
-    // console.log(`SHould be null - ${boardState.getTile(tilePlacement.coords)}`);
-    // console.log(`Adjacency check: ${this._checkPlayerAdjacency(avatar, tilePlacement)}`);
     // Make sure we have our avatar, make sure the tile is empty, and make sure it is adjacent to the player.
     return (
       avatar &&
@@ -63,7 +57,6 @@ class RuleChecker {
     const avatarCopy = boardCopy.getAvatar(player.id);
     // If the move causes player death, check if any hand tiles can prevent the death.
     if (Board.isAvatarOnOutsidePosition(avatarCopy.coords, avatarCopy.position)) {
-      console.log('PLEASE GET HERE');
       // If a non-death move is found, the given action is invalid.
       return !this._doesPlayerHaveValidMove(boardState, tilePlacement.coords, player);
     }
@@ -109,12 +102,6 @@ class RuleChecker {
         const avatarCopy = boardCopy.getAvatar(id);
         // If the player does not end up at the edge, they are alive return true
         if (!Board.isAvatarOnOutsidePosition(avatarCopy.coords, avatarCopy.position)) {
-          console.log(
-            `av pos: ${util.inspect(avatarCopy.coords, false)} <><> ${util.inspect(
-              avatarCopy.position,
-              false
-            )}`
-          );
           return true;
         }
       }
