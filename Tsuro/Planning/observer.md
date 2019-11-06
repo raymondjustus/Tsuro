@@ -1,6 +1,6 @@
 # Observer
 
-The role of the Observer is to be able to watch a game that is currenlty in progress.
+The role of the Observer is to be able to watch a game that is currently in progress.
 Player will extend this class so that players can watch the game they are participating in.
 
 ```ts
@@ -9,7 +9,7 @@ type IP = string;
 
 interface connectionOptions {
   ip: IP;
-  port: int;
+  port: number;
 }
 
 interface Observer {
