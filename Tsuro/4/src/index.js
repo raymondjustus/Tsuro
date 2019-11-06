@@ -10,6 +10,7 @@ const main = () => {
     const command = placement[placement.length - 1];
     // console.log(`this ->${moves}`);
     const board = handlePlacements(moves, true);
+    console.log(`ASKHJD: ${typeof board}`);
     handleTurns(board.getState(), command);
   });
 };

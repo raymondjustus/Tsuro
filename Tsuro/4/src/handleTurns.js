@@ -1,5 +1,5 @@
 const ruleChecker = require('../../Common/rules.js');
-const TilePlacement = require('../../Common/placement.js');
+const { TilePlacement } = require('../../Common/placement.js');
 const getTileFromLetters = require('../../Common/utils/getTileFromLetters.js');
 const { tiles } = require('../../Common/__tests__');
 const Coords = require('../../Common/coords.js');

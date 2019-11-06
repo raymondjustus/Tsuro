@@ -15,8 +15,9 @@ const { COLORS } = require('./constants');
  * a board. Then, prints responses for each available avatar color.
  *
  * @param {array[]} placements the array of placement instructions
+ * @param {boolean} returnBoard is a flag whether this will return a board or the conclusory state of the turns
  */
-const handlePlacements = placements => {
+const handlePlacements = (placements, returnBoard = false) => {
   const board = new Board();
   // for keeping track of tile index and rotation (only pertinent to testing suite)
   const jsonBoard = getEmptyBoardArray();
@@ -26,6 +27,7 @@ const handlePlacements = placements => {
    * the board.
    *
    * @param {array[]} placements the placements array
+   *
    */
   const usePlacements = placements => {
     /**
@@ -112,7 +114,10 @@ const handlePlacements = placements => {
 
   try {
     usePlacements(placements);
-    const responses = getResponses();
+    const responses = returnBoard ? board : getResponses();
+    if (returnBoard) {
+      return responses;
+    }
     console.log(JSON.stringify(responses));
   } catch (err) {
     console.log(getMessage('Invalid JSON ', placements));
