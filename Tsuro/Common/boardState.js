@@ -12,10 +12,9 @@ class BoardState {
    */
   constructor(initialState) {
     if (initialState) {
-      const boardState = initialState.copy();
-      this._avatars = boardState._avatars;
-      this._initialAvatarHashes = boardState._initialAvatarHashes;
-      this._tiles = boardState._tiles;
+      this._avatars = initialState._avatars;
+      this._initialAvatarHashes = initialState._initialAvatarHashes;
+      this._tiles = initialState._tiles;
     } else {
       this._avatars = {};
       this._initialAvatarHashes = {};
