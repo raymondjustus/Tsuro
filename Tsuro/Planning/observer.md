@@ -1,8 +1,12 @@
 # Observer
 
+Player will extend this class as player functionality adds on to observer functionality.
+
 ```ts
+type Id = string;
+
 interface Observer {
-  id: string;
+  id: Id;
   name: string;
   isPlayer: boolean;
   state: BoardState;
@@ -12,17 +16,19 @@ interface Observer {
    * @constructor
    * Creates a new observer. Sets `boardState` to an empty board.
    *
-   * @param {string} id the unique ID of the player
+   * @param {Id} id the unique ID of the player
    * @param {string} name the player's name
    */
-  constructor(id: Id, name: string): Observer;
+  constructor(id: id, name: string): Observer;
 
   /**
-   * Connects to a game via TCP using the information in the `gameConnection`
+   * Connects to a game via TCP using the information in the
+   *  `gameConnection`. This might include IP, port, login credentials,
+   *  or any other connection specifications.
    *
-   * @param {string} gameConnection the JSON options object for connection information
+   * @param {JSON} gameConnection the JSON options object for connection information
    *
-   * @returns {boolean} whether the connection was successful 'isPlayer'
+   * @returns {boolean} whether the connection was successful
    */
   connectToGame(gameConnection: string): boolean;
 
@@ -33,15 +39,15 @@ interface Observer {
   disconnect(): void;
 
   /**
-   * Updates the boardstate of this observer. Has validation that an update command, only valid when via the `conn`
+   * Updates the boardstate of this observer. Will validate that it only mutates when given a board state from the server (via the 'conn')
    *
-   * @param {BoardState} state of the game when called
+   * @param {BoardState} state the current state of the baord
    */
 
   update(state: BoardState): void;
 
   /**
-   * renders the current `state`
+   * renders the current `state` on the client
    */
   render(): void;
 
