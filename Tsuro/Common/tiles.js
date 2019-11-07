@@ -1,38 +1,17 @@
 const fs = require('fs');
 const path = require('path');
 const D3Node = require('d3-node');
-const { COLORS, DIRECTIONS, DIRECTIONS_CLOCKWISE } = require('./utils/constants');
+const { DIRECTIONS, DIRECTIONS_CLOCKWISE, RENDER_STYLES } = require('./utils/constants');
 require('./utils/polyfills');
-
-const STYLES = `
-  .background, .port {
-    stroke: ${COLORS.BLACK};
-    stroke-width: 1;
-  }
-
-  .background {
-    fill: ${COLORS.GRAY};
-  }
-
-  .port {
-    fill: ${COLORS.WHITE};
-  }
-
-  .path {
-    fill: none;
-    stroke: ${COLORS.BLACK};
-    stroke-width: 3;
-  }
-`;
 
 class Tile {
   /**
    * Creates a new Tile, with the given paths.
    *
-   * @param {Path[]} paths the paths of the tile
+   * @param {Path[]} [paths=[]] the paths of the tile
    */
-  constructor(paths) {
-    this.d3Node = new D3Node({ styles: STYLES });
+  constructor(paths = []) {
+    this.d3Node = new D3Node({ styles: RENDER_STYLES });
     this.d3 = this.d3Node.d3;
 
     this.paths = paths;

@@ -1,5 +1,8 @@
-const { BoardState } = require('.');
-const { BOARD_SIZE, DIRECTIONS } = require('./utils/constants');
+const fs = require('fs');
+const D3Node = require('d3-node');
+const BoardState = require('./boardState');
+const Tile = require('./tiles');
+const { BOARD_SIZE, DIRECTIONS, RENDER_STYLES } = require('./utils/constants');
 
 class Board {
   /**
@@ -11,18 +14,14 @@ class Board {
    * @param {BoardState} [stateOverride] override for initial state
    */
   constructor(initialPlacements = [], stateOverride) {
+    this.d3Node = new D3Node({ styles: RENDER_STYLES });
+    this.d3 = this.d3Node.d3;
+
     this._state = new BoardState(stateOverride);
 
     initialPlacements.forEach(({ tile, coords, player, color, position }) => {
-      if (this._hasNeighboringTiles(coords)) {
-        throw 'Tile neighbors existing tile';
-      } else if (!this._isTileOnBorder(coords)) {
-        throw 'Tile must be placed on Border';
-      } else if (!this.isAvatarOnOutsidePosition(coords, position)) {
-        throw 'Avatar must be placed on an inward-facing port';
-      }
-      this.placeTile(tile, coords, true);
-      this.placeAvatar(player, color, coords, position);
+      player.setColor(color);
+      this.placeInitialTileAvatar(player, tile, coords, position);
     });
   }
 
@@ -51,6 +50,15 @@ class Board {
   }
 
   /**
+   * Gets a copy of all avatars on the board.
+   *
+   * @returns {Avatar[]} the copy of all avatars on the board
+   */
+  getAvatars() {
+    return this._state.getAvatars().map(avatar => avatar.copy());
+  }
+
+  /**
    * Gets the current state of the board, via a copy.
    *
    * @returns {BoardState} the current state of the board
@@ -60,17 +68,56 @@ class Board {
   }
 
   /**
+   * @private
    * Places an avatar on the board. Then, updates the board state with the
    * new avatar.
    *
    * @param {Player} player the player to attach to the avatar
-   * @param {string} color the chosen avatar color
    * @param {Coords} coords the starting coordinates of the avatar
    * @param {Position} position the starting position of the avatar
    */
-  placeAvatar(player, color, coords, position) {
-    this._state.addAvatar(player, color, coords, position);
+  _placeAvatar(player, coords, position) {
+    this._state.addAvatar(player, coords, position);
     this._updateAvatars();
+  }
+
+  /**
+   * @private
+   * Places a tile on the board at the given coordinates. Then, updates
+   * the board state with the new tile (if not skipped).
+   *
+   * @param {Tile} tile the tile to place
+   * @param {Coords} coords the coordinates to place the tile at
+   * @param {boolean} [skipUpdate=false] whether to skip updating
+   * the avatars on the board after place
+   */
+  _placeTileAndUpdate(tile, coords, skipUpdate = false) {
+    this._state.addTile(tile, coords);
+
+    if (!skipUpdate) {
+      this._updateAvatars();
+    }
+  }
+
+  /**
+   * Places an initial tile and avatar on the board.
+   *
+   * @param {Player} player the player to attach to the avatar
+   * @param {Tile} tile the tile to place
+   * @param {Coords} coords the coordinates to place the tile at
+   * @param {Position} position the starting position of the avatar
+   * on the tile
+   */
+  placeInitialTileAvatar(player, tile, coords, position) {
+    if (this._hasNeighboringTiles(coords)) {
+      throw 'Tile neighbors existing tile';
+    } else if (!this._isTileOnBorder(coords)) {
+      throw 'Tile must be placed on Border';
+    } else if (!Board.isAvatarOnOutsidePosition(coords, position)) {
+      throw 'Avatar must be placed on an inward-facing port';
+    }
+    this._placeTileAndUpdate(tile, coords, true);
+    this._placeAvatar(player, coords, position);
   }
 
   /**
@@ -79,15 +126,18 @@ class Board {
    *
    * @param {Tile} tile the tile to place
    * @param {Coords} coords the coordinates to place the tile at
-   * @param {boolean} [skipUpdate=false] whether to skip updating
-   * the avatars on the board after place
    */
-  placeTile(tile, coords, skipUpdate = false) {
-    this._state.addTile(tile, coords);
+  placeTile(tile, coords) {
+    this._placeTileAndUpdate(tile, coords);
+  }
 
-    if (!skipUpdate) {
-      this._updateAvatars();
-    }
+  /**
+   * Removes an avatar from the board state.
+   *
+   * @param {string} id the avatar's associated player ID
+   */
+  removeAvatar(id) {
+    this._state.removeAvatar(id);
   }
 
   /**
@@ -181,6 +231,48 @@ class Board {
     this._state.getAvatars().forEach(avatar => {
       this._updateAvatar(avatar);
     });
+  }
+
+  ///////////////////////////////////
+  // RENDER FUNCTIONS
+  ///////////////////////////////////
+
+  /**
+   * Renders a board to the given selection.
+   *
+   * @param {d3.Selection} selection the current D3 selection
+   * @param {number} xStart the starting x position for the board
+   * @param {number} yStart the starting y position for the board
+   * @param {number} size the total size of the board
+   */
+  render(selection, xStart, yStart, size) {
+    const tileSize = size / BOARD_SIZE;
+
+    const emptyTile = new Tile();
+    this._state.getTiles().forEach((column, x) => {
+      column.forEach((tile, y) => {
+        const tileToRender = tile || emptyTile;
+        const tileX = xStart + x * tileSize;
+        const tileY = yStart + y * tileSize;
+        tileToRender.render(selection, tileX, tileY, tileSize);
+      });
+    });
+  }
+
+  /**
+   * Renders a tile to the render directory, given a filename.
+   *
+   * @param {string} path the path of the file (with extension)
+   * @param {string} size the size of the image
+   */
+  renderToFile(path, size = 800) {
+    const svg = this.d3Node.createSVG(size, size);
+
+    this.render(svg, 0, 0, size);
+
+    const svgFile = fs.createWriteStream(path);
+    svgFile.write(this.d3Node.svgString());
+    svgFile.end();
   }
 }
 

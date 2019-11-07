@@ -1,4 +1,4 @@
-const { LETTERS_MAP } = require('../../Common/utils/constants');
+const { LETTERS_MAP } = require('../utils/constants');
 const { COLOR_SET } = require('./constants');
 
 /**
