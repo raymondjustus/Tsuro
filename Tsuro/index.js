@@ -21,6 +21,6 @@ referee.addPlayer(wirt); // Wirt wins
 // referee.addPlayer(woodsman); // Jack wins
 // referee.addPlayer(beast); // Max players reached
 referee.notifyPlayersOfColors();
-referee.changePlayer();
+referee.runGame();
 
 referee.board.renderToFile(path.resolve(__dirname, 'final.svg'));

@@ -237,6 +237,29 @@ class Referee {
   }
 
   /**
+   * Changes the current player to the next on in line. If the player is no longer
+   * playing, their turn will be skipped. If the player doesn't have an avatar on
+   * the board, they will be prompted for an initial action. If they do have an
+   * avatar and can move, they will be prompted for an intermediate action. If
+   * neither, they will be removed from play.
+   */
+  _nextPlayer() {
+    this.currentPlayerIdx = incrementIndex(this.currentPlayerIdx, this.playerIds);
+    const id = this.playerIds[this.currentPlayerIdx];
+    const player = this.currentPlayers[id];
+
+    if (player) {
+      if (!this._hasAvatar(player)) {
+        this._promptPlayerForAction(player, true);
+      } else if (this._canPlayerMove(player)) {
+        this._promptPlayerForAction(player);
+      } else {
+        this._removePlayer(player);
+      }
+    }
+  }
+
+  /**
    * Checks whether the game is over yet, that is if one or no players
    * are left on the board.
    *
@@ -274,29 +297,17 @@ class Referee {
   }
 
   /**
-   * Changes the current player, and prompts them for action. This function
+   * Starts and runs a game with the currently added players. This function
    * will loop until the game is over, at which point all players will
    * be notified of game over and who won.
    */
-  changePlayer() {
+  runGame() {
     if (this.playerIds.length === 0) {
       throw 'No players added to game yet';
     }
 
     while (!this._isGameOver()) {
-      this.currentPlayerIdx = incrementIndex(this.currentPlayerIdx, this.playerIds);
-      const id = this.playerIds[this.currentPlayerIdx];
-      const player = this.currentPlayers[id];
-
-      if (player) {
-        if (!this._hasAvatar(player)) {
-          this._promptPlayerForAction(player, true);
-        } else if (this._canPlayerMove(player)) {
-          this._promptPlayerForAction(player);
-        } else {
-          this._removePlayer(player);
-        }
-      }
+      this._nextPlayer();
     }
 
     this._notifyPlayersOfGameOver();
