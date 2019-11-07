@@ -1,26 +1,26 @@
-const { Board, Coords, InitialPlacement, Path, Player, Position, Tile } = require('./Common');
-const { COLORS, DIRECTIONS, PORTS } = require('./Common/utils/constants');
+/* eslint-disable no-unused-vars */
 
-const playerA = new Player('a', 'Josh');
+const path = require('path');
+const Referee = require('./Admin/Referee');
+const Player = require('./Player/Player');
+const DumbStrategy = require('./Player/Strategy/DumbStrategy');
 
-const tile = new Tile([
-  new Path(new Position(DIRECTIONS.NORTH, PORTS.ZERO), new Position(DIRECTIONS.SOUTH, PORTS.ZERO)),
-  new Path(new Position(DIRECTIONS.NORTH, PORTS.ONE), new Position(DIRECTIONS.SOUTH, PORTS.ONE)),
-  new Path(new Position(DIRECTIONS.EAST, PORTS.ZERO), new Position(DIRECTIONS.WEST, PORTS.ZERO)),
-  new Path(new Position(DIRECTIONS.EAST, PORTS.ONE), new Position(DIRECTIONS.WEST, PORTS.ONE)),
-]);
+const jack = new Player('jack', 'Jack', DumbStrategy);
+const jill = new Player('jill', 'Jill', DumbStrategy);
+const wirt = new Player('wirt', 'Wirt', DumbStrategy);
+const greg = new Player('greg', 'Greg', DumbStrategy);
+const woodsman = new Player('woodsman', 'Woodsman', DumbStrategy);
+const beast = new Player('beast', 'Beast', DumbStrategy);
 
-const placements = [
-  new InitialPlacement(
-    tile,
-    new Coords(0, 0),
-    playerA,
-    COLORS.GREEN,
-    new Position(DIRECTIONS.WEST, PORTS.ZERO)
-  ),
-];
+const referee = new Referee();
 
-const b = new Board(placements);
+referee.addPlayer(jack); // Jack wins, by default
+referee.addPlayer(jill); // Jill wins
+referee.addPlayer(wirt); // Wirt wins
+// referee.addPlayer(greg); // Jill wins
+// referee.addPlayer(woodsman); // Jack wins
+// referee.addPlayer(beast); // Max players reached
+referee.notifyPlayersOfColors();
+referee.changePlayer();
 
-b.placeTile(tile, new Coords(1, 0));
-console.log(b.getState().getAvatars());
+referee.board.renderToFile(path.resolve(__dirname, 'final.svg'));

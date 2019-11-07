@@ -15,7 +15,7 @@ class RuleChecker {
     // Check if we can put the tile here
     if (this.checkPlacementLegality(boardState, tilePlacement, player)) {
       // Check the death cases of validity for this tile placement
-      return this.checkPlacementValidity(boardState, tilePlacement, player);
+      return this.checkHandValidity(boardState, tilePlacement, player);
     }
 
     return false;
@@ -54,12 +54,23 @@ class RuleChecker {
     const boardCopy = new Board([], boardState.copy());
     boardCopy.placeTile(tilePlacement.tile, tilePlacement.coords);
     const avatarCopy = boardCopy.getAvatar(player.id);
-    // If the move causes player death, check if any hand tiles can prevent the death.
-    if (Board.isAvatarOnOutsidePosition(avatarCopy.coords, avatarCopy.position)) {
-      // If a non-death move is found, the given action is invalid.
-      return !this._doesPlayerHaveValidMove(boardState, tilePlacement.coords, player);
+
+    return !Board.isAvatarOnOutsidePosition(avatarCopy.coords, avatarCopy.position);
+  }
+
+  /**
+   * Check whether the tile placement is valid and, if not, whether the player has any valid moves within their hand.
+   *
+   * @param {*} boardState
+   * @param {*} tilePlacement
+   * @param {*} player
+   * @returns {boolean}
+   */
+  static checkHandValidity(boardState, tilePlacement, player) {
+    if (this.checkPlacementValidity(boardState, tilePlacement, player)) {
+      return true;
     }
-    return true;
+    return this._doesPlayerHaveValidMove(boardState, tilePlacement.coords, player);
   }
 
   /**
@@ -71,10 +82,13 @@ class RuleChecker {
    * @private
    */
   static _checkPlayerAdjacency(avatar, tilePlacement) {
+    if (!avatar) {
+      return false;
+    }
     const { coords, position } = avatar;
     try {
       const newCoords = coords.copy().moveOne(position.direction);
-      return tilePlacement.coords.isEqualTo(newCoords);
+      return newCoords.isEqualTo(tilePlacement.coords);
     } catch (e) {
       return false;
     }

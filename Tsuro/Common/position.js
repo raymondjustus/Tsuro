@@ -1,3 +1,4 @@
+const incrementIndex = require('./utils/incrementIndex');
 const { DIRECTIONS, DIRECTIONS_CLOCKWISE, PORTS } = require('./utils/constants');
 
 class Position {
@@ -72,7 +73,7 @@ class Position {
    */
   rotate(rotations) {
     const idx = DIRECTIONS_CLOCKWISE.indexOf(this.direction);
-    const newIdx = (idx + rotations) % DIRECTIONS_CLOCKWISE.length;
+    const newIdx = incrementIndex(idx, DIRECTIONS_CLOCKWISE, rotations);
     this.direction = DIRECTIONS_CLOCKWISE[newIdx];
     this._updateHash();
     return this;

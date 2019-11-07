@@ -1,4 +1,4 @@
-const { Board, Coords, Player } = require('..');
+const { Board, Coords } = require('..');
 const {
   getEmptyBoardArray,
   getLetterFromPosition,
@@ -6,6 +6,7 @@ const {
   getTileFromLetters,
 } = require('../utils');
 const { tiles } = require('.');
+const Player = require('../../Player/Player');
 const getMessage = require('./getMessage');
 const isValidPlacement = require('./isValidPlacement');
 const { COLORS } = require('./constants');
@@ -33,31 +34,17 @@ const handlePlacements = (placements, printResponses = true) => {
    */
   const usePlacements = placements => {
     /**
-     * Helper function for placing tiles on the board.
-     *
-     * @param {number} tileIndex the index of the tile to choose from, from 0-34
-     * @param {number} rotation the rotation amount of the tile, from 0-270 by
-     * 90 degree increments
-     * @param {number} x the x position of the tile
-     * @param {number} y the y position of the tile
-     * @param {boolean} [skipUpdate=false] whether to skip board updates
-     */
-    const placeTile = (tileIndex, rotation, x, y, skipUpdate = false) => {
-      const coords = new Coords(x, y);
-      const tile = getTileFromLetters(tiles[tileIndex]).rotate(rotation / 90);
-
-      board.placeTile(tile, coords, skipUpdate);
-      jsonBoard[x][y] = { tileIndex, rotation };
-    };
-
-    /**
      * Handles an intermediate placement, placing only a tile.
      *
      * @param {array} placement the intermediate placement JSON array
      */
     const handleIntermediatePlacement = ([color, tileIndex, rotation, x, y]) => {
       if (board.getAvatar(color)) {
-        placeTile(tileIndex, rotation, x, y);
+        const coords = new Coords(x, y);
+        const tile = getTileFromLetters(tiles[tileIndex]).rotate(rotation / 90);
+
+        board.placeTile(tile, coords);
+        jsonBoard[x][y] = { tileIndex, rotation };
       }
     };
 
@@ -67,12 +54,15 @@ const handlePlacements = (placements, printResponses = true) => {
      * @param {array} placement the initial placement JSON array
      */
     const handleInitialPlacement = ([tileIndex, rotation, color, port, x, y]) => {
-      placeTile(tileIndex, rotation, x, y, true);
-
       const player = new Player(color, color);
+      player.setColor(color);
+
+      const tile = getTileFromLetters(tiles[tileIndex]).rotate(rotation / 90);
       const coords = new Coords(x, y);
       const position = getPositionFromLetter(port);
-      board.placeAvatar(player, color, coords, position);
+
+      board.placeInitialTileAvatar(player, tile, coords, position);
+      jsonBoard[x][y] = { tileIndex, rotation };
     };
 
     placements.forEach(placement => {
@@ -122,6 +112,7 @@ const handlePlacements = (placements, printResponses = true) => {
     }
     return board;
   } catch (err) {
+    console.log(err);
     console.log(getMessage('Invalid JSON ', placements));
   }
 };

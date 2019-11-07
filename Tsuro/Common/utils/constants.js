@@ -1,13 +1,11 @@
 exports.BOARD_SIZE = 10;
 
 exports.COLORS = {
-  BLACK: '#000000',
-  BROWN: '#7b2a26',
-  GRAY: '#eeeeee',
-  GREEN: '#63af33',
-  RED: '#bf2952',
-  WHITE: '#ffffff',
-  YELLOW: '#d2b53c',
+  BLACK: 'black',
+  BLUE: 'blue',
+  GREEN: 'green',
+  RED: 'red',
+  WHITE: 'white',
 };
 
 const DIRECTIONS = {
@@ -25,6 +23,12 @@ exports.DIRECTIONS_CLOCKWISE = [
   DIRECTIONS.WEST,
 ];
 
+exports.GAME_STATUS = {
+  WAITING: 0,
+  CURRENT_TURN: 1,
+  GAME_OVER: 2,
+};
+
 const LETTERS = 'ABCDEFGH'.split('');
 exports.LETTERS = LETTERS;
 
@@ -40,3 +44,31 @@ exports.PORTS = {
   ZERO: 0,
   ONE: 1,
 };
+
+const RENDER_COLORS = {
+  BLACK: '#000000',
+  GRAY: '#eeeeee',
+  WHITE: '#ffffff',
+};
+exports.RENDER_COLORS = RENDER_COLORS;
+
+exports.RENDER_STYLES = `
+  .background, .port {
+    stroke: ${RENDER_COLORS.BLACK};
+    stroke-width: 1;
+  }
+
+  .background {
+    fill: ${RENDER_COLORS.GRAY};
+  }
+
+  .port {
+    fill: ${RENDER_COLORS.WHITE};
+  }
+
+  .path {
+    fill: none;
+    stroke: ${RENDER_COLORS.BLACK};
+    stroke-width: 3;
+  }
+`;

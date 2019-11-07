@@ -26,18 +26,17 @@ class BoardState {
    * Adds an avatar to the board.
    *
    * @param {Player} player the player to attach to the avatar
-   * @param {string} color the chosen avatar color
    * @param {Coords} coords the starting coordinates of the avatar
    * @param {Position} position the starting position of the avatar
    * @returns {Avatar} the newly created avatar
    */
-  addAvatar(player, color, coords, position) {
+  addAvatar(player, coords, position) {
     const { id } = player;
     if (this._avatars[id]) {
       throw 'Player already has avatar on board';
     }
     const tile = this.getTile(coords);
-    const avatar = new Avatar(id, color, coords, position);
+    const avatar = new Avatar(id, player.getColor(), coords, position);
     this._initialAvatarHashes[avatar.getHash(coords, position)] = id;
     this._avatars[id] = avatar;
 
@@ -68,9 +67,10 @@ class BoardState {
    */
   copy() {
     const newState = new BoardState();
-    Object.keys(this._avatars).forEach(key => {
-      newState._avatars[key] = this._avatars[key].copy();
-    });
+    newState._avatars = Object.keys(this._avatars).reduce(
+      (acc, id) => Object.assign(acc, { [id]: this._avatars[id].copy() }),
+      {}
+    );
     newState._initialAvatarHashes = Object.keys(this._initialAvatarHashes).reduce(
       (acc, key) =>
         Object.assign(acc, {
@@ -175,6 +175,15 @@ class BoardState {
     if (this._initialAvatarHashes[avatar.getHash()]) {
       avatar.collide();
     }
+  }
+
+  /**
+   * Removes the avatar of the given ID from the board.
+   *
+   * @param {string} id the avatar's associated player ID
+   */
+  removeAvatar(id) {
+    delete this._avatars[id];
   }
 }
 
