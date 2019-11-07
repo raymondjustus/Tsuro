@@ -33,11 +33,11 @@ interface Observer {
    * `ConnectionOptions`. This might include IP, port, login credentials,
    * or any other connection specifications.
    *
-   * @param {JSON} ConnectionOptions the JSON options object for connection information
+   * @param {ConnectionOptions} connectionOptions the JSON options object for connection information
    *
    * @returns {boolean} whether the connection was successful
    */
-  connectToGame(ConnectionOptions: JSON): boolean;
+  connectToGame(connectionOptions: JSON): boolean;
 
   /**
    * Disconnects this observer from that socket connection
@@ -60,5 +60,12 @@ interface Observer {
    * @returns {boolean} if this is a player
    */
   isPlayer(): boolean;
+
+  /**
+   * Uses D3 to render the current state of the board and whose turn it is, which can then be shown in a window.
+   *
+   * @param {BoardState} state the current state of the baord
+   */
+  render(state: BoardState): void;
 }
 ```
