@@ -1,6 +1,7 @@
 const { Avatar } = require('.');
 const { getEmptyBoardArray } = require('./utils');
 const { DIRECTIONS_CLOCKWISE } = require('./utils/constants');
+
 require('./utils/polyfills');
 
 class BoardState {
@@ -67,7 +68,9 @@ class BoardState {
    */
   copy() {
     const newState = new BoardState();
-    newState._avatars = Object.keys(this._avatars).map(key => this._avatars[key].copy());
+    Object.keys(this._avatars).forEach(key => {
+      newState._avatars[key] = this._avatars[key].copy();
+    });
     newState._initialAvatarHashes = Object.keys(this._initialAvatarHashes).reduce(
       (acc, key) =>
         Object.assign(acc, {

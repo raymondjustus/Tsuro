@@ -9,5 +9,6 @@ exports.InitialPlacement = InitialPlacement;
 exports.Path = require('./path');
 exports.Player = require('./player');
 exports.Position = require('./position');
+exports.RuleChecker = require('./rules');
 exports.Tile = require('./tiles');
 exports.TilePlacement = TilePlacement;

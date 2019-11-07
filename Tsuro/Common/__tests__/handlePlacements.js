@@ -1,11 +1,11 @@
-const { Board, Coords, Player } = require('../../Common');
+const { Board, Coords, Player } = require('..');
 const {
   getEmptyBoardArray,
   getLetterFromPosition,
   getPositionFromLetter,
   getTileFromLetters,
-} = require('../../Common/utils');
-const { tiles } = require('../../Common/__tests__');
+} = require('../utils');
+const { tiles } = require('.');
 const getMessage = require('./getMessage');
 const isValidPlacement = require('./isValidPlacement');
 const { COLORS } = require('./constants');
@@ -15,8 +15,11 @@ const { COLORS } = require('./constants');
  * a board. Then, prints responses for each available avatar color.
  *
  * @param {array[]} placements the array of placement instructions
+ * @param {boolean} [printResponses = true] is a flag whether this will print out the board's response to those moves
+ *
+ * @returns {Board} once all the given placements have taken place.
  */
-const handlePlacements = placements => {
+const handlePlacements = (placements, printResponses = true) => {
   const board = new Board();
   // for keeping track of tile index and rotation (only pertinent to testing suite)
   const jsonBoard = getEmptyBoardArray();
@@ -26,6 +29,7 @@ const handlePlacements = placements => {
    * the board.
    *
    * @param {array[]} placements the placements array
+   *
    */
   const usePlacements = placements => {
     /**
@@ -112,8 +116,11 @@ const handlePlacements = placements => {
 
   try {
     usePlacements(placements);
-    const responses = getResponses();
-    console.log(JSON.stringify(responses));
+    if (printResponses) {
+      const responses = getResponses();
+      console.log(JSON.stringify(responses));
+    }
+    return board;
   } catch (err) {
     console.log(getMessage('Invalid JSON ', placements));
   }
