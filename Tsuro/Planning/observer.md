@@ -37,7 +37,7 @@ interface Observer {
    *
    * @returns {boolean} whether the connection was successful
    */
-  connectToGame(connectionOptions: JSON): boolean;
+  connectToGame(connectionOptions: ConnectionOptions): boolean;
 
   /**
    * Disconnects this observer from that socket connection
