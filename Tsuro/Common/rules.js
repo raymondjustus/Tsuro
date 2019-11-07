@@ -15,8 +15,9 @@ class RuleChecker {
     // Check if we can put the tile here
     if (this.checkPlacementLegality(boardState, tilePlacement, player)) {
       // Check the death cases of validity for this tile placement
-      return this.checkPlacementValidity(boardState, tilePlacement, player);
+      return this.checkHandValidity(boardState, tilePlacement, player);
     }
+
     return false;
   }
 
@@ -34,7 +35,8 @@ class RuleChecker {
     return (
       avatar &&
       !boardState.getTile(tilePlacement.coords) &&
-      this._checkPlayerAdjacency(avatar, tilePlacement)
+      this._checkPlayerAdjacency(avatar, tilePlacement) &&
+      player.hand.some(tile => tile.isEqualToRotated(tilePlacement.tile))
     );
   }
 
@@ -49,7 +51,7 @@ class RuleChecker {
    */
   static checkPlacementValidity(boardState, tilePlacement, player) {
     // Copy the board to test tile placement results
-    const boardCopy = new Board([], boardState);
+    const boardCopy = new Board([], boardState.copy());
     boardCopy.placeTile(tilePlacement.tile, tilePlacement.coords);
     const avatarCopy = boardCopy.getAvatar(player.id);
 
@@ -68,7 +70,7 @@ class RuleChecker {
     if (this.checkPlacementValidity(boardState, tilePlacement, player)) {
       return true;
     }
-    return this._doesPlayerHaveValidMove(player, boardState, tilePlacement.coords);
+    return this._doesPlayerHaveValidMove(boardState, tilePlacement.coords, player);
   }
 
   /**
@@ -106,7 +108,7 @@ class RuleChecker {
     return hand.some(tile => {
       // Test all four rotations
       for (let j = 0; j < 4; j++) {
-        const boardCopy = boardState.copy();
+        const boardCopy = new Board([], boardState.copy());
         const tileCopy = tile.copy(j);
         boardCopy.placeTile(tileCopy, coords);
         const avatarCopy = boardCopy.getAvatar(id);

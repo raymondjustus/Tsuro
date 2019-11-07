@@ -1,4 +1,4 @@
-const { incrementIndex } = require('./utils');
+const incrementIndex = require('./utils/incrementIndex');
 const { DIRECTIONS, DIRECTIONS_CLOCKWISE, PORTS } = require('./utils/constants');
 
 class Position {
