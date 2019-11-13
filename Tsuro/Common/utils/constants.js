@@ -47,28 +47,55 @@ exports.PORTS = {
 
 const RENDER_COLORS = {
   BLACK: '#000000',
+  BOARD: '#E3A865',
+  BORDER: '#583C14',
   GRAY: '#eeeeee',
   WHITE: '#ffffff',
+  TILE: '#936D36',
+  PATH: '#FCE8B8',
 };
 exports.RENDER_COLORS = RENDER_COLORS;
 
 exports.RENDER_STYLES = `
-  .background, .port {
-    stroke: ${RENDER_COLORS.BLACK};
+  .border, .port, .avatar {
+    stroke: ${RENDER_COLORS.BORDER};
     stroke-width: 1;
   }
 
+  .avatar__shadow {
+    fill: ${RENDER_COLORS.PATH};
+  }
+
+  .border {
+    fill: none;
+  }
+
   .background {
-    fill: ${RENDER_COLORS.GRAY};
+    fill: ${RENDER_COLORS.TILE};
+  }
+
+  .background--empty {
+    fill: ${RENDER_COLORS.BOARD};
+  }
+
+  .dead {
+    opacity: 0.75;
   }
 
   .port {
     fill: ${RENDER_COLORS.WHITE};
   }
 
+  .path__shadow {
+    fill: none;
+    stroke: ${RENDER_COLORS.BORDER};
+    stroke-width: 5;
+    opacity: 0.5;
+  }
+
   .path {
     fill: none;
-    stroke: ${RENDER_COLORS.BLACK};
+    stroke: ${RENDER_COLORS.PATH};
     stroke-width: 3;
   }
 `;

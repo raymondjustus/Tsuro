@@ -1,4 +1,5 @@
 const { Coords, Position } = require('.');
+const Renderer = require('./Renderer');
 const { DIRECTIONS, PORTS } = require('./utils/constants');
 
 class Avatar {
@@ -128,6 +129,34 @@ class Avatar {
    */
   _updateHash() {
     this._hash = `${this.coords.getHash()}${this.position.getHash()}`;
+  }
+
+  render(selection, xStart, yStart, tileSize) {
+    const { x, y } = this.coords;
+
+    const boardX = xStart + x * tileSize;
+    const boardY = yStart + y * tileSize;
+
+    const renderer = new Renderer(boardX, boardY, tileSize);
+
+    const [aX, aY] = renderer.getPositionCoords(this.position);
+
+    const group = selection.append('g').classed('dead', this.hasLost());
+
+    group
+      .append('circle')
+      .attr('class', 'avatar__shadow')
+      .attr('cx', renderer.scaleX(aX))
+      .attr('cy', renderer.scaleY(aY))
+      .attr('r', Math.min(tileSize * 0.1, 12));
+
+    group
+      .append('circle')
+      .attr('class', 'avatar')
+      .attr('fill', this.color)
+      .attr('cx', renderer.scaleX(aX))
+      .attr('cy', renderer.scaleY(aY))
+      .attr('r', Math.min(tileSize * 0.07, 10));
   }
 }
 

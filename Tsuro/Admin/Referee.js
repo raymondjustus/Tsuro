@@ -187,7 +187,7 @@ class Referee {
       ...(this.removedPlayersForTurn[this.currentTurn] || []),
       id,
     ];
-    this.board.removeAvatar(id);
+    // this.board.removeAvatar(id);
   }
 
   /**

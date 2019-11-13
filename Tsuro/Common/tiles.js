@@ -1,7 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const D3Node = require('d3-node');
-const { DIRECTIONS, DIRECTIONS_CLOCKWISE, RENDER_STYLES } = require('./utils/constants');
+const Renderer = require('./Renderer');
+const { DIRECTIONS_CLOCKWISE, RENDER_STYLES } = require('./utils/constants');
 require('./utils/polyfills');
 
 class Tile {
@@ -116,15 +117,7 @@ class Tile {
    * (equivalent to width or height)
    */
   render(selection, x, y, size) {
-    const scaleX = this._getRenderScale(x, size);
-    const scaleY = this._getRenderScale(y, size);
-
-    const PORT_POINTS = {
-      [DIRECTIONS.NORTH]: [[1 / 3, 0], [2 / 3, 0]],
-      [DIRECTIONS.EAST]: [[1, 1 / 3], [1, 2 / 3]],
-      [DIRECTIONS.SOUTH]: [[2 / 3, 1], [1 / 3, 1]],
-      [DIRECTIONS.WEST]: [[0, 2 / 3], [0, 1 / 3]],
-    };
+    const renderer = new Renderer(x, y, size);
 
     const group = selection.append('g');
 
@@ -132,9 +125,21 @@ class Tile {
      * Renders the tile's background.
      */
     const renderBackground = () => {
+      const isEmpty = !this.paths.length;
       group
         .append('rect')
         .attr('class', 'background')
+        .classed('background--empty', isEmpty)
+        .attr('x', x)
+        .attr('y', y)
+        .attr('width', size)
+        .attr('height', size);
+    };
+
+    const renderBorder = () => {
+      group
+        .append('rect')
+        .attr('class', 'border')
         .attr('x', x)
         .attr('y', y)
         .attr('width', size)
@@ -149,7 +154,10 @@ class Tile {
      * @param {number[]} end The ending point of the path
      * @param {string} color The color of the path
      */
-    const renderPath = (start, end) => {
+    const getPathCommands = (start, end) => {
+      const startCoords = renderer.getPositionCoords(start);
+      const endCoords = renderer.getPositionCoords(end);
+
       /**
        * Gets the draw commands for an svg `path` from an array of
        * points. It draws a path using a basis curve.
@@ -161,8 +169,8 @@ class Tile {
        */
       const getDrawCommands = this.d3
         .line()
-        .x(([x]) => scaleX(x))
-        .y(([, y]) => scaleY(y))
+        .x(([x]) => renderer.scaleX(x))
+        .y(([, y]) => renderer.scaleY(y))
         .curve(this.d3.curveBasis);
 
       /**
@@ -172,8 +180,8 @@ class Tile {
        * @returns {number[][]} an array of mid points
        */
       const getMidPoints = () => {
-        let [midX1, midY1] = start;
-        let [midX2, midY2] = end;
+        let [midX1, midY1] = startCoords;
+        let [midX2, midY2] = endCoords;
 
         /**
          * Gets the closest quarter value. If the value is 1, it'll
@@ -209,12 +217,16 @@ class Tile {
         return [[midX1, midY1], [midX2, midY2]];
       };
 
-      const points = [start, ...getMidPoints(), end];
+      const points = [startCoords, ...getMidPoints(), endCoords];
 
+      return getDrawCommands(points);
+    };
+
+    const renderPath = (className, pathCommands) => {
       group
         .append('path')
-        .attr('class', 'path')
-        .attr('d', getDrawCommands(points));
+        .attr('class', className)
+        .attr('d', pathCommands);
     };
 
     /**
@@ -225,31 +237,32 @@ class Tile {
      * @param {number} y the y position of the port (from a
      * scale of 0 to 1)
      */
-    const renderPort = (x, y) => {
-      group
-        .append('circle')
-        .attr('class', 'port')
-        .attr('cx', scaleX(x))
-        .attr('cy', scaleY(y))
-        .attr('r', Math.min(size * 0.025, 8));
-    };
+    // const renderPort = ([x, y]) => {
+    //   group
+    //     .append('circle')
+    //     .attr('class', 'port')
+    //     .attr('cx', renderer.scaleX(x))
+    //     .attr('cy', renderer.scaleY(y))
+    //     .attr('r', Math.min(size * 0.025, 8));
+    // };
 
     // Renders background
     renderBackground();
 
-    // Renders paths
-    this.paths.forEach(path => {
-      const startPoint = PORT_POINTS[path.start.direction][path.start.port];
-      const endPoint = PORT_POINTS[path.end.direction][path.end.port];
-      renderPath(startPoint, endPoint);
+    const paths = this.paths.map(path => {
+      const pathCommands = getPathCommands(path.start, path.end);
+      renderPath('path__shadow', pathCommands);
+      return pathCommands;
     });
 
-    // Renders ports
-    Object.keys(PORT_POINTS).forEach(direction => {
-      PORT_POINTS[direction].forEach(([x, y]) => {
-        renderPort(x, y);
-      });
+    paths.forEach(pathCommands => {
+      renderPath('path', pathCommands);
     });
+
+    renderBorder();
+
+    // Renders ports
+    // renderer.getAllPositionCoords().forEach(renderPort);
   }
 
   /**
