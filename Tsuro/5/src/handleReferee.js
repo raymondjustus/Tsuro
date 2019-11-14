@@ -35,7 +35,7 @@ const handleReferee = playerNames => {
     }
   }
 
-  const output = { winners: [winners], loosers: losers };
+  const output = { winners: [winners], losers: losers };
   console.log(JSON.stringify(output));
 
   referee.board.renderToFile(path.resolve(__dirname, 'final.svg'));
