@@ -276,7 +276,7 @@ class Referee {
    *
    * @returns {string[]} an array of player IDs
    */
-  _getWinners() {
+  getWinners() {
     const currentPlayers = Object.keys(this.currentPlayers);
     if (currentPlayers.length > 0) {
       return currentPlayers;
@@ -290,7 +290,7 @@ class Referee {
    * won the game.
    */
   _notifyPlayersOfGameOver() {
-    const winners = this._getWinners();
+    const winners = this.getWinners();
     this.playerIds.forEach(id => {
       this.playerMap[id].endGame(winners);
     });
