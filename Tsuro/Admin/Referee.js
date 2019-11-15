@@ -24,17 +24,36 @@ class Referee {
     this.observerMap = {};
   }
 
+  /**
+   * Adds an observer to the current game.
+   *
+   * @param {Observer} observer the observer to add to the game
+   */
   addObserver(observer) {
     const { id } = observer;
     this.observerMap[id] = observer;
   }
 
+  /**
+   * @private
+   * Gets a list of all observers in the current game.
+   *
+   * @returns {Observer[]} an array of all current observers
+   */
   _getObservers() {
     return Object.values(this.observerMap);
   }
 
+  /**
+   * @private
+   * Helper function for quickly updating all observers, using the given
+   * update function.
+   *
+   * @param {function} updateFunc a callback function which takes in a
+   * single observer and updates it accordingly
+   */
   _updateObservers(updateFunc) {
-    return this._getObservers().forEach(updateFunc);
+    this._getObservers().forEach(updateFunc);
   }
 
   /**
@@ -55,7 +74,7 @@ class Referee {
   }
 
   /**
-   * Notifies all players of the other players' colors.
+   * Notifies all players and observers of the other players' colors.
    */
   notifyPlayersOfColors() {
     const idToColorMap = this.playerIds.reduce((acc, id) => {
@@ -73,6 +92,7 @@ class Referee {
   }
 
   /**
+   * @private
    * Checks whether the given player has an avatar currently on
    * the board.
    *
@@ -85,6 +105,7 @@ class Referee {
   }
 
   /**
+   * @private
    * Checks whether the given player can move, ala if they have
    * lost or not.
    *
@@ -98,6 +119,7 @@ class Referee {
   }
 
   /**
+   * @private
    * Gets a hand of the given size to give to the player.
    *
    * @param {number} size the preferred size of the hand
@@ -114,6 +136,7 @@ class Referee {
   }
 
   /**
+   * @private
    * Starts a player's turn by updating their board state, setting their
    * turn status to current, and giving them their hand.
    *
@@ -130,7 +153,7 @@ class Referee {
     player.receiveHand(hand);
 
     this._updateObservers(observer => {
-      observer.updateBoardState(boardState);
+      observer.updateState(boardState);
       observer.updateCurrentTurn(this.currentTurn);
       observer.updateCurrentPlayerId(player.id);
       observer.updateCurrentHand(hand);
@@ -140,6 +163,7 @@ class Referee {
   }
 
   /**
+   * @private
    * Checks if the given action is legal for the given player, that is it
    * can be placed on the board at all.
    *
@@ -169,6 +193,7 @@ class Referee {
   }
 
   /**
+   * @private
    * Checks if the given action is valid for the given player, that is it
    * doesn't result in player suicide.
    *
@@ -188,6 +213,7 @@ class Referee {
   }
 
   /**
+   * @private
    * Ends a player's turn by clearing their hand, setting their turn status
    * to waiting, and updating all players' board states.
    *
@@ -201,11 +227,12 @@ class Referee {
       this.playerMap[id].updateState(boardState);
     });
     this._updateObservers(observer => {
-      observer.updateBoardState(boardState);
+      observer.updateState(boardState);
     });
   }
 
   /**
+   * @private
    * Removes a player from play.
    *
    * @param {Player} player the player to remove from play
@@ -223,6 +250,7 @@ class Referee {
   }
 
   /**
+   * @private
    * Places a tile on the board at the player's given discression. Also places the player's
    * avatar if the action is initial. Then ends player's turn.
    *
@@ -248,6 +276,7 @@ class Referee {
   }
 
   /**
+   * @private
    * Plays through an entire player's turn, from start to end. This will start
    * the player's turn, prompt them for action, and check for legality and
    * validity. If the action isn't legal or valid, the player will be removed
@@ -272,6 +301,7 @@ class Referee {
   }
 
   /**
+   * @private
    * Changes the current player to the next on in line. If the player is no longer
    * playing, their turn will be skipped. If the player doesn't have an avatar on
    * the board, they will be prompted for an initial action. If they do have an
@@ -295,6 +325,7 @@ class Referee {
   }
 
   /**
+   * @private
    * Checks whether the game is over yet, that is if one or no players
    * are left on the board.
    *
@@ -305,6 +336,7 @@ class Referee {
   }
 
   /**
+   * @private
    * Gets the current winners of the game, that is those are still in play. If
    * none are left in play, it will check for the last turn in which players
    * have been removed and award those players.
@@ -321,6 +353,7 @@ class Referee {
   }
 
   /**
+   * @private
    * Notifies all players that the game is now over, and which players have
    * won the game.
    */
@@ -337,8 +370,8 @@ class Referee {
    * be notified of game over and who won.
    */
   runGame() {
-    if (this.playerIds.length === 0) {
-      throw 'No players added to game yet';
+    if (this.playerIds.length <= 1) {
+      throw 'At least two players are required to game.';
     }
 
     while (!this._isGameOver()) {

@@ -6,17 +6,10 @@ class Board {
    * Creates a new board. Provides overrides for tiles and avatars for
    * cloning Board objects.
    *
-   * @param {InitialPlacement[]} [initialPlacements=[]] an array of initial
-   * placements that outline tile and avatar coords/positions
    * @param {BoardState} [stateOverride] override for initial state
    */
-  constructor(initialPlacements = [], stateOverride) {
+  constructor(stateOverride) {
     this._state = new BoardState(stateOverride);
-
-    initialPlacements.forEach(({ tile, coords, player, color, position }) => {
-      player.setColor(color);
-      this.placeInitialTileAvatar(player, tile, coords, position);
-    });
   }
 
   /**
@@ -26,7 +19,7 @@ class Board {
    */
   copy() {
     const copiedState = this.getState();
-    return new Board([], copiedState);
+    return new Board(copiedState);
   }
 
   /**

@@ -16,7 +16,7 @@ const referee = new Referee();
 const observer = new Observer();
 
 referee.addObserver(observer);
-referee.addPlayer(jack); // Jack wins, by default
+referee.addPlayer(jack); // Not enough players
 referee.addPlayer(jill); // Jill wins
 referee.addPlayer(wirt); // Wirt wins
 // referee.addPlayer(greg); // Jill wins

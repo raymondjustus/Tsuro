@@ -99,7 +99,7 @@ const handleObserver = moves => {
 
   observer.setPlayerColors(playerColors);
   const boardState = board.getState();
-  observer.updateBoardState(boardState);
+  observer.updateState(boardState);
 
   let renderPath = DEFAULT_PATH;
   if (process.argv[2]) {

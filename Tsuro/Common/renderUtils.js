@@ -9,6 +9,14 @@ const PORT_POINTS = {
 };
 
 class RenderUtils {
+  /**
+   * @constructor
+   * Creates a new RenderUtils object for the given specification.
+   *
+   * @param {number} x the starting x-position
+   * @param {number} y the starting y-position
+   * @param {number} size the size of the render area
+   */
   constructor(x, y, size) {
     this._d3 = new D3Node().d3;
 
@@ -23,6 +31,7 @@ class RenderUtils {
   }
 
   /**
+   * @private
    * Gets the linear scale for rendering on a single tile.
    *
    * @param {number} min the minimum point of the range
@@ -50,6 +59,14 @@ class RenderUtils {
     return this._getDrawCommands(points);
   }
 
+  /**
+   * Gets the render coordinates for a given position.
+   *
+   * @param {Position} position the position to fetch render
+   * coordinates for
+   * @returns {[number, number]} the x and y render coordinates
+   * within an array
+   */
   getPositionCoords(position) {
     const { direction, port } = position;
     return PORT_POINTS[direction][port];

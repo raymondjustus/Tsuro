@@ -1,7 +1,7 @@
 const fs = require('fs');
 const D3Node = require('d3-node');
 const { BoardState } = require('../Common');
-const { RENDER_STYLES } = require('../Common/utils/constants');
+const { styles } = require('../Common/utils');
 
 const MARGIN = 20;
 const MARGIN_INNER = MARGIN / 2;
@@ -10,54 +10,110 @@ const WIDTH = 800;
 const HEIGHT = WIDTH + TILE_PREVIEW_SIZE + MARGIN;
 
 class Observer {
-  constructor() {
-    this.d3Node = new D3Node({ styles: RENDER_STYLES });
-    this.d3 = this.d3Node.d3;
+  /**
+   * @constructor
+   * Creates a new Observer with an empty board state.
+   */
+  constructor(id) {
+    this.id = id;
 
     this._boardState = new BoardState();
+    this._playerColors = {};
+    this._deadPlayers = new Set();
 
-    this._currentHand = [];
-    this._lastHand = this._currentHand;
-
+    this._currentTurn = 0;
     this._currentPlayerId = null;
     this._lastPlayerId = this._currentPlayerId;
 
-    this._currentTurn = 0;
+    this._currentHand = [];
+    this._lastHand = this._currentHand;
     this._lastAction = null;
-    this._playerColors = {};
-    this._deadPlayers = new Set();
+
+    // RENDER VARIABLES
+    this.d3Node = new D3Node({ styles });
+    this.d3 = this.d3Node.d3;
   }
 
+  /**
+   * Sets the player ID-to-colors map as given by the referee.
+   *
+   * @param {object} playerColors a map from player ID to
+   * corresponding player color
+   */
   setPlayerColors(playerColors) {
     this._playerColors = playerColors;
   }
 
-  updateBoardState(boardState) {
+  /**
+   * Updates the currently stored board state with the latest one
+   * from the referee.
+   *
+   * @param {BoardState} boardState the current board state
+   */
+  updateState(boardState) {
     this._boardState = boardState;
   }
 
+  /**
+   * Updates the player ID to that of the player whose turn it
+   * currently is, as told by the referee.
+   *
+   * @param {string} currentPlayerId the current player's ID
+   */
   updateCurrentPlayerId(currentPlayerId) {
     this._currentPlayerId = currentPlayerId;
   }
 
+  /**
+   * Updates the turn number, as told by the referee.
+   *
+   * @param {number} currentTurn the current turn number
+   */
   updateCurrentTurn(currentTurn) {
     this._currentTurn = currentTurn;
   }
 
+  /**
+   * Updates the observer's view of the current player's hand, as
+   * told by the referee.
+   *
+   * @param {Tile[]} currentHand the current player's hand.
+   */
   updateCurrentHand(currentHand) {
     this._currentHand = currentHand;
   }
 
+  /**
+   * Updates the last action used by a player, as told by the referee.
+   * This also updates the last hand and player ID to use the currently
+   * set ones (in anticipation of the next turn).
+   *
+   * @param {Action} lastAction the last action used
+   */
   updateLastAction(lastAction) {
     this._lastAction = lastAction;
     this._lastHand = this._currentHand;
     this._lastPlayerId = this._currentPlayerId;
   }
 
+  /**
+   * Removes a player from play, as decided by the referee.
+   *
+   * @param {string} id the ID of the player to be removed
+   */
   removePlayer(id) {
     this._deadPlayers.add(id);
   }
 
+  /**
+   * @private
+   * Renders an avatar icon at the given x-position.
+   *
+   * @param {d3.Selection} selection the selection to render the avatar to
+   * @param {number} x the x-position to center the avatar
+   * @param {string} [className="avatar"] the class name to give the avatar
+   * @returns {d3.Selection} the avatar selection
+   */
   _renderAvatar(selection, x, className = 'avatar') {
     return selection
       .append('circle')
@@ -67,6 +123,14 @@ class Observer {
       .attr('r', MARGIN_INNER);
   }
 
+  /**
+   * @private
+   * Renders all avatars to a new group within the given selection. This will
+   * fade out any currently dead or removed players, and highlight the player
+   * whose turn it currently is.
+   *
+   * @param {d3.Selection} selection the selection to render the avatars to
+   */
   _renderAvatars(selection) {
     const avatarGroup = selection.append('g');
     const radius = MARGIN_INNER;
@@ -86,6 +150,15 @@ class Observer {
     });
   }
 
+  /**
+   * @private
+   * Renders the last action to the given selection. This includes the player
+   * to make the last action, the cards in the player's hand, and highlighting
+   * the tile that was chosen from the hand.
+   *
+   * @param {d3.Selection} selection the selection to render the action to
+   * @param {number} width the total width of the screen
+   */
   _renderLastAction(selection, width) {
     if (this._lastAction) {
       let tileX = width - MARGIN;
@@ -115,6 +188,14 @@ class Observer {
     }
   }
 
+  /**
+   * @private
+   * Renders the meta data to the game, including turn number, avatar and turn
+   * order, and the last action made.
+   *
+   * @param {d3.Selection} selection the selection to render the action to
+   * @param {number} width the total width of the screen
+   */
   _renderMeta(selection, width) {
     selection
       .append('text')
@@ -129,13 +210,21 @@ class Observer {
     this._renderLastAction(selection, width);
   }
 
-  render(selection, x, y, width, height) {
+  /**
+   * Renders the entire screen to the given selection, including
+   * the meta info and current board state.
+   *
+   * @param {d3.Selection} selection the current D3 selection
+   * @param {number} width the total width of the "screen"
+   * @param {number} height the total height of the "screen"
+   */
+  render(selection, width = WIDTH, height = HEIGHT) {
     selection
       .append('g')
       .append('rect')
       .attr('class', 'background')
-      .attr('x', x)
-      .attr('y', y)
+      .attr('x', 0)
+      .attr('y', 0)
       .attr('width', width)
       .attr('height', height);
 
@@ -144,7 +233,7 @@ class Observer {
     const boardSize = width - 2 * MARGIN;
     this._boardState.render(
       selection,
-      x + MARGIN,
+      MARGIN,
       height - boardSize - MARGIN,
       boardSize,
       this._lastAction ? this._lastAction.coords : null
@@ -152,13 +241,15 @@ class Observer {
   }
 
   /**
+   * Renders the current game state screen to a file at the
+   * given path.
    *
-   * @param {string} path
+   * @param {string} path the path to render the state to
    */
   renderToFile(path) {
     const svg = this.d3Node.createSVG(WIDTH, HEIGHT);
 
-    this.render(svg, 0, 0, WIDTH, HEIGHT);
+    this.render(svg, WIDTH, HEIGHT);
 
     const svgFile = fs.createWriteStream(path);
     svgFile.write(this.d3Node.svgString());

@@ -131,6 +131,14 @@ class Avatar {
     this._hash = `${this.coords.getHash()}${this.position.getHash()}`;
   }
 
+  /**
+   * Renders an avatar to the given selection.
+   *
+   * @param {d3.Selection} selection the current D3 selection
+   * @param {number} xStart the starting x position for the board
+   * @param {number} yStart the starting y position for the board
+   * @param {number} tileSize the size of a board tile
+   */
   render(selection, xStart, yStart, tileSize) {
     const { x, y } = this.coords;
     const boardX = xStart + x * tileSize;
@@ -141,6 +149,13 @@ class Avatar {
 
     const group = selection.append('g').classed('dead', this.hasLost());
 
+    /**
+     * Renders a circle with the given class name to the avatar
+     * selection group.
+     *
+     * @param {string} className the circle's class name
+     * @returns {d3.Selection} the rendered circle
+     */
     const renderCircle = className =>
       group
         .append('circle')
