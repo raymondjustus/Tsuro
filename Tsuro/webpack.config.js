@@ -1,18 +1,24 @@
 const path = require('path');
 const { BannerPlugin } = require('webpack');
-const nodeExternals = require('webpack-node-externals');
-const WebpackShellPlugin = require('webpack-shell-plugin');
+const WebpackShellPlugin = require('webpack-shell-plugin-next');
 
-const BASE_PATH = path.resolve(__dirname, '5');
-const OUTPUT_FILENAME = 'xobs';
+const files = {
+  '5/xobs': '5/src/index.js',
+};
 
 module.exports = {
   target: 'node',
   mode: 'production',
-  entry: path.resolve(BASE_PATH, 'src/index.js'),
+  entry: Object.entries(files).reduce(
+    (acc, [output, input]) =>
+      Object.assign(acc, {
+        [output]: path.resolve(__dirname, input),
+      }),
+    {}
+  ),
   output: {
-    path: BASE_PATH,
-    filename: OUTPUT_FILENAME,
+    path: __dirname,
+    filename: '[name]',
   },
   module: {
     rules: [
@@ -29,12 +35,7 @@ module.exports = {
       raw: true,
     }),
     new WebpackShellPlugin({
-      onBuildEnd: [`chmod +x ${path.resolve(BASE_PATH, OUTPUT_FILENAME)}`],
-    }),
-  ],
-  externals: [
-    nodeExternals({
-      whitelist: ['d3-node'],
+      onBuildEnd: Object.keys(files).map(output => `chmod +x ${path.resolve(__dirname, output)}`),
     }),
   ],
 };
