@@ -1,9 +1,6 @@
-const fs = require('fs');
-const D3Node = require('d3-node');
 const { Avatar, Tile } = require('.');
 const { getEmptyBoardArray } = require('./utils');
-const { BOARD_SIZE, DIRECTIONS_CLOCKWISE, RENDER_STYLES } = require('./utils/constants');
-
+const { BOARD_SIZE, DIRECTIONS_CLOCKWISE } = require('./utils/constants');
 require('./utils/polyfills');
 
 class BoardState {
@@ -13,9 +10,6 @@ class BoardState {
    * @param {BoardState} [initialState] an override for initial state
    */
   constructor(initialState) {
-    this.d3Node = new D3Node({ styles: RENDER_STYLES });
-    this.d3 = this.d3Node.d3;
-
     if (initialState) {
       this._avatars = initialState._avatars;
       this._initialAvatarHashes = initialState._initialAvatarHashes;
@@ -191,10 +185,6 @@ class BoardState {
     delete this._avatars[id];
   }
 
-  ///////////////////////////////////
-  // RENDER FUNCTIONS
-  ///////////////////////////////////
-
   /**
    * Renders a board to the given selection.
    *
@@ -221,22 +211,6 @@ class BoardState {
     this.getAvatars().forEach(avatar => {
       avatar.render(avatarGroup, xStart, yStart, tileSize);
     });
-  }
-
-  /**
-   * Renders a tile to the render directory, given a filename.
-   *
-   * @param {string} path the path of the file (with extension)
-   * @param {string} [size=800] the size of the image
-   */
-  renderToFile(path, size = 800) {
-    const svg = this.d3Node.createSVG(size, size);
-
-    this.render(svg, 0, 0, size);
-
-    const svgFile = fs.createWriteStream(path);
-    svgFile.write(this.d3Node.svgString());
-    svgFile.end();
   }
 }
 

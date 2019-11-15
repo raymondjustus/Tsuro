@@ -57,45 +57,68 @@ const RENDER_COLORS = {
 exports.RENDER_COLORS = RENDER_COLORS;
 
 exports.RENDER_STYLES = `
-  .border, .port, .avatar {
+  .avatar, .border, .port {
     stroke: ${RENDER_COLORS.BORDER};
     stroke-width: 1;
   }
 
+  .avatar__highlight {
+    fill: ${RENDER_COLORS.BOARD};
+    stroke: ${RENDER_COLORS.BOARD};
+    stroke-width: 7;
+  }
+
   .avatar__shadow {
     fill: ${RENDER_COLORS.PATH};
+    stroke: ${RENDER_COLORS.PATH};
+    stroke-width: 5;
+  }
+
+  .background {
+    fill: ${RENDER_COLORS.WHITE};
   }
 
   .border {
     fill: none;
   }
 
-  .background {
-    fill: ${RENDER_COLORS.TILE};
-  }
-
-  .background--empty {
-    fill: ${RENDER_COLORS.BOARD};
-  }
-
   .dead {
-    opacity: 0.75;
+    opacity: 0.5;
   }
 
   .port {
     fill: ${RENDER_COLORS.WHITE};
   }
 
-  .path__shadow {
-    fill: none;
-    stroke: ${RENDER_COLORS.BORDER};
-    stroke-width: 5;
-    opacity: 0.5;
-  }
-
   .path {
     fill: none;
     stroke: ${RENDER_COLORS.PATH};
     stroke-width: 3;
+  }
+
+  .path__shadow {
+    fill: none;
+    opacity: 0.5;
+    stroke: ${RENDER_COLORS.BORDER};
+    stroke-width: 7;
+  }
+
+  .tile-bg {
+    fill: ${RENDER_COLORS.TILE};
+  }
+
+  .tile-bg--empty {
+    fill: ${RENDER_COLORS.BOARD};
+  }
+
+  text {
+    fill: ${RENDER_COLORS.BLACK};
+    font-family: 'Helvetica', sans-serif;
+    font-size: 16px;
+    transform: translate(0, 12px);
+  }
+
+  text tspan {
+    font-weight: 600;
   }
 `;

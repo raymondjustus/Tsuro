@@ -227,10 +227,6 @@ class Board {
     });
   }
 
-  ///////////////////////////////////
-  // RENDER FUNCTIONS
-  ///////////////////////////////////
-
   /**
    * Renders a board to the given selection.
    *
@@ -241,16 +237,6 @@ class Board {
    */
   render(selection, xStart, yStart, size) {
     this._state.render(selection, xStart, yStart, size);
-  }
-
-  /**
-   * Renders a tile to the render directory, given a filename.
-   *
-   * @param {string} path the path of the file (with extension)
-   * @param {string} [size] the size of the image
-   */
-  renderToFile(path, size) {
-    this._state.renderToFile(path, size);
   }
 }
 

@@ -1,5 +1,5 @@
 const { Coords, Position } = require('.');
-const Renderer = require('./Renderer');
+const RenderUtils = require('./renderUtils');
 const { DIRECTIONS, PORTS } = require('./utils/constants');
 
 class Avatar {
@@ -133,30 +133,24 @@ class Avatar {
 
   render(selection, xStart, yStart, tileSize) {
     const { x, y } = this.coords;
-
     const boardX = xStart + x * tileSize;
     const boardY = yStart + y * tileSize;
 
-    const renderer = new Renderer(boardX, boardY, tileSize);
-
-    const [aX, aY] = renderer.getPositionCoords(this.position);
+    const renderUtils = new RenderUtils(boardX, boardY, tileSize);
+    const [cx, cy] = renderUtils.getPositionCoords(this.position);
 
     const group = selection.append('g').classed('dead', this.hasLost());
 
-    group
-      .append('circle')
-      .attr('class', 'avatar__shadow')
-      .attr('cx', renderer.scaleX(aX))
-      .attr('cy', renderer.scaleY(aY))
-      .attr('r', Math.min(tileSize * 0.1, 12));
+    const renderCircle = className =>
+      group
+        .append('circle')
+        .attr('class', className)
+        .attr('cx', renderUtils.scaleX(cx))
+        .attr('cy', renderUtils.scaleY(cy))
+        .attr('r', Math.min(tileSize * 0.07, 10));
 
-    group
-      .append('circle')
-      .attr('class', 'avatar')
-      .attr('fill', this.color)
-      .attr('cx', renderer.scaleX(aX))
-      .attr('cy', renderer.scaleY(aY))
-      .attr('r', Math.min(tileSize * 0.07, 10));
+    renderCircle('avatar__shadow');
+    renderCircle('avatar').attr('fill', this.color);
   }
 }
 

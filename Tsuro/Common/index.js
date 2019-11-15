@@ -12,6 +12,6 @@ exports.InitialPlacement = InitialPlacement;
 exports.IntermediateAction = IntermediateAction;
 exports.Path = require('./path');
 exports.Position = require('./position');
-exports.Renderer = require('./Renderer');
+exports.RenderUtils = require('./renderUtils');
 exports.RuleChecker = require('./rules');
 exports.TilePlacement = TilePlacement;

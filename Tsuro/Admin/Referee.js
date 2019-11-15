@@ -20,6 +20,21 @@ class Referee {
     this.playerIds = [];
 
     this.removedPlayersForTurn = {};
+
+    this.observerMap = {};
+  }
+
+  addObserver(observer) {
+    const { id } = observer;
+    this.observerMap[id] = observer;
+  }
+
+  _getObservers() {
+    return Object.values(this.observerMap);
+  }
+
+  _updateObservers(updateFunc) {
+    return this._getObservers().forEach(updateFunc);
   }
 
   /**
@@ -51,6 +66,9 @@ class Referee {
     }, {});
     this.playerIds.forEach(id => {
       this.playerMap[id].setPlayerColors(idToColorMap);
+    });
+    this._updateObservers(observer => {
+      observer.setPlayerColors(idToColorMap);
     });
   }
 
@@ -108,7 +126,16 @@ class Referee {
     const boardState = this.board.getState();
     player.updateState(boardState);
     player.setTurnStatus(true);
-    player.receiveHand(this._getHand(handSize));
+    const hand = this._getHand(handSize);
+    player.receiveHand(hand);
+
+    this._updateObservers(observer => {
+      observer.updateBoardState(boardState);
+      observer.updateCurrentTurn(this.currentTurn);
+      observer.updateCurrentPlayerId(player.id);
+      observer.updateCurrentHand(hand);
+    });
+
     return boardState;
   }
 
@@ -173,10 +200,13 @@ class Referee {
     this.playerIds.forEach(id => {
       this.playerMap[id].updateState(boardState);
     });
+    this._updateObservers(observer => {
+      observer.updateBoardState(boardState);
+    });
   }
 
   /**
-   * Removes a player from the board and play.
+   * Removes a player from play.
    *
    * @param {Player} player the player to remove from play
    */
@@ -187,7 +217,9 @@ class Referee {
       ...(this.removedPlayersForTurn[this.currentTurn] || []),
       id,
     ];
-    // this.board.removeAvatar(id);
+    this._updateObservers(observer => {
+      observer.removePlayer(id);
+    });
   }
 
   /**
@@ -209,6 +241,9 @@ class Referee {
     } else {
       this.board.placeTile(tile, coords);
     }
+    this._updateObservers(observer => {
+      observer.updateLastAction(action);
+    });
     this._endPlayerTurn(player);
   }
 
