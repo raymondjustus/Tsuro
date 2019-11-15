@@ -27,6 +27,10 @@ module.exports = {
         exclude: /node_modules/,
         use: 'babel-loader',
       },
+      {
+        test: /\.node$/,
+        use: 'node-loader',
+      },
     ],
   },
   plugins: [

@@ -71,14 +71,13 @@ const styles = `
     fill: ${COLORS.BOARD};
   }
 
-  text {
+  .text {
     fill: ${COLORS.BLACK};
     font-family: 'Helvetica', sans-serif;
-    font-size: 16px;
-    transform: translate(0, 12px);
+    font-size: 20;
   }
 
-  text tspan {
+  .bold {
     font-weight: 600;
   }
 `;

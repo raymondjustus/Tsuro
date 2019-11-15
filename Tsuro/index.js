@@ -25,4 +25,4 @@ referee.addPlayer(wirt); // Wirt wins
 referee.notifyPlayersOfColors();
 referee.runGame();
 
-observer.renderToFile('final.svg');
+observer.renderToFile('final.png');
