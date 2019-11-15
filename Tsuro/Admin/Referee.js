@@ -180,8 +180,9 @@ class Referee {
    * Removes a player from the board and play.
    *
    * @param {Player} player the player to remove from play
+   * @param {boolean} [fromLegalMove=true] will add to rejected players if false
    */
-  _removePlayer(player) {
+  _removePlayer(player, fromLegalMove) {
     const { id } = player;
     delete this.currentPlayers[id];
     this.removedPlayersForTurn[this.currentTurn] = [
@@ -189,7 +190,9 @@ class Referee {
       id,
     ];
     this.board.removeAvatar(id);
-    this.rejectedPlayers.push(id);
+    if (!fromLegalMove) {
+      this.rejectedPlayers.push(id);
+    }
   }
 
   /**
@@ -231,7 +234,7 @@ class Referee {
     const isLegal = this._checkForActionLegality(boardState, player, action, isInitial);
     const isValid = this._checkForActionValidity(boardState, player, action, isInitial);
     if (!isValid || !isLegal) {
-      this._removePlayer(player);
+      this._removePlayer(player, isLegal);
     }
     if (isLegal) {
       this._usePlayerAction(player, action, isInitial);
@@ -279,12 +282,19 @@ class Referee {
    * @returns {string[]} an array of player IDs
    */
   getWinners() {
+    const result = [];
+    Object.keys(this.removedPlayersForTurn).forEach(turn => {
+      result.unshift(this.removedPlayersForTurn[turn]);
+    });
+    // Put winners in front
     const currentPlayers = Object.keys(this.currentPlayers);
     if (currentPlayers.length > 0) {
-      return currentPlayers;
+      result.unshift(currentPlayers);
+    } else {
+      const lastTurn = Math.max(...Object.keys(this.removedPlayersForTurn));
+      result.unshift(this.removedPlayersForTurn[lastTurn]);
     }
-    const lastTurn = Math.max(...Object.keys(this.removedPlayersForTurn));
-    return this.removedPlayersForTurn[lastTurn];
+    return result;
   }
 
   /**

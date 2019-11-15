@@ -8,11 +8,9 @@ const DumbStrategy = require('../../Player/Strategy/DumbStrategy');
  */
 const handleReferee = playerNames => {
   const referee = new Referee();
-  const players = [];
   playerNames.forEach(name => {
     const player = new Player(name, name, DumbStrategy);
     player.setPlayerPrintResultsStatus(false);
-    players.push(player);
     try {
       referee.addPlayer(player);
     } catch (error) {
@@ -23,21 +21,8 @@ const handleReferee = playerNames => {
   referee.notifyPlayersOfColors();
   referee.runGame();
 
-  const winners = [referee.getWinners()];
-
-  Object.keys(referee.removedPlayersForTurn).forEach(ending => {
-    winners.push(referee.removedPlayersForTurn[ending]);
-  });
-
-  const losers = [];
-  const nonDisqualiedPlayers = winners => [].concat(...winners);
-  for (let i = nonDisqualiedPlayers.length; i--; ) {
-    if (winners.indexOf(nonDisqualiedPlayers[i]) === -1) {
-      if (nonDisqualiedPlayers[i]) {
-        losers.push(nonDisqualiedPlayers[i]);
-      }
-    }
-  }
+  const winners = referee.getWinners();
+  const losers = referee.getLosers();
 
   const output = { winners: winners, losers: losers };
   console.log(JSON.stringify(output));
