@@ -5,11 +5,22 @@
   "main": "index.js",
   "author": "",
   "license": "ISC",
+  "scripts": {
+    "build": "webpack"
+  },
   "dependencies": {
-    "d3": "^5.12.0",
     "d3-node": "^2.2.0"
   },
   "devDependencies": {
-    "@types/d3": "^5.7.2"
+    "@babel/core": "^7.7.2",
+    "@babel/plugin-proposal-class-properties": "^7.7.0",
+    "@babel/polyfill": "^7.7.0",
+    "@babel/preset-env": "^7.7.1",
+    "@types/d3": "^5.7.2",
+    "babel-loader": "^8.0.6",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10",
+    "webpack-node-externals": "^1.7.2",
+    "webpack-shell-plugin": "^0.5.0"
   }
 }

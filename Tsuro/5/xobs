@@ -1,5 +1,4415 @@
 #!/usr/bin/env node
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 50);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, exports) {
 
-const main = require('./src');
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+exports.BOARD_SIZE = 10;
+exports.COLORS = {
+  BLACK: 'black',
+  BLUE: 'blue',
+  GREEN: 'green',
+  RED: 'red',
+  WHITE: 'white'
+};
+var DIRECTIONS = {
+  NORTH: 'north',
+  EAST: 'east',
+  SOUTH: 'south',
+  WEST: 'west'
+};
+exports.DIRECTIONS = DIRECTIONS;
+exports.DIRECTIONS_CLOCKWISE = [DIRECTIONS.NORTH, DIRECTIONS.EAST, DIRECTIONS.SOUTH, DIRECTIONS.WEST];
+exports.GAME_STATUS = {
+  WAITING: 0,
+  CURRENT_TURN: 1,
+  GAME_OVER: 2
+};
+var LETTERS = 'ABCDEFGH'.split('');
+exports.LETTERS = LETTERS;
+exports.LETTERS_MAP = LETTERS.reduce(function (acc, letter, i) {
+  return Object.assign(acc, _defineProperty({}, letter, i));
+}, {});
+exports.PORTS = {
+  ZERO: 0,
+  ONE: 1
+};
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(4);
+
+var _require = __webpack_require__(55),
+    InitialAction = _require.InitialAction,
+    IntermediateAction = _require.IntermediateAction;
+
+exports.Avatar = __webpack_require__(56);
+exports.Tile = __webpack_require__(40);
+exports.BoardState = __webpack_require__(41);
+exports.Board = __webpack_require__(46);
+exports.Coords = __webpack_require__(62);
+exports.InitialAction = InitialAction;
+exports.IntermediateAction = IntermediateAction;
+exports.Path = __webpack_require__(45);
+exports.Position = __webpack_require__(43);
+exports.RenderUtils = __webpack_require__(5);
+exports.RuleChecker = __webpack_require__(63);
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _require = __webpack_require__(42),
+    getPositionFromLetter = _require.getPositionFromLetter,
+    getLetterFromPosition = _require.getLetterFromPosition;
+
+exports.getEmptyBoardArray = __webpack_require__(59);
+exports.getLetterFromPosition = getLetterFromPosition;
+exports.getPositionFromLetter = getPositionFromLetter;
+exports.getTileFromLetters = __webpack_require__(60);
+exports.incrementIndex = __webpack_require__(44);
+exports.styles = __webpack_require__(61);
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports.tiles = __webpack_require__(51);
+exports.getInput = __webpack_require__(52);
+exports.handlePlacements = __webpack_require__(54);
+exports.isValidPlacement = __webpack_require__(48);
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports) {
+
+/**
+ * Gets the first non-null value returned from an array, given
+ * a filter function.
+ *
+ * @param {function} getValueFromItem the function that returns
+ * a value or null, given an array item
+ * @returns {any} the first non-null value returned from the
+ * filter
+ */
+Array.prototype.first = function (getValueFromItem) {
+  var firstValue = null;
+  this.some(function (value) {
+    var returnedValue = getValueFromItem(value);
+
+    if (returnedValue !== null) {
+      firstValue = returnedValue;
+      return true;
+    }
+
+    return false;
+  });
+  return firstValue;
+};
+/**
+ * Retrieves all values from a given object.
+ *
+ * @param {object} object the object to retrieve the values from
+ * @returns {any[]} an array of the object values
+ */
+
+
+Object.prototype.values = function (object) {
+  return Object.keys(object).map(function (key) {
+    return object[key];
+  });
+};
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _PORT_POINTS;
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var D3Node = __webpack_require__(7);
+
+var _require = __webpack_require__(0),
+    DIRECTIONS = _require.DIRECTIONS;
+
+var PORT_POINTS = (_PORT_POINTS = {}, _defineProperty(_PORT_POINTS, DIRECTIONS.NORTH, [[1 / 3, 0], [2 / 3, 0]]), _defineProperty(_PORT_POINTS, DIRECTIONS.EAST, [[1, 1 / 3], [1, 2 / 3]]), _defineProperty(_PORT_POINTS, DIRECTIONS.SOUTH, [[2 / 3, 1], [1 / 3, 1]]), _defineProperty(_PORT_POINTS, DIRECTIONS.WEST, [[0, 2 / 3], [0, 1 / 3]]), _PORT_POINTS);
+
+var RenderUtils =
+/*#__PURE__*/
+function () {
+  /**
+   * @constructor
+   * Creates a new RenderUtils object for the given specification.
+   *
+   * @param {number} x the starting x-position
+   * @param {number} y the starting y-position
+   * @param {number} size the size of the render area
+   */
+  function RenderUtils(x, y, size) {
+    var _this = this;
+
+    _classCallCheck(this, RenderUtils);
+
+    this._d3 = new D3Node().d3;
+    this.scaleX = this._getRenderScale(x, size);
+    this.scaleY = this._getRenderScale(y, size);
+    this._getDrawCommands = this._d3.line().x(function (_ref) {
+      var _ref2 = _slicedToArray(_ref, 1),
+          x = _ref2[0];
+
+      return _this.scaleX(x);
+    }).y(function (_ref3) {
+      var _ref4 = _slicedToArray(_ref3, 2),
+          y = _ref4[1];
+
+      return _this.scaleY(y);
+    }).curve(this._d3.curveBasis);
+  }
+  /**
+   * @private
+   * Gets the linear scale for rendering on a single tile.
+   *
+   * @param {number} min the minimum point of the range
+   * @param {number} size the size of the tile
+   * @returns {d3.ScaleLinear<number, number>} the linear scale
+   * of a given axis, from 0 to 1
+   */
+
+
+  _createClass(RenderUtils, [{
+    key: "_getRenderScale",
+    value: function _getRenderScale(min, size) {
+      return this._d3.scaleLinear().domain([0, 1]).range([min, min + size]);
+    }
+    /**
+     * Gets the draw commands for an svg `path` from an array of
+     * points. It draws a path using a basis curve.
+     *
+     * @param {number[][]} points an array of points to convert
+     * to draw commands
+     * @returns {string} the draw commands to pass to the `d`
+     * attribute of a path
+     */
+
+  }, {
+    key: "getDrawCommands",
+    value: function getDrawCommands(points) {
+      return this._getDrawCommands(points);
+    }
+    /**
+     * Gets the render coordinates for a given position.
+     *
+     * @param {Position} position the position to fetch render
+     * coordinates for
+     * @returns {[number, number]} the x and y render coordinates
+     * within an array
+     */
+
+  }, {
+    key: "getPositionCoords",
+    value: function getPositionCoords(position) {
+      var direction = position.direction,
+          port = position.port;
+      return PORT_POINTS[direction][port];
+    }
+  }]);
+
+  return RenderUtils;
+}();
+
+module.exports = RenderUtils;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports) {
+
+/**
+ * Creates a message to send to STDOUT as a stringified
+ * JSON array.
+ *
+ * @param  {...string} messages the message parts
+ * to send as an array
+ * @returns {string} the stringified JSON array of messages
+ */
+var getMessage = function getMessage() {
+  for (var _len = arguments.length, messages = new Array(_len), _key = 0; _key < _len; _key++) {
+    messages[_key] = arguments[_key];
+  }
+
+  return JSON.stringify(messages);
+};
+
+module.exports = getMessage;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+const jsDom = __webpack_require__(57)
+const d3 = __webpack_require__(58)
+
+module.exports = D3Node
+
+module.exports.d3 = d3
+module.exports.jsDom = jsDom
+
+function fixXmlCase (text) {
+  // Fix a jsdom issue where all SVG tagNames are lowercased:
+  // https://github.com/tmpvar/jsdom/issues/620
+  var tagNames = ['linearGradient', 'radialGradient', 'clipPath', 'textPath']
+  for (var i = 0, l = tagNames.length; i < l; i++) {
+    var tagName = tagNames[i]
+    text = text.replace(
+      new RegExp('(<|</)' + tagName.toLowerCase() + '\\b', 'g'),
+      function (all, start) {
+        return start + tagName
+      })
+  }
+  return text
+}
+
+function D3Node ({ d3Module = d3, selector = '', container = '', styles = '', svgStyles = '', canvasModule = '' } = {}) {
+  // deprecates props
+  if (svgStyles && !styles) { // deprecated svgStyles option
+    console.warn('WARNING: svgStyles is deprecated, please use styles instead !!')
+    styles = svgStyles
+  }
+
+  // auto-new instance, so we always have 'this'
+  if (!(this instanceof D3Node)) {
+    return new D3Node({ d3Module, selector, container, styles })
+  }
+
+  // setup DOM
+  let document = jsDom.jsdom()
+  if (container) {
+    document = jsDom.jsdom(container)
+  }
+
+  // setup d3 selection
+  let d3Element = d3Module.select(document.body)
+  if (selector) {
+    d3Element = d3Element.select(selector)
+  }
+
+  this.options = { d3Module, selector, container, styles, canvasModule }
+  this.document = document
+  this.window = document.defaultView
+  this.d3Element = d3Element
+  this.d3 = d3Module
+}
+
+D3Node.prototype.createSVG = function (width, height, attrs) {
+  const svg = this.d3Element.append('svg')
+    .attr('xmlns', 'http://www.w3.org/2000/svg')
+
+  if (width && height) {
+    svg.attr('width', width)
+      .attr('height', height)
+  }
+
+  if (attrs) {
+    Object.keys(attrs).forEach(function (key) {
+      svg.attr(key, attrs[key])
+    })
+  }
+
+  if (this.options.styles) {
+    svg.append('defs')
+      .append('style')
+      .attr('type', 'text/css')
+      .text(`<![CDATA[ ${this.options.styles} ]]>`)
+  }
+  return svg
+}
+
+// experimental method for creating canvas
+D3Node.prototype.createCanvas = function (width, height) {
+  const Canvas = this.options.canvasModule
+  if (!Canvas || !Canvas.version) {
+    throw new Error('Install node-canvas for HTMLCanvasElement support.')
+  }
+
+  let canvas = null
+  // console.log('using Canvas.version:', Canvas.version)
+  if (parseInt(Canvas.version) >= 2) {
+    canvas = new Canvas.Canvas(width, height)
+  } else {
+    canvas = new Canvas(width, height)
+  }
+  this.options.canvas = canvas
+  return canvas
+}
+
+D3Node.prototype.svgString = function () {
+  if (this.d3Element.select('svg').node()) {
+    // temp until: https://github.com/tmpvar/jsdom/issues/1368
+    return fixXmlCase(this.d3Element.select('svg').node().outerHTML)
+  }
+  return ''
+}
+
+D3Node.prototype.html = function () {
+  return jsDom.serializeDocument(this.document)
+}
+
+D3Node.prototype.chartHTML = function () {
+  return this.document.querySelector(this.options.selector).outerHTML
+}
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* unused harmony export name */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return version; });
+/* unused harmony export description */
+/* unused harmony export keywords */
+/* unused harmony export homepage */
+/* unused harmony export license */
+/* unused harmony export author */
+/* unused harmony export main */
+/* unused harmony export unpkg */
+/* unused harmony export jsdelivr */
+/* unused harmony export module */
+/* unused harmony export repository */
+/* unused harmony export scripts */
+/* unused harmony export devDependencies */
+/* unused harmony export dependencies */
+var name = "d3";
+var version = "5.4.0";
+var description = "Data-Driven Documents";
+var keywords = ["dom","visualization","svg","animation","canvas"];
+var homepage = "https://d3js.org";
+var license = "BSD-3-Clause";
+var author = {"name":"Mike Bostock","url":"https://bost.ocks.org/mike"};
+var main = "dist/d3.node.js";
+var unpkg = "dist/d3.min.js";
+var jsdelivr = "dist/d3.min.js";
+var module = "index";
+var repository = {"type":"git","url":"https://github.com/d3/d3.git"};
+var scripts = {"pretest":"rimraf dist && mkdir dist && json2module package.json > dist/package.js && node rollup.node","test":"tape 'test/**/*-test.js'","prepublishOnly":"npm run test && rollup -c --banner \"$(preamble)\" && uglifyjs -b beautify=false,preamble=\"'$(preamble)'\" dist/d3.js -c negate_iife=false -m -o dist/d3.min.js","postpublish":"git push && git push --tags && cd ../d3.github.com && git pull && cp ../d3/dist/d3.js d3.v5.js && cp ../d3/dist/d3.min.js d3.v5.min.js && git add d3.v5.js d3.v5.min.js && git commit -m \"d3 ${npm_package_version}\" && git push && cd - && cd ../d3-bower && git pull && cp ../d3/LICENSE ../d3/README.md ../d3/dist/d3.js ../d3/dist/d3.min.js . && git add -- LICENSE README.md d3.js d3.min.js && git commit -m \"${npm_package_version}\" && git tag -am \"${npm_package_version}\" v${npm_package_version} && git push && git push --tags && cd - && zip -j dist/d3.zip -- LICENSE README.md API.md CHANGES.md dist/d3.js dist/d3.min.js"};
+var devDependencies = {"json2module":"0.0","package-preamble":"0.1","rimraf":"2","rollup":"0.57","rollup-plugin-ascii":"0.0","rollup-plugin-node-resolve":"3","tape":"4","uglify-js":"3.2"};
+var dependencies = {"d3-array":"1","d3-axis":"1","d3-brush":"1","d3-chord":"1","d3-collection":"1","d3-color":"1","d3-contour":"1","d3-dispatch":"1","d3-drag":"1","d3-dsv":"1","d3-ease":"1","d3-fetch":"1","d3-force":"1","d3-format":"1","d3-geo":"1","d3-hierarchy":"1","d3-interpolate":"1","d3-path":"1","d3-polygon":"1","d3-quadtree":"1","d3-random":"1","d3-scale":"2","d3-scale-chromatic":"1","d3-selection":"1","d3-shape":"1","d3-time":"1","d3-time-format":"2","d3-timer":"1","d3-transition":"1","d3-voronoi":"1","d3-zoom":"1"};
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-array");
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-axis");
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-brush");
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-chord");
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-collection");
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-color");
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-contour");
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-dispatch");
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-drag");
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-dsv");
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-ease");
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-fetch");
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-force");
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-format");
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-geo");
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-hierarchy");
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-interpolate");
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-path");
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-polygon");
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-quadtree");
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-random");
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-scale");
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-scale-chromatic");
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-selection");
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-shape");
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-time");
+
+/***/ }),
+/* 35 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-time-format");
+
+/***/ }),
+/* 36 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-timer");
+
+/***/ }),
+/* 37 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-transition");
+
+/***/ }),
+/* 38 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-voronoi");
+
+/***/ }),
+/* 39 */
+/***/ (function(module, exports) {
+
+module.exports = require("d3-zoom");
+
+/***/ }),
+/* 40 */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var RenderUtils = __webpack_require__(5);
+
+var _require = __webpack_require__(0),
+    DIRECTIONS_CLOCKWISE = _require.DIRECTIONS_CLOCKWISE;
+
+__webpack_require__(4);
+
+var Tile =
+/*#__PURE__*/
+function () {
+  /**
+   * Creates a new Tile, with the given paths.
+   *
+   * @param {Path[]} [paths=[]] the paths of the tile
+   */
+  function Tile() {
+    var paths = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+    _classCallCheck(this, Tile);
+
+    this.paths = paths;
+  }
+  /**
+   * Returns a new copy of this tile.
+   *
+   * @param {number} [rotations] rotations to perform on the new copy
+   * @returns {Tile} a copy of this tile
+   */
+
+
+  _createClass(Tile, [{
+    key: "copy",
+    value: function copy() {
+      var rotations = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+      var tileCopy = new Tile(this.paths.map(function (path) {
+        return path.copy();
+      }));
+
+      if (rotations > 0) {
+        tileCopy.rotate(rotations);
+      }
+
+      return tileCopy;
+    }
+    /**
+     * Gets the ending position of the given starting position on the tile.
+     *
+     * @param {Position} position the chosen starting position
+     * @returns {Position} the respective ending position
+     */
+
+  }, {
+    key: "getEndingPosition",
+    value: function getEndingPosition(position) {
+      return this.paths.first(function (path) {
+        return path.getEndingPosition(position);
+      });
+    }
+    /**
+     * Checks exact match on pathways between this tile and the given one.
+     *
+     * @param {Tile} tile the tile to check equality against
+     * @returns {boolean} whether the given tile is equal to this one
+     */
+
+  }, {
+    key: "isEqualTo",
+    value: function isEqualTo(tile) {
+      return this.paths.every(function (path) {
+        return tile.paths.some(function (otherPath) {
+          return otherPath.isEqualTo(path);
+        });
+      });
+    }
+    /**
+     * Checks the equality of this tile versus the given, allowing for a
+     * difference in rotations.
+     *
+     * @param {Tile} tile the tile to check equality against
+     * @returns {boolean} whether the given tile is equal to this one
+     */
+
+  }, {
+    key: "isEqualToRotated",
+    value: function isEqualToRotated(tile) {
+      return this.isEqualTo(tile) || this.isEqualTo(tile.copy(1)) || this.isEqualTo(tile.copy(2)) || this.isEqualTo(tile.copy(3));
+    }
+    /**
+     * Rotates the tile 90 degrees clockwise per number of
+     * rotations given.
+     *
+     * @param {number} rotations the amount of 90-degree
+     * clockwise rotations to perform
+     * @returns {Tile} this tile, rotated
+     */
+
+  }, {
+    key: "rotate",
+    value: function rotate(rotations) {
+      var actualRotations = rotations % DIRECTIONS_CLOCKWISE.length;
+
+      if (actualRotations > 0) {
+        this.paths = this.paths.map(function (path) {
+          path.rotate(actualRotations);
+          return path;
+        });
+      }
+
+      return this;
+    }
+    /**
+     * Renders a tile to the given D3 selection with the given
+     * parameters.
+     *
+     * @param {d3.Selection} selection the current D3 selection
+     * @param {number} x the starting X position
+     * @param {number} y  the starting Y position
+     * @param {number} size  the total size of the tile
+     * (equivalent to width or height)
+     */
+
+  }, {
+    key: "render",
+    value: function render(selection, x, y, size) {
+      var _this = this;
+
+      var renderUtils = new RenderUtils(x, y, size);
+      var group = selection.append('g');
+      /**
+       * Renders a square to the selection group with the given
+       * class name.
+       *
+       * @param {string} className the class of the rendered square
+       * @returns {d3.Selection} the rendered square
+       */
+
+      var renderSquare = function renderSquare(className) {
+        return group.append('rect').attr('class', className).attr('x', x).attr('y', y).attr('width', size).attr('height', size);
+      };
+      /**
+       * Renders the tile's background.
+       */
+
+
+      var renderBackground = function renderBackground() {
+        var isEmpty = !_this.paths.length;
+        renderSquare('tile-bg').classed('tile-bg--empty', isEmpty);
+      };
+      /**
+       * Renders the tile's border.
+       */
+
+
+      var renderBorder = function renderBorder() {
+        renderSquare('border');
+      };
+      /**
+       * Renders a path from a given starting point to a given
+       * ending point.
+       *
+       * @param {number[]} start The starting point of the path
+       * @param {number[]} end The ending point of the path
+       * @param {string} color The color of the path
+       */
+
+
+      var getPathCommands = function getPathCommands(start, end) {
+        var startCoords = renderUtils.getPositionCoords(start);
+        var endCoords = renderUtils.getPositionCoords(end);
+        /**
+         * Gets the mid points of a path. This is used to achieve
+         * smoothly curved lines that blend into adjacent tiles.
+         *
+         * @returns {number[][]} an array of mid points
+         */
+
+        var getMidPoints = function getMidPoints() {
+          var _startCoords = _slicedToArray(startCoords, 2),
+              midX1 = _startCoords[0],
+              midY1 = _startCoords[1];
+
+          var _endCoords = _slicedToArray(endCoords, 2),
+              midX2 = _endCoords[0],
+              midY2 = _endCoords[1];
+          /**
+           * Gets the closest quarter value. If the value is 1, it'll
+           * return 0.75; otherwise, it'll return 0.25.
+           *
+           * @param {number} val the value to check
+           * @returns {number} the closest quarter value
+           */
+
+
+          var getClosestQuarterValue = function getClosestQuarterValue(val) {
+            return val === 1 ? 0.75 : 0.25;
+          };
+          /**
+           * Checks if value is 0 or 1, on a scale from 0 to 1.
+           *
+           * @param {number} val the value to check
+           * @returns {boolean} whether value is 0 or 1
+           */
+
+
+          var isZeroOrOne = function isZeroOrOne(val) {
+            return val % 1 === 0;
+          };
+
+          if (midY1 === midY2 && isZeroOrOne(midY1)) {
+            midY1 = midY2 = getClosestQuarterValue(midY1);
+          } else if (isZeroOrOne(midX1) && isZeroOrOne(midX2)) {
+            midX1 = getClosestQuarterValue(midX1);
+            midX2 = getClosestQuarterValue(midX2);
+          } else if (isZeroOrOne(midX1)) {
+            midY2 = midY1;
+          } else if (isZeroOrOne(midX2)) {
+            midY1 = midY2;
+          } else {
+            midY1 = getClosestQuarterValue(midY1);
+            midY2 = getClosestQuarterValue(midY2);
+          }
+
+          return [[midX1, midY1], [midX2, midY2]];
+        };
+
+        var points = [startCoords].concat(_toConsumableArray(getMidPoints()), [endCoords]);
+        return renderUtils.getDrawCommands(points);
+      };
+      /**
+       * Renders a path with the given class name and path commands.
+       *
+       * @param {string} className the class of the rendered path
+       * @param {string} pathCommands the commands that control the
+       * direction of the path as an svg draws them
+       * @returns {d3.Selection} the rendered path
+       */
+
+
+      var renderPath = function renderPath(className, pathCommands) {
+        return group.append('path').attr('class', className).attr('d', pathCommands);
+      }; // Renders background
+
+
+      renderBackground(); // Creates path commands and draws path shadows
+
+      var paths = this.paths.map(function (path) {
+        var pathCommands = getPathCommands(path.start, path.end);
+        renderPath('path__shadow', pathCommands);
+        return pathCommands;
+      }); // Renders paths
+
+      paths.forEach(function (pathCommands) {
+        renderPath('path', pathCommands);
+      }); // Renders border
+
+      renderBorder();
+      return group;
+    }
+  }]);
+
+  return Tile;
+}();
+
+module.exports = Tile;
+
+/***/ }),
+/* 41 */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var _require = __webpack_require__(1),
+    Avatar = _require.Avatar,
+    Tile = _require.Tile;
+
+var _require2 = __webpack_require__(2),
+    getEmptyBoardArray = _require2.getEmptyBoardArray;
+
+var _require3 = __webpack_require__(0),
+    BOARD_SIZE = _require3.BOARD_SIZE,
+    DIRECTIONS_CLOCKWISE = _require3.DIRECTIONS_CLOCKWISE;
+
+__webpack_require__(4);
+
+var BoardState =
+/*#__PURE__*/
+function () {
+  /**
+   * Creates a new Board State.
+   *
+   * @param {BoardState} [initialState] an override for initial state
+   */
+  function BoardState(initialState) {
+    _classCallCheck(this, BoardState);
+
+    if (initialState) {
+      this._avatars = initialState._avatars;
+      this._initialAvatarHashes = initialState._initialAvatarHashes;
+      this._tiles = initialState._tiles;
+    } else {
+      this._avatars = {};
+      this._initialAvatarHashes = {};
+      this._tiles = getEmptyBoardArray();
+    }
+  }
+  /**
+   * Adds an avatar to the board.
+   *
+   * @param {Player} player the player to attach to the avatar
+   * @param {Coords} coords the starting coordinates of the avatar
+   * @param {Position} position the starting position of the avatar
+   * @returns {Avatar} the newly created avatar
+   */
+
+
+  _createClass(BoardState, [{
+    key: "addAvatar",
+    value: function addAvatar(player, coords, position) {
+      var id = player.id;
+
+      if (this._avatars[id]) {
+        throw 'Player already has avatar on board';
+      }
+
+      var tile = this.getTile(coords);
+      var avatar = new Avatar(id, player.getColor(), coords, position);
+      this._initialAvatarHashes[avatar.getHash(coords, position)] = id;
+      this._avatars[id] = avatar;
+      var endPosition = tile.getEndingPosition(position);
+      this.moveAvatar(id, coords, endPosition);
+      return avatar;
+    }
+    /**
+     * Places a tile on the board at the given coordinates.
+     *
+     * @param {Tile} tile the tile to place
+     * @param {Coords} coords the coordinates to place the tile at
+     */
+
+  }, {
+    key: "addTile",
+    value: function addTile(tile, coords) {
+      var x = coords.x,
+          y = coords.y;
+      var currentTile = this._tiles[x][y];
+
+      if (currentTile) {
+        throw 'Tile already exists at coords';
+      }
+
+      this._tiles[x][y] = tile;
+    }
+    /**
+     * Creates a new copy of this Board State.
+     *
+     * @returns {BoardState} a copy of this Board State
+     */
+
+  }, {
+    key: "copy",
+    value: function copy() {
+      var _this = this;
+
+      var newState = new BoardState();
+      newState._avatars = Object.keys(this._avatars).reduce(function (acc, id) {
+        return Object.assign(acc, _defineProperty({}, id, _this._avatars[id].copy()));
+      }, {});
+      newState._initialAvatarHashes = Object.keys(this._initialAvatarHashes).reduce(function (acc, key) {
+        return Object.assign(acc, _defineProperty({}, key, _this._initialAvatarHashes[key]));
+      }, {});
+      newState._tiles = this._tiles.map(function (row) {
+        return row.map(function (tile) {
+          return tile ? tile.copy() : null;
+        });
+      });
+      return newState;
+    }
+    /**
+     * Gets a single avatar with the given ID. Returns null
+     * if an avatar with the given ID doesn't exist.
+     *
+     * @param {string} id the ID of the desired avatar
+     * @returns {Avatar} the avatar with the given ID
+     * @returns {null} `null`, if the avatar doesn't exist
+     */
+
+  }, {
+    key: "getAvatar",
+    value: function getAvatar(id) {
+      return this._avatars[id] || null;
+    }
+    /**
+     * Gets a list of the avatars in the board state.
+     *
+     * @returns {Avatar[]} a list of avatars
+     */
+
+  }, {
+    key: "getAvatars",
+    value: function getAvatars() {
+      return Object.values(this._avatars);
+    }
+    /**
+     * Gets a tile at the given coordinates. Returns null if no
+     * tile exists.
+     *
+     * @param {Coords} coords the coordinates to get the tile at
+     * @returns {Tile} the tile at the given coordinates
+     * @returns {null} `null`, if no tile exists at given coordinates
+     */
+
+  }, {
+    key: "getTile",
+    value: function getTile(coords) {
+      var x = coords.x,
+          y = coords.y;
+
+      if (this._tiles[x] && this._tiles[x][y]) {
+        return this._tiles[x][y];
+      }
+
+      return null;
+    }
+    /**
+     * Gets a list of all tiles on the board, including empty (`null`)
+     * spaces.
+     *
+     * @returns {Tile[][]} a list representation of the board tiles
+     */
+
+  }, {
+    key: "getTiles",
+    value: function getTiles() {
+      return this._tiles;
+    }
+    /**
+     * Gets a tile's neighboring tile in the given direction.
+     *
+     * @param {Coords} coords the coordinates of the tile
+     * @param {string} direction the direction to get the neighbor at
+     * @returns {Tile} the neighboring tile
+     * @returns {null} `null`, if no tile exists in that direction
+     */
+
+  }, {
+    key: "_getNeighboringTile",
+    value: function _getNeighboringTile(coords, direction) {
+      try {
+        var neighborCoords = coords.copy().moveOne(direction);
+        return this.getTile(neighborCoords);
+      } catch (err) {
+        return null;
+      }
+    }
+    /**
+     * Checks whether a tile with the given coordinates has any
+     * neighboring tiles.
+     *
+     * @param {Coords} coords the coordinates to check
+     * @returns {boolean} whether the tile has any neighbors
+     */
+
+  }, {
+    key: "hasNeighboringTiles",
+    value: function hasNeighboringTiles(coords) {
+      var _this2 = this;
+
+      return DIRECTIONS_CLOCKWISE.some(function (direction) {
+        return !!_this2._getNeighboringTile(coords, direction);
+      });
+    }
+    /**
+     * Moves an avatar with the given ID to the given coordinates and
+     * position. Marks an avatar as collided if it lands on another
+     * avatar's initial starting place.
+     *
+     * @param {string} id the ID of the avatar
+     * @param {Coords} coords the new coords of the avatar
+     * @param {Position} position the new position of the avatar
+     */
+
+  }, {
+    key: "moveAvatar",
+    value: function moveAvatar(id, coords, position) {
+      var avatar = this.getAvatar(id);
+
+      if (!avatar) {
+        throw 'Avatar does not exist.';
+      }
+
+      avatar.move(coords, position);
+
+      if (this._initialAvatarHashes[avatar.getHash()]) {
+        avatar.collide();
+      }
+    }
+    /**
+     * Removes the avatar of the given ID from the board.
+     *
+     * @param {string} id the avatar's associated player ID
+     */
+
+  }, {
+    key: "removeAvatar",
+    value: function removeAvatar(id) {
+      delete this._avatars[id];
+    }
+    /**
+     * Renders a board to the given selection.
+     *
+     * @param {d3.Selection} selection the current D3 selection
+     * @param {number} xStart the starting x position for the board
+     * @param {number} yStart the starting y position for the board
+     * @param {number} size the total size of the board
+     */
+
+  }, {
+    key: "render",
+    value: function render(selection, xStart, yStart, size, highlightCoords) {
+      var tileSize = size / BOARD_SIZE;
+
+      var getRenderCoords = function getRenderCoords(x, y) {
+        var tileX = xStart + x * tileSize;
+        var tileY = yStart + y * tileSize;
+        return [tileX, tileY];
+      };
+
+      var emptyTile = new Tile();
+
+      this._tiles.forEach(function (column, x) {
+        column.forEach(function (tile, y) {
+          var tileToRender = tile || emptyTile;
+
+          var _getRenderCoords = getRenderCoords(x, y),
+              _getRenderCoords2 = _slicedToArray(_getRenderCoords, 2),
+              tileX = _getRenderCoords2[0],
+              tileY = _getRenderCoords2[1];
+
+          tileToRender.render(selection, tileX, tileY, tileSize).classed('raise', highlightCoords && highlightCoords.x === x && highlightCoords.y === y);
+        });
+      });
+
+      if (highlightCoords) {
+        var _getRenderCoords3 = getRenderCoords(highlightCoords.x, highlightCoords.y),
+            _getRenderCoords4 = _slicedToArray(_getRenderCoords3, 2),
+            tileX = _getRenderCoords4[0],
+            tileY = _getRenderCoords4[1];
+
+        selection.append('rect').attr('class', 'tile__highlight').attr('x', tileX).attr('y', tileY).attr('width', tileSize).attr('height', tileSize);
+        selection.select('.raise').raise();
+      }
+
+      var avatarGroup = selection.append('g');
+      this.getAvatars().forEach(function (avatar) {
+        avatar.render(avatarGroup, xStart, yStart, tileSize);
+      });
+    }
+  }]);
+
+  return BoardState;
+}();
+
+module.exports = BoardState;
+
+/***/ }),
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var Position = __webpack_require__(43);
+
+var _require = __webpack_require__(0),
+    DIRECTIONS_CLOCKWISE = _require.DIRECTIONS_CLOCKWISE,
+    LETTERS = _require.LETTERS,
+    LETTERS_MAP = _require.LETTERS_MAP,
+    PORTS = _require.PORTS;
+
+var POSITIONS_MAP = {};
+var POSITIONS = DIRECTIONS_CLOCKWISE.reduce(function (acc, direction, i) {
+  var _POSITIONS_MAP$direct;
+
+  var idx = i * 2;
+  POSITIONS_MAP[direction] = (_POSITIONS_MAP$direct = {}, _defineProperty(_POSITIONS_MAP$direct, PORTS.ZERO, idx), _defineProperty(_POSITIONS_MAP$direct, PORTS.ONE, idx + 1), _POSITIONS_MAP$direct);
+  acc.push(new Position(direction, PORTS.ZERO), new Position(direction, PORTS.ONE));
+  return acc;
+}, []);
+/**
+ * Gets a letter based on a given Position object.
+ *
+ * @param {Position} position the position object that
+ * specifies a specific port on a tile
+ * @returns {string} a letter A-H, specifying a port
+ * from North-0 to West-1, clockwise
+ */
+
+var getLetterFromPosition = function getLetterFromPosition(position) {
+  if (!position || !(position instanceof Position)) {
+    throw 'Position is not valid';
+  }
+
+  var direction = position.direction,
+      port = position.port;
+  var portMap = POSITIONS_MAP[direction];
+
+  if (!portMap) {
+    throw 'Direction is not valid';
+  }
+
+  var letterIdx = portMap[port];
+
+  if (letterIdx === undefined) {
+    throw 'Port is not valid';
+  }
+
+  return LETTERS[letterIdx];
+};
+/**
+ * Gets a Position object based on a given letter that
+ * specifies a port on a tile.
+ *
+ * @param {string} letter a letter A-H, specifying a port
+ * from North-0 to West-1, clockwise
+ * @returns {Position} the respective position
+ */
+
+
+var getPositionFromLetter = function getPositionFromLetter(letter) {
+  var positionIdx = LETTERS_MAP[letter];
+
+  if (positionIdx === undefined) {
+    throw 'Letter is not valid.';
+  }
+
+  var position = POSITIONS[positionIdx];
+  return position.copy();
+};
+
+exports.getLetterFromPosition = getLetterFromPosition;
+exports.getPositionFromLetter = getPositionFromLetter;
+
+/***/ }),
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var incrementIndex = __webpack_require__(44);
+
+var _require = __webpack_require__(0),
+    DIRECTIONS = _require.DIRECTIONS,
+    DIRECTIONS_CLOCKWISE = _require.DIRECTIONS_CLOCKWISE,
+    PORTS = _require.PORTS;
+
+var Position =
+/*#__PURE__*/
+function () {
+  /**
+   * Constructs a new Position object.
+   *
+   * @param {string} direction the direction of the tile
+   * @param {number} port the port of the given directional side
+   */
+  function Position(direction, port) {
+    _classCallCheck(this, Position);
+
+    this.direction = direction;
+    this.port = port;
+
+    this._updateHash();
+  }
+  /**
+   * Returns a new copy of this position.
+   *
+   * @returns {Position} a copy of this position
+   */
+
+
+  _createClass(Position, [{
+    key: "copy",
+    value: function copy() {
+      return new Position(this.direction, this.port);
+    }
+    /**
+     * Gets the hash for this Position.
+     *
+     * @returns {string} the hash for this Position
+     */
+
+  }, {
+    key: "getHash",
+    value: function getHash() {
+      return this._hash;
+    }
+    /**
+     * Reflects the current position to represent the connecting
+     * side on a neighboring tile.
+     *
+     * @returns {Position} this position, reflected
+     */
+
+  }, {
+    key: "reflect",
+    value: function reflect() {
+      if (this.direction === DIRECTIONS.NORTH) {
+        this.direction = DIRECTIONS.SOUTH;
+      } else if (this.direction === DIRECTIONS.EAST) {
+        this.direction = DIRECTIONS.WEST;
+      } else if (this.direction === DIRECTIONS.SOUTH) {
+        this.direction = DIRECTIONS.NORTH;
+      } else if (this.direction === DIRECTIONS.WEST) {
+        this.direction = DIRECTIONS.EAST;
+      }
+
+      this.port = this.port === PORTS.ZERO ? PORTS.ONE : PORTS.ZERO;
+
+      this._updateHash();
+
+      return this;
+    }
+    /**
+     * Checks for an exact match on direction and port between this position
+     * and the given one.
+     *
+     * @param {Position} position the position to check equality against
+     * @returns {boolean} whether the given position is equal to this one
+     */
+
+  }, {
+    key: "isEqualTo",
+    value: function isEqualTo(position) {
+      return this.direction === position.direction && this.port === position.port;
+    }
+    /**
+     * Rotates the position 90 degrees clockwise per number of rotations given.
+     *
+     * @param {number} rotations the amount of 90-degree clockwise rotations
+     * to perform
+     * @returns {Position} this position, rotated
+     */
+
+  }, {
+    key: "rotate",
+    value: function rotate(rotations) {
+      var idx = DIRECTIONS_CLOCKWISE.indexOf(this.direction);
+      var newIdx = incrementIndex(idx, DIRECTIONS_CLOCKWISE, rotations);
+      this.direction = DIRECTIONS_CLOCKWISE[newIdx];
+
+      this._updateHash();
+
+      return this;
+    }
+    /**
+     * @private
+     * Updates the hash for this Position when the direction and/or port changes.
+     */
+
+  }, {
+    key: "_updateHash",
+    value: function _updateHash() {
+      this._hash = "".concat(this.direction).concat(this.port);
+    }
+  }]);
+
+  return Position;
+}();
+
+module.exports = Position;
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports) {
+
+/**
+ * Increments the given index by one, with the max value being the length
+ * of the given array. Further increments will cycle back to 0.
+ *
+ * @param {number} index the current index to increase
+ * @param {any[]} boundedArray the array whose length sets the upper bounds
+ * of the index
+ * @param {number} [value=1] the value to increment by, defaulted to 1
+ * @returns {number} the incremented index
+ */
+var incrementIndex = function incrementIndex(index, boundedArray) {
+  var value = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
+  return (index + value) % boundedArray.length;
+};
+
+module.exports = incrementIndex;
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports) {
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Path =
+/*#__PURE__*/
+function () {
+  /**
+   * Constructs a new Path object.
+   *
+   * @param {Position} start the start position of the pat
+   * @param {Position} end the end position of the pat
+   */
+  function Path(start, end) {
+    _classCallCheck(this, Path);
+
+    this.start = start;
+    this.end = end;
+  }
+  /**
+   * Returns a new copy of this path.
+   *
+   * @returns {Path} a copy of this path
+   */
+
+
+  _createClass(Path, [{
+    key: "copy",
+    value: function copy() {
+      return new Path(this.start.copy(), this.end.copy());
+    }
+    /**
+     * Gets the ending position of the path, given the starting position.
+     *
+     * @param {Position} position the starting position to check
+     * @returns {Position} the other position, given a valid starting position
+     * @returns {null} null if the position does not exist on the path
+     */
+
+  }, {
+    key: "getEndingPosition",
+    value: function getEndingPosition(position) {
+      if (this.start.isEqualTo(position)) {
+        return this.end.copy();
+      } else if (this.end.isEqualTo(position)) {
+        return this.start.copy();
+      }
+
+      return null;
+    }
+    /**
+     * Returns whether this path contains the given position.
+     *
+     * @param {Position} position the position to check for
+     * @returns {boolean} whether the position is within the path
+     */
+
+  }, {
+    key: "has",
+    value: function has(position) {
+      return this.start.isEqualTo(position) || this.end.isEqualTo(position);
+    }
+    /**
+     * Checks for a match on positions between this path and the given one.
+     *
+     * @param {Path} path the path to check equality against
+     * @returns {boolean} whether the given path is equal to this one
+     */
+
+  }, {
+    key: "isEqualTo",
+    value: function isEqualTo(path) {
+      return this.start.isEqualTo(path.start) && this.end.isEqualTo(path.end) || this.start.isEqualTo(path.end) && this.end.isEqualTo(path.start);
+    }
+    /**
+     * Rotates the path 90 degrees clockwise per number of rotations given.
+     *
+     * @param {number} rotations the amount of 90-degree clockwise rotations
+     * to perform
+     */
+
+  }, {
+    key: "rotate",
+    value: function rotate(rotations) {
+      this.start.rotate(rotations);
+      this.end.rotate(rotations);
+    }
+  }]);
+
+  return Path;
+}();
+
+module.exports = Path;
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var BoardState = __webpack_require__(41);
+
+var _require = __webpack_require__(0),
+    BOARD_SIZE = _require.BOARD_SIZE,
+    DIRECTIONS = _require.DIRECTIONS;
+
+var Board =
+/*#__PURE__*/
+function () {
+  /**
+   * Creates a new board. Provides overrides for tiles and avatars for
+   * cloning Board objects.
+   *
+   * @param {BoardState} [stateOverride] override for initial state
+   */
+  function Board(stateOverride) {
+    _classCallCheck(this, Board);
+
+    this._state = new BoardState(stateOverride);
+  }
+  /**
+   * Creates a new copy of this Board.
+   *
+   * @returns {Board} a copy of this Board
+   */
+
+
+  _createClass(Board, [{
+    key: "copy",
+    value: function copy() {
+      var copiedState = this.getState();
+      return new Board(copiedState);
+    }
+    /**
+     * Gets a copy of an avatar with the given ID.
+     *
+     * @returns {Avatar} the copy of the avatar with the given ID
+     * @returns {null} `null`, if the avatar doesn't exist
+     */
+
+  }, {
+    key: "getAvatar",
+    value: function getAvatar(id) {
+      var avatar = this._state.getAvatar(id);
+
+      if (avatar) {
+        return avatar.copy();
+      }
+
+      return avatar;
+    }
+    /**
+     * Gets a copy of all avatars on the board.
+     *
+     * @returns {Avatar[]} the copy of all avatars on the board
+     */
+
+  }, {
+    key: "getAvatars",
+    value: function getAvatars() {
+      return this._state.getAvatars().map(function (avatar) {
+        return avatar.copy();
+      });
+    }
+    /**
+     * Gets the current state of the board, via a copy.
+     *
+     * @returns {BoardState} the current state of the board
+     */
+
+  }, {
+    key: "getState",
+    value: function getState() {
+      return this._state.copy();
+    }
+    /**
+     * @private
+     * Places an avatar on the board. Then, updates the board state with the
+     * new avatar.
+     *
+     * @param {Player} player the player to attach to the avatar
+     * @param {Coords} coords the starting coordinates of the avatar
+     * @param {Position} position the starting position of the avatar
+     */
+
+  }, {
+    key: "_placeAvatar",
+    value: function _placeAvatar(player, coords, position) {
+      this._state.addAvatar(player, coords, position);
+
+      this._updateAvatars();
+    }
+    /**
+     * @private
+     * Places a tile on the board at the given coordinates. Then, updates
+     * the board state with the new tile (if not skipped).
+     *
+     * @param {Tile} tile the tile to place
+     * @param {Coords} coords the coordinates to place the tile at
+     * @param {boolean} [skipUpdate=false] whether to skip updating
+     * the avatars on the board after place
+     */
+
+  }, {
+    key: "_placeTileAndUpdate",
+    value: function _placeTileAndUpdate(tile, coords) {
+      var skipUpdate = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+      this._state.addTile(tile, coords);
+
+      if (!skipUpdate) {
+        this._updateAvatars();
+      }
+    }
+    /**
+     * Places an initial tile and avatar on the board.
+     *
+     * @param {Player} player the player to attach to the avatar
+     * @param {Tile} tile the tile to place
+     * @param {Coords} coords the coordinates to place the tile at
+     * @param {Position} position the starting position of the avatar
+     * on the tile
+     */
+
+  }, {
+    key: "placeInitialTileAvatar",
+    value: function placeInitialTileAvatar(player, tile, coords, position) {
+      if (this._hasNeighboringTiles(coords)) {
+        throw 'Tile neighbors existing tile';
+      } else if (!this._isTileOnBorder(coords)) {
+        throw 'Tile must be placed on Border';
+      } else if (!Board.isAvatarOnOutsidePosition(coords, position)) {
+        throw 'Avatar must be placed on an inward-facing port';
+      }
+
+      this._placeTileAndUpdate(tile, coords, true);
+
+      this._placeAvatar(player, coords, position);
+    }
+    /**
+     * Places a tile on the board at the given coordinates. Then, updates
+     * the board state with the new tile.
+     *
+     * @param {Tile} tile the tile to place
+     * @param {Coords} coords the coordinates to place the tile at
+     */
+
+  }, {
+    key: "placeTile",
+    value: function placeTile(tile, coords) {
+      this._placeTileAndUpdate(tile, coords);
+    }
+    /**
+     * Removes an avatar from the board state.
+     *
+     * @param {string} id the avatar's associated player ID
+     */
+
+  }, {
+    key: "removeAvatar",
+    value: function removeAvatar(id) {
+      this._state.removeAvatar(id);
+    }
+    /**
+     * Checks whether a tile with the given coordinates has any
+     * neighboring tiles.
+     *
+     * @param {Coords} coords the coordinates to check
+     * @returns {boolean} whether the tile has any neighbors
+     */
+
+  }, {
+    key: "_hasNeighboringTiles",
+    value: function _hasNeighboringTiles(coords) {
+      return this._state.hasNeighboringTiles(coords);
+    }
+    /**
+     * @private
+     * Whether an avatar is to be placed on a valid initial position
+     * on a tile at the given coordinates.
+     *
+     * @param {Coords} coords the coordinates of the avatar's tile
+     * @param {Position} position the position of the avatar
+     * @returns {boolean} whether the initial position is valid
+     */
+
+  }, {
+    key: "_isTileOnBorder",
+
+    /**
+     * @private
+     * Checks whether the given coordinates of a tile are along
+     * the board's border.
+     *
+     * @param {Coords} coords the coordinates to check
+     * @returns {boolean} whether the coordinates are on the border
+     */
+    value: function _isTileOnBorder(coords) {
+      var x = coords.x,
+          y = coords.y;
+      return x === 0 || x === BOARD_SIZE - 1 || y === 0 || y === BOARD_SIZE - 1;
+    }
+    /**
+     * @private
+     * Updates the coordinates and position of the given avatar, given that
+     * the avatar has not yet exited the board. Moves the avatar along the board
+     * based on board paths. Marks the avatar as exited if it cannot move further.
+     *
+     * @param {Avatar} avatar the avatar to update
+     */
+
+  }, {
+    key: "_updateAvatar",
+    value: function _updateAvatar(avatar) {
+      if (!avatar.hasExited()) {
+        var position = avatar.position.copy();
+        var neighborCoords = null;
+
+        try {
+          neighborCoords = avatar.coords.copy().moveOne(position.direction);
+        } catch (err) {
+          return avatar.exit();
+        }
+
+        var neighborTile = this._state.getTile(neighborCoords);
+
+        if (neighborTile) {
+          var intermediatePosition = position.reflect();
+          var finalPosition = neighborTile.getEndingPosition(intermediatePosition);
+
+          this._state.moveAvatar(avatar.id, neighborCoords, finalPosition);
+
+          this._updateAvatar(avatar);
+        }
+      }
+    }
+    /**
+     * @private
+     * Updates the coordinates and positions of all avatars.
+     */
+
+  }, {
+    key: "_updateAvatars",
+    value: function _updateAvatars() {
+      var _this = this;
+
+      this._state.getAvatars().forEach(function (avatar) {
+        _this._updateAvatar(avatar);
+      });
+    }
+    /**
+     * Renders a board to the given selection.
+     *
+     * @param {d3.Selection} selection the current D3 selection
+     * @param {number} xStart the starting x position for the board
+     * @param {number} yStart the starting y position for the board
+     * @param {number} size the total size of the board
+     */
+
+  }, {
+    key: "render",
+    value: function render(selection, xStart, yStart, size) {
+      this._state.render(selection, xStart, yStart, size);
+    }
+  }], [{
+    key: "isAvatarOnOutsidePosition",
+    value: function isAvatarOnOutsidePosition(coords, position) {
+      var x = coords.x,
+          y = coords.y;
+      var direction = position.direction;
+      var isValid = false;
+
+      if (x === 0) {
+        isValid = direction === DIRECTIONS.WEST;
+      } else if (x === BOARD_SIZE - 1) {
+        isValid = direction === DIRECTIONS.EAST;
+      }
+
+      if (y === 0) {
+        isValid = isValid || direction === DIRECTIONS.NORTH;
+      } else if (y === BOARD_SIZE - 1) {
+        isValid = isValid || direction === DIRECTIONS.SOUTH;
+      }
+
+      return isValid;
+    }
+  }]);
+
+  return Board;
+}();
+
+module.exports = Board;
+
+/***/ }),
+/* 47 */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var _require = __webpack_require__(1),
+    BoardState = _require.BoardState;
+
+var _require2 = __webpack_require__(0),
+    GAME_STATUS = _require2.GAME_STATUS;
+
+var Player =
+/*#__PURE__*/
+function () {
+  /**
+   * Creates a new Player, with an empty hand. Sets `gameStatus`
+   * to `Waiting` and the `boardState` to an empty board.
+   *
+   * @param {string} id the unique ID of the player
+   * @param {string} name the name of the player
+   * @param {Strategy} strategy a strategy implementation to be used
+   * to make moves for the player
+   */
+  function Player(id, name, strategy) {
+    _classCallCheck(this, Player);
+
+    this.id = id;
+    this.name = name;
+    this.strategy = strategy;
+    this.colors = {};
+    this.hand = [];
+    this.gameStatus = GAME_STATUS.WAITING;
+    this.boardState = new BoardState();
+  }
+  /**
+   * Updates the game status to either be `Current Turn` if the referee
+   * is waiting on the player for action, or `Waiting` if the player's
+   * turn is now over.
+   *
+   * @param {boolean} isCurrentTurn whether it's currently the player's turn
+   */
+
+
+  _createClass(Player, [{
+    key: "setTurnStatus",
+    value: function setTurnStatus(isCurrentTurn) {
+      var gameStatus = isCurrentTurn ? GAME_STATUS.CURRENT_TURN : GAME_STATUS.WAITING;
+      this.gameStatus = gameStatus;
+    }
+    /**
+     * Updates the player's personal board state, and gives them
+     * the most recent view of the board.
+     *
+     * @param {BoardState} boardState the new BoardState given by the referee
+     */
+
+  }, {
+    key: "updateState",
+    value: function updateState(boardState) {
+      this.boardState = boardState;
+    }
+    /**
+     * Sets this player's color to the referee-assigned color.
+     *
+     * @param {string} color this player's avatar's color
+     */
+
+  }, {
+    key: "setColor",
+    value: function setColor(color) {
+      this.colors[this.id] = color;
+    }
+    /**
+     * Gets the player's avatar's color.
+     *
+     * @returns {string} the player's avatar's color
+     */
+
+  }, {
+    key: "getColor",
+    value: function getColor() {
+      return this.colors[this.id];
+    }
+    /**
+     * Adds a map of player IDs to colors, so this player knows which player
+     * is which color in the game.
+     *
+     * @param {{ [id: string]: string }} colorMap a map of player's ID to their
+     * associated avatar color
+     */
+
+  }, {
+    key: "setPlayerColors",
+    value: function setPlayerColors(colorMap) {
+      this.colors = Object.assign(this.colors, colorMap);
+    }
+    /**
+     * Receives a hand given by the referee, and updated the current
+     * player hand.
+     *
+     * @param {Tile[]} hand the new array (hand) of tiles
+     */
+
+  }, {
+    key: "receiveHand",
+    value: function receiveHand(hand) {
+      this.hand = hand;
+    }
+    /**
+     * Gets either a player's initial or intermediate action, as determined
+     * by the strategy.
+     *
+     * @param {boolean} [isInitial=false] whether the action to retrieve
+     * should be the player's initial action
+     */
+
+  }, {
+    key: "getAction",
+    value: function getAction() {
+      var isInitial = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+      if (isInitial) {
+        return this.getInitialAction();
+      }
+
+      return this.getIntermediateAction();
+    }
+    /**
+     * Gets the initial action of this player, as determined by the strategy,
+     *
+     * @returns {InitialAction} the player's initial action
+     */
+
+  }, {
+    key: "getInitialAction",
+    value: function getInitialAction() {
+      return this.strategy.getInitialAction(this.id, this.hand, this.boardState);
+    }
+    /**
+     * Gets the next intermediate action for the player, as determined by the strategy.
+     *
+     * @returns {IntermediateAction} the player's next action
+     */
+
+  }, {
+    key: "getIntermediateAction",
+    value: function getIntermediateAction() {
+      return this.strategy.getIntermediateAction(this.id, this.hand, this.boardState);
+    }
+    /**
+     * Removes all tiles from the current hand.
+     */
+
+  }, {
+    key: "clearHand",
+    value: function clearHand() {
+      this.hand = [];
+    }
+    /**
+     * Sets the `gameStatus` to `GameOver`. This signals to the player
+     * that the game is now over, and which player(s) won.
+     *
+     * @param {string[]} winners the player ID(s) of the winner(s)
+     * of the game
+     */
+
+  }, {
+    key: "endGame",
+    value: function endGame(winners) {
+      this.gameStatus = GAME_STATUS.GAME_OVER;
+      console.log(winners);
+    }
+  }]);
+
+  return Player;
+}();
+
+module.exports = Player;
+
+/***/ }),
+/* 48 */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+var _require = __webpack_require__(0),
+    LETTERS_MAP = _require.LETTERS_MAP;
+
+var _require2 = __webpack_require__(49),
+    COLOR_SET = _require2.COLOR_SET;
+/**
+ * Helper function for checking if the given placement arguments are valid.
+ *
+ * @param {any} color the user argument for color
+ * @param {any} tileIndex the user argument for tile index
+ * @param {any} rotation the user argument for rotation
+ * @param {any} x the user argument for x
+ * @param {any} y the user argument for y
+ * @returns {boolean} whether the given arguments are valid
+ */
+
+
+var areValidPlacementArgs = function areValidPlacementArgs(color, tileIndex, rotation, x, y) {
+  /**
+   * Helper function for checking if the given value is a valid
+   * number between the min and max values, inclusive.
+   *
+   * @param {any} val the value to check
+   * @param {number} min the minimum value, inclusive
+   * @param {number} max the maximum value, inclusive
+   * @returns {boolean} whether the given value is valid
+   */
+  var isValidNumber = function isValidNumber(val, min, max) {
+    return typeof val === 'number' && val >= min && val <= max;
+  };
+
+  return typeof color === 'string' && COLOR_SET.has(color) && isValidNumber(tileIndex, 0, 34) && typeof rotation === 'number' && (rotation === 0 || rotation === 90 || rotation === 180 || rotation === 270) && isValidNumber(x, 0, 9) && isValidNumber(y, 0, 9);
+};
+/**
+ * Whether the given placement is a valid intermediate placement
+ * instruction.
+ *
+ * @param {any} placement the user placement to check
+ * @returns {boolean} whether the placement instruction is valid
+ */
+
+
+var isValidIntermediatePlacement = function isValidIntermediatePlacement(placement) {
+  if (!Array.isArray(placement) || placement.length !== 5) {
+    return false;
+  }
+
+  var _placement = _slicedToArray(placement, 5),
+      color = _placement[0],
+      tileIndex = _placement[1],
+      rotation = _placement[2],
+      x = _placement[3],
+      y = _placement[4];
+
+  return areValidPlacementArgs(color, tileIndex, rotation, x, y);
+};
+/**
+ * Whether the given placement is a valid initial placement
+ * instruction.
+ *
+ * @param {any} placement the user placement to check
+ * @returns {boolean} whether the placement instruction is valid
+ */
+
+
+var isValidInitialPlacement = function isValidInitialPlacement(placement) {
+  if (!Array.isArray(placement) || placement.length !== 6) {
+    return false;
+  }
+
+  var _placement2 = _slicedToArray(placement, 6),
+      tileIndex = _placement2[0],
+      rotation = _placement2[1],
+      color = _placement2[2],
+      port = _placement2[3],
+      x = _placement2[4],
+      y = _placement2[5];
+
+  return areValidPlacementArgs(color, tileIndex, rotation, x, y) && typeof port === 'string' && LETTERS_MAP[port] !== undefined;
+};
+/**
+ * Whether the given placement is a valid placement instruction.
+ *
+ * @param {any} placement the user placement to check
+ * @param {boolean} [isInitial=false] whether to check for a valid
+ * initial placement
+ * @returns {boolean} whether the placement instruction is valid
+ */
+
+
+var isValidPlacement = function isValidPlacement(placement) {
+  var isInitial = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+  if (isInitial) {
+    return isValidInitialPlacement(placement);
+  }
+
+  return isValidIntermediatePlacement(placement);
+};
+
+module.exports = isValidPlacement;
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports) {
+
+var COLORS = ['white', 'black', 'red', 'green', 'blue'];
+exports.COLORS = COLORS;
+exports.COLOR_SET = new Set(COLORS);
+
+/***/ }),
+/* 50 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _require = __webpack_require__(3),
+    getInput = _require.getInput;
+
+var handleObserver = __webpack_require__(64);
+
+var main = function main() {
+  getInput().then(handleObserver);
+};
 
 main();
+
+/***/ }),
+/* 51 */
+/***/ (function(module, exports) {
+
+module.exports = [[['A', 'E'], ['B', 'F'], ['C', 'H'], ['D', 'G']], // 0
+[['A', 'E'], ['B', 'F'], ['C', 'G'], ['D', 'H']], // 1
+[['A', 'F'], ['B', 'E'], ['C', 'H'], ['D', 'G']], // 2
+[['A', 'E'], ['B', 'D'], ['C', 'G'], ['F', 'H']], // 3
+[['A', 'H'], ['B', 'C'], ['D', 'E'], ['F', 'G']], // 4
+[['A', 'E'], ['B', 'C'], ['D', 'H'], ['F', 'G']], // 5
+[['A', 'E'], ['B', 'C'], ['D', 'G'], ['F', 'H']], // 6
+[['A', 'D'], ['B', 'G'], ['C', 'F'], ['E', 'H']], // 7
+[['A', 'D'], ['B', 'F'], ['C', 'G'], ['E', 'H']], // 8
+[['A', 'D'], ['B', 'E'], ['C', 'H'], ['F', 'G']], // 9
+[['A', 'D'], ['B', 'E'], ['C', 'G'], ['F', 'H']], // 10
+[['A', 'D'], ['B', 'C'], ['E', 'H'], ['F', 'G']], // 11
+[['A', 'C'], ['B', 'H'], ['D', 'F'], ['E', 'G']], // 12
+[['A', 'C'], ['B', 'H'], ['D', 'E'], ['F', 'G']], // 13
+[['A', 'C'], ['B', 'G'], ['D', 'F'], ['E', 'H']], // 14
+[['A', 'C'], ['B', 'G'], ['D', 'E'], ['F', 'H']], // 15
+[['A', 'C'], ['B', 'F'], ['D', 'H'], ['E', 'G']], // 16
+[['A', 'C'], ['B', 'F'], ['D', 'G'], ['E', 'H']], // 17
+[['A', 'C'], ['B', 'E'], ['D', 'H'], ['F', 'G']], // 18
+[['A', 'C'], ['B', 'E'], ['D', 'G'], ['F', 'H']], // 19
+[['A', 'C'], ['B', 'D'], ['E', 'H'], ['F', 'G']], // 20
+[['A', 'C'], ['B', 'D'], ['E', 'G'], ['F', 'H']], // 21
+[['A', 'B'], ['C', 'H'], ['D', 'G'], ['E', 'F']], // 22
+[['A', 'B'], ['C', 'H'], ['D', 'F'], ['E', 'G']], // 23
+[['A', 'B'], ['C', 'H'], ['D', 'E'], ['F', 'G']], // 24
+[['A', 'B'], ['C', 'G'], ['D', 'H'], ['E', 'F']], // 25
+[['A', 'B'], ['C', 'G'], ['D', 'F'], ['E', 'H']], // 26
+[['A', 'B'], ['C', 'G'], ['D', 'E'], ['F', 'H']], // 27
+[['A', 'B'], ['C', 'F'], ['D', 'H'], ['E', 'G']], // 28
+[['A', 'B'], ['C', 'F'], ['D', 'G'], ['E', 'H']], // 29
+[['A', 'B'], ['C', 'E'], ['D', 'H'], ['F', 'G']], // 30
+[['A', 'B'], ['C', 'E'], ['D', 'G'], ['F', 'H']], // 31
+[['A', 'B'], ['C', 'D'], ['E', 'H'], ['F', 'G']], // 32
+[['A', 'B'], ['C', 'D'], ['E', 'G'], ['F', 'H']], // 33
+[['A', 'B'], ['C', 'D'], ['E', 'F'], ['G', 'H']] // 34
+];
+
+/***/ }),
+/* 52 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var getMessage = __webpack_require__(6);
+
+var Ref = __webpack_require__(53);
+/**
+ * Returns an event handler for handling new data from STDIN.
+ *
+ * @param {Ref} inputRef a reference to the current accumulated
+ * user input
+ * @returns {function} the `data` event handler
+ */
+
+
+var onData = function onData(inputRef) {
+  return function (data) {
+    inputRef.set(function (input) {
+      return "".concat(input).concat(data.trim());
+    });
+  };
+};
+/**
+ * Returns an event handler for handling an `end` from STDIN.
+ *
+ * @param {Ref} inputRef a reference to the current accumulated
+ * user input
+ * @param {function} resolve a callback function to call with
+ * the final data
+ * @returns {function} the `end` event handler
+ */
+
+
+var onEnd = function onEnd(inputRef, resolve) {
+  return function () {
+    var text = inputRef.get();
+
+    try {
+      var json = JSON.parse(inputRef.get());
+      resolve(json);
+    } catch (err) {
+      console.log(getMessage('Invalid JSON ', text));
+    }
+  };
+};
+/**
+ * Initializes STDIN event handlers, and retrieves input
+ * from them.
+ *
+ * @returns {Promise} a promise that will resolve on end
+ * of input with the final data
+ */
+
+
+var getInput = function getInput() {
+  return new Promise(function (resolve) {
+    var inputRef = new Ref();
+    process.stdin.setEncoding('utf8');
+    process.stdin.on('data', onData(inputRef));
+    process.stdin.on('end', onEnd(inputRef, resolve));
+  });
+};
+
+module.exports = getInput;
+
+/***/ }),
+/* 53 */
+/***/ (function(module, exports) {
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Ref =
+/*#__PURE__*/
+function () {
+  /**
+   * Initializes a new ref. Sets the ref type based on initial
+   * value.
+   *
+   * @param {any} [value=''] the initial value for a ref
+   */
+  function Ref() {
+    var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
+    _classCallCheck(this, Ref);
+
+    this.value = value;
+  }
+  /**
+   * Sets the value of the ref to the given value.
+   *
+   * Can accept a function that dynamically sets the value. This
+   * function will be passed a single argument equal to the current
+   * value of the ref.
+   *
+   * Example:
+   * ```js
+   * const ref = new Ref(1);
+   * ref.set(2);
+   * ref.set(val => val + 1);
+   * ```
+   *
+   * @param {any} value the new value to set, or a setter function
+   * that accepts the current value
+   */
+
+
+  _createClass(Ref, [{
+    key: "set",
+    value: function set(value) {
+      if (typeof value === 'function') {
+        this.value = value(this.value);
+      } else {
+        this.value = value;
+      }
+    }
+    /**
+     * Gets the current value of the ref.
+     *
+     * @returns {any} the current value of the ref
+     */
+
+  }, {
+    key: "get",
+    value: function get() {
+      return this.value;
+    }
+  }]);
+
+  return Ref;
+}();
+
+module.exports = Ref;
+
+/***/ }),
+/* 54 */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+var _require = __webpack_require__(1),
+    Board = _require.Board,
+    Coords = _require.Coords;
+
+var _require2 = __webpack_require__(2),
+    getEmptyBoardArray = _require2.getEmptyBoardArray,
+    getLetterFromPosition = _require2.getLetterFromPosition,
+    getPositionFromLetter = _require2.getPositionFromLetter,
+    getTileFromLetters = _require2.getTileFromLetters;
+
+var _require3 = __webpack_require__(3),
+    tiles = _require3.tiles;
+
+var Player = __webpack_require__(47);
+
+var getMessage = __webpack_require__(6);
+
+var isValidPlacement = __webpack_require__(48);
+
+var _require4 = __webpack_require__(49),
+    COLORS = _require4.COLORS;
+/**
+ * Handles parsing the placements as directed by the user, and using them on
+ * a board. Then, prints responses for each available avatar color.
+ *
+ * @param {array[]} placements the array of placement instructions
+ * @param {boolean} [printResponses = true] is a flag whether this will print out the board's response to those moves
+ *
+ * @returns {Board} once all the given placements have taken place.
+ */
+
+
+var handlePlacements = function handlePlacements(placements) {
+  var printResponses = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+  var board = new Board(); // for keeping track of tile index and rotation (only pertinent to testing suite)
+
+  var jsonBoard = getEmptyBoardArray();
+  /**
+   * Uses the given placements array to make tile and avatar placements onto
+   * the board.
+   *
+   * @param {array[]} placements the placements array
+   *
+   */
+
+  var usePlacements = function usePlacements(placements) {
+    /**
+     * Handles an intermediate placement, placing only a tile.
+     *
+     * @param {array} placement the intermediate placement JSON array
+     */
+    var handleIntermediatePlacement = function handleIntermediatePlacement(_ref) {
+      var _ref2 = _slicedToArray(_ref, 5),
+          color = _ref2[0],
+          tileIndex = _ref2[1],
+          rotation = _ref2[2],
+          x = _ref2[3],
+          y = _ref2[4];
+
+      if (board.getAvatar(color)) {
+        var coords = new Coords(x, y);
+        var tile = getTileFromLetters(tiles[tileIndex]).rotate(rotation / 90);
+        board.placeTile(tile, coords);
+        jsonBoard[x][y] = {
+          tileIndex: tileIndex,
+          rotation: rotation
+        };
+      }
+    };
+    /**
+     * Handles an initial placement, placing a tile and avatar together.
+     *
+     * @param {array} placement the initial placement JSON array
+     */
+
+
+    var handleInitialPlacement = function handleInitialPlacement(_ref3) {
+      var _ref4 = _slicedToArray(_ref3, 6),
+          tileIndex = _ref4[0],
+          rotation = _ref4[1],
+          color = _ref4[2],
+          port = _ref4[3],
+          x = _ref4[4],
+          y = _ref4[5];
+
+      var player = new Player(color, color);
+      player.setColor(color);
+      var tile = getTileFromLetters(tiles[tileIndex]).rotate(rotation / 90);
+      var coords = new Coords(x, y);
+      var position = getPositionFromLetter(port);
+      board.placeInitialTileAvatar(player, tile, coords, position);
+      jsonBoard[x][y] = {
+        tileIndex: tileIndex,
+        rotation: rotation
+      };
+    };
+
+    placements.forEach(function (placement) {
+      if (isValidPlacement(placement, true)) {
+        handleInitialPlacement(placement);
+      } else if (isValidPlacement(placement, false)) {
+        handleIntermediatePlacement(placement);
+      } else {
+        throw 'Invalid placement instruction';
+      }
+    });
+  };
+  /**
+   * Gets the responses for each of the defined colors. Determines
+   * whether the color was ever played, if it collided, if it exited,
+   * or, if none of the above, the current position of the color.
+   *
+   * @returns {array[]} an array of responses
+   */
+
+
+  var getResponses = function getResponses() {
+    return COLORS.map(function (color) {
+      var avatar = board.getAvatar(color);
+
+      if (!avatar) {
+        return [color, ' never played'];
+      } else if (avatar.hasCollided()) {
+        return [color, ' collided'];
+      } else if (avatar.hasExited()) {
+        return [color, ' exited'];
+      }
+
+      var _avatar$coords = avatar.coords,
+          x = _avatar$coords.x,
+          y = _avatar$coords.y,
+          position = avatar.position;
+      var port = getLetterFromPosition(position);
+      var _jsonBoard$x$y = jsonBoard[x][y],
+          tileIndex = _jsonBoard$x$y.tileIndex,
+          rotation = _jsonBoard$x$y.rotation;
+      return [color, tileIndex, rotation, port, x, y];
+    });
+  };
+
+  try {
+    usePlacements(placements);
+
+    if (printResponses) {
+      var responses = getResponses();
+      console.log(JSON.stringify(responses));
+    }
+
+    return board;
+  } catch (err) {
+    console.log(err);
+    console.log(getMessage('Invalid JSON ', placements));
+  }
+};
+
+module.exports = handlePlacements;
+
+/***/ }),
+/* 55 */
+/***/ (function(module, exports) {
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Action =
+/**
+ *
+ * @param {Tile} tile
+ * @param {Coords} coords
+ */
+function Action(tile, coords) {
+  _classCallCheck(this, Action);
+
+  this.tile = tile;
+  this.coords = coords;
+};
+
+var InitialAction =
+/*#__PURE__*/
+function (_Action) {
+  _inherits(InitialAction, _Action);
+
+  /**
+   *
+   * @param {Tile} tile
+   * @param {Coords} coords
+   * @param {Position} position
+   */
+  function InitialAction(tile, coords, position) {
+    var _this;
+
+    _classCallCheck(this, InitialAction);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(InitialAction).call(this, tile, coords));
+    _this.position = position;
+    return _this;
+  }
+
+  return InitialAction;
+}(Action);
+
+var IntermediateAction =
+/*#__PURE__*/
+function (_Action2) {
+  _inherits(IntermediateAction, _Action2);
+
+  function IntermediateAction() {
+    _classCallCheck(this, IntermediateAction);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(IntermediateAction).apply(this, arguments));
+  }
+
+  return IntermediateAction;
+}(Action);
+
+exports.InitialAction = InitialAction;
+exports.IntermediateAction = IntermediateAction;
+
+/***/ }),
+/* 56 */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var _require = __webpack_require__(1),
+    Coords = _require.Coords,
+    Position = _require.Position;
+
+var RenderUtils = __webpack_require__(5);
+
+var _require2 = __webpack_require__(0),
+    DIRECTIONS = _require2.DIRECTIONS,
+    PORTS = _require2.PORTS;
+
+var Avatar =
+/*#__PURE__*/
+function () {
+  /**
+   * Creates a new Avatar for a player.
+   *
+   * @param {string} id a unique ID, matching a respective player
+   * @param {string} color the avatar color
+   * @param {Coords} [coords] the initial coordinates of the avatar
+   * @param {Position} [position] the initial position on a tile
+   */
+  function Avatar(id, color, coords, position) {
+    _classCallCheck(this, Avatar);
+
+    this.id = id;
+    this.color = color;
+    this.coords = coords || new Coords(0, 0);
+    this.position = position || new Position(DIRECTIONS.NORTH, PORTS.ZERO);
+    this._collided = false;
+    this._exited = false;
+
+    this._updateHash();
+  }
+  /**
+   * Marks this Avatar as having collided with another
+   * avatar.
+   *
+   * @returns {Avatar} this avatar, collided
+   */
+
+
+  _createClass(Avatar, [{
+    key: "collide",
+    value: function collide() {
+      this._collided = true;
+      return this;
+    }
+    /**
+     * Creates a new copy of this Avatar.
+     *
+     * @returns {Avatar} a copy of this Avatar
+     */
+
+  }, {
+    key: "copy",
+    value: function copy() {
+      var avatar = new Avatar(this.id, this.color, this.coords.copy(), this.position.copy());
+
+      if (this.hasExited()) {
+        avatar.exit();
+      }
+
+      if (this.hasCollided()) {
+        avatar.collide();
+      }
+
+      return avatar;
+    }
+    /**
+     * Marks this Avatar as having exited the board.
+     *
+     * @returns {Avatar} this avatar, exited
+     */
+
+  }, {
+    key: "exit",
+    value: function exit() {
+      this._exited = true;
+      return this;
+    }
+    /**
+     * @static
+     * Static method for generating an Avatar hash, using the
+     * given coordinates and position.
+     *
+     * @param {Coords} coords the coordinates of an Avatar
+     * @param {Position} position the position of an Avatar
+     * @returns {string} the theoretical Avatar hash
+     */
+
+  }, {
+    key: "getHash",
+
+    /**
+     * Gets this Avatar's hash.
+     *
+     * @returns {string} this Avatar's hash
+     */
+    value: function getHash() {
+      return this._hash;
+    }
+    /**
+     * Checks whether this Avatar has lost, either by colliding
+     * or exiting the board.
+     *
+     * @returns {boolean} whether this Avatar has lost
+     */
+
+  }, {
+    key: "hasLost",
+    value: function hasLost() {
+      return this._collided || this._exited;
+    }
+    /**
+     * Checks whether this Avatar has collided with another Avatar.
+     *
+     * @returns {boolean} whether this Avatar collided
+     */
+
+  }, {
+    key: "hasCollided",
+    value: function hasCollided() {
+      return this._collided;
+    }
+    /**
+     * Checks whether this Avatar has exited the board.
+     *
+     * @returns {boolean} whether this Avatar exited the board
+     */
+
+  }, {
+    key: "hasExited",
+    value: function hasExited() {
+      return this._exited;
+    }
+    /**
+     * Moves this Avatar to the given coords and position.
+     *
+     * @param {Coords} coords the new Avatar coords
+     * @param {Position} position the new Avatar position
+     */
+
+  }, {
+    key: "move",
+    value: function move(coords, position) {
+      this.coords = coords;
+      this.position = position;
+
+      this._updateHash();
+    }
+    /**
+     * @private
+     * Updates this Avatar's hash to match new coordinates and/ors
+     * position.
+     */
+
+  }, {
+    key: "_updateHash",
+    value: function _updateHash() {
+      this._hash = "".concat(this.coords.getHash()).concat(this.position.getHash());
+    }
+    /**
+     * Renders an avatar to the given selection.
+     *
+     * @param {d3.Selection} selection the current D3 selection
+     * @param {number} xStart the starting x position for the board
+     * @param {number} yStart the starting y position for the board
+     * @param {number} tileSize the size of a board tile
+     */
+
+  }, {
+    key: "render",
+    value: function render(selection, xStart, yStart, tileSize) {
+      var _this$coords = this.coords,
+          x = _this$coords.x,
+          y = _this$coords.y;
+      var boardX = xStart + x * tileSize;
+      var boardY = yStart + y * tileSize;
+      var renderUtils = new RenderUtils(boardX, boardY, tileSize);
+
+      var _renderUtils$getPosit = renderUtils.getPositionCoords(this.position),
+          _renderUtils$getPosit2 = _slicedToArray(_renderUtils$getPosit, 2),
+          cx = _renderUtils$getPosit2[0],
+          cy = _renderUtils$getPosit2[1];
+
+      var group = selection.append('g').classed('dead', this.hasLost());
+      /**
+       * Renders a circle with the given class name to the avatar
+       * selection group.
+       *
+       * @param {string} className the circle's class name
+       * @returns {d3.Selection} the rendered circle
+       */
+
+      var renderCircle = function renderCircle(className) {
+        return group.append('circle').attr('class', className).attr('cx', renderUtils.scaleX(cx)).attr('cy', renderUtils.scaleY(cy)).attr('r', Math.min(tileSize * 0.07, 10));
+      };
+
+      renderCircle('avatar__shadow');
+      renderCircle('avatar').attr('fill', this.color);
+    }
+  }], [{
+    key: "generateHash",
+    value: function generateHash(coords, position) {
+      return "".concat(coords.getHash()).concat(position.getHash());
+    }
+  }]);
+
+  return Avatar;
+}();
+
+module.exports = Avatar;
+
+/***/ }),
+/* 57 */
+/***/ (function(module, exports) {
+
+module.exports = require("jsdom");
+
+/***/ }),
+/* 58 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _dist_package__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8);
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "version", function() { return _dist_package__WEBPACK_IMPORTED_MODULE_0__["a"]; });
+
+/* harmony import */ var d3_array__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9);
+/* harmony import */ var d3_array__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(d3_array__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_array__WEBPACK_IMPORTED_MODULE_1__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_array__WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_axis__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(10);
+/* harmony import */ var d3_axis__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(d3_axis__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_axis__WEBPACK_IMPORTED_MODULE_2__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_axis__WEBPACK_IMPORTED_MODULE_2__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_brush__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(11);
+/* harmony import */ var d3_brush__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(d3_brush__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_brush__WEBPACK_IMPORTED_MODULE_3__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_brush__WEBPACK_IMPORTED_MODULE_3__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_chord__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(12);
+/* harmony import */ var d3_chord__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(d3_chord__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_chord__WEBPACK_IMPORTED_MODULE_4__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_chord__WEBPACK_IMPORTED_MODULE_4__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_collection__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(13);
+/* harmony import */ var d3_collection__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(d3_collection__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_collection__WEBPACK_IMPORTED_MODULE_5__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_collection__WEBPACK_IMPORTED_MODULE_5__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_color__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(14);
+/* harmony import */ var d3_color__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(d3_color__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_color__WEBPACK_IMPORTED_MODULE_6__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_color__WEBPACK_IMPORTED_MODULE_6__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_contour__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(15);
+/* harmony import */ var d3_contour__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(d3_contour__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_contour__WEBPACK_IMPORTED_MODULE_7__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_contour__WEBPACK_IMPORTED_MODULE_7__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_dispatch__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(16);
+/* harmony import */ var d3_dispatch__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(d3_dispatch__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_dispatch__WEBPACK_IMPORTED_MODULE_8__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_dispatch__WEBPACK_IMPORTED_MODULE_8__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_drag__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(17);
+/* harmony import */ var d3_drag__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(d3_drag__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_drag__WEBPACK_IMPORTED_MODULE_9__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_drag__WEBPACK_IMPORTED_MODULE_9__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_dsv__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(18);
+/* harmony import */ var d3_dsv__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(d3_dsv__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_dsv__WEBPACK_IMPORTED_MODULE_10__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_dsv__WEBPACK_IMPORTED_MODULE_10__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_ease__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(19);
+/* harmony import */ var d3_ease__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(d3_ease__WEBPACK_IMPORTED_MODULE_11__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_ease__WEBPACK_IMPORTED_MODULE_11__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_ease__WEBPACK_IMPORTED_MODULE_11__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_fetch__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(20);
+/* harmony import */ var d3_fetch__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(d3_fetch__WEBPACK_IMPORTED_MODULE_12__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_fetch__WEBPACK_IMPORTED_MODULE_12__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_fetch__WEBPACK_IMPORTED_MODULE_12__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_force__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(21);
+/* harmony import */ var d3_force__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(d3_force__WEBPACK_IMPORTED_MODULE_13__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_force__WEBPACK_IMPORTED_MODULE_13__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_force__WEBPACK_IMPORTED_MODULE_13__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_format__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(22);
+/* harmony import */ var d3_format__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(d3_format__WEBPACK_IMPORTED_MODULE_14__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_format__WEBPACK_IMPORTED_MODULE_14__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_format__WEBPACK_IMPORTED_MODULE_14__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_geo__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(23);
+/* harmony import */ var d3_geo__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(d3_geo__WEBPACK_IMPORTED_MODULE_15__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_geo__WEBPACK_IMPORTED_MODULE_15__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_geo__WEBPACK_IMPORTED_MODULE_15__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_hierarchy__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(24);
+/* harmony import */ var d3_hierarchy__WEBPACK_IMPORTED_MODULE_16___default = /*#__PURE__*/__webpack_require__.n(d3_hierarchy__WEBPACK_IMPORTED_MODULE_16__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_hierarchy__WEBPACK_IMPORTED_MODULE_16__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_hierarchy__WEBPACK_IMPORTED_MODULE_16__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_interpolate__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(25);
+/* harmony import */ var d3_interpolate__WEBPACK_IMPORTED_MODULE_17___default = /*#__PURE__*/__webpack_require__.n(d3_interpolate__WEBPACK_IMPORTED_MODULE_17__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_interpolate__WEBPACK_IMPORTED_MODULE_17__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_interpolate__WEBPACK_IMPORTED_MODULE_17__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_path__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(26);
+/* harmony import */ var d3_path__WEBPACK_IMPORTED_MODULE_18___default = /*#__PURE__*/__webpack_require__.n(d3_path__WEBPACK_IMPORTED_MODULE_18__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_path__WEBPACK_IMPORTED_MODULE_18__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_path__WEBPACK_IMPORTED_MODULE_18__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_polygon__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(27);
+/* harmony import */ var d3_polygon__WEBPACK_IMPORTED_MODULE_19___default = /*#__PURE__*/__webpack_require__.n(d3_polygon__WEBPACK_IMPORTED_MODULE_19__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_polygon__WEBPACK_IMPORTED_MODULE_19__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_polygon__WEBPACK_IMPORTED_MODULE_19__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_quadtree__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(28);
+/* harmony import */ var d3_quadtree__WEBPACK_IMPORTED_MODULE_20___default = /*#__PURE__*/__webpack_require__.n(d3_quadtree__WEBPACK_IMPORTED_MODULE_20__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_quadtree__WEBPACK_IMPORTED_MODULE_20__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_quadtree__WEBPACK_IMPORTED_MODULE_20__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_random__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(29);
+/* harmony import */ var d3_random__WEBPACK_IMPORTED_MODULE_21___default = /*#__PURE__*/__webpack_require__.n(d3_random__WEBPACK_IMPORTED_MODULE_21__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_random__WEBPACK_IMPORTED_MODULE_21__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_random__WEBPACK_IMPORTED_MODULE_21__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_scale__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(30);
+/* harmony import */ var d3_scale__WEBPACK_IMPORTED_MODULE_22___default = /*#__PURE__*/__webpack_require__.n(d3_scale__WEBPACK_IMPORTED_MODULE_22__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_scale__WEBPACK_IMPORTED_MODULE_22__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_scale__WEBPACK_IMPORTED_MODULE_22__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_scale_chromatic__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(31);
+/* harmony import */ var d3_scale_chromatic__WEBPACK_IMPORTED_MODULE_23___default = /*#__PURE__*/__webpack_require__.n(d3_scale_chromatic__WEBPACK_IMPORTED_MODULE_23__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_scale_chromatic__WEBPACK_IMPORTED_MODULE_23__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_scale_chromatic__WEBPACK_IMPORTED_MODULE_23__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_selection__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(32);
+/* harmony import */ var d3_selection__WEBPACK_IMPORTED_MODULE_24___default = /*#__PURE__*/__webpack_require__.n(d3_selection__WEBPACK_IMPORTED_MODULE_24__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_selection__WEBPACK_IMPORTED_MODULE_24__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_selection__WEBPACK_IMPORTED_MODULE_24__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_shape__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(33);
+/* harmony import */ var d3_shape__WEBPACK_IMPORTED_MODULE_25___default = /*#__PURE__*/__webpack_require__.n(d3_shape__WEBPACK_IMPORTED_MODULE_25__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_shape__WEBPACK_IMPORTED_MODULE_25__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_shape__WEBPACK_IMPORTED_MODULE_25__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_time__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(34);
+/* harmony import */ var d3_time__WEBPACK_IMPORTED_MODULE_26___default = /*#__PURE__*/__webpack_require__.n(d3_time__WEBPACK_IMPORTED_MODULE_26__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_time__WEBPACK_IMPORTED_MODULE_26__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_time__WEBPACK_IMPORTED_MODULE_26__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_time_format__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(35);
+/* harmony import */ var d3_time_format__WEBPACK_IMPORTED_MODULE_27___default = /*#__PURE__*/__webpack_require__.n(d3_time_format__WEBPACK_IMPORTED_MODULE_27__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_time_format__WEBPACK_IMPORTED_MODULE_27__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_time_format__WEBPACK_IMPORTED_MODULE_27__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_timer__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(36);
+/* harmony import */ var d3_timer__WEBPACK_IMPORTED_MODULE_28___default = /*#__PURE__*/__webpack_require__.n(d3_timer__WEBPACK_IMPORTED_MODULE_28__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_timer__WEBPACK_IMPORTED_MODULE_28__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_timer__WEBPACK_IMPORTED_MODULE_28__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_transition__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(37);
+/* harmony import */ var d3_transition__WEBPACK_IMPORTED_MODULE_29___default = /*#__PURE__*/__webpack_require__.n(d3_transition__WEBPACK_IMPORTED_MODULE_29__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_transition__WEBPACK_IMPORTED_MODULE_29__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_transition__WEBPACK_IMPORTED_MODULE_29__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_voronoi__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(38);
+/* harmony import */ var d3_voronoi__WEBPACK_IMPORTED_MODULE_30___default = /*#__PURE__*/__webpack_require__.n(d3_voronoi__WEBPACK_IMPORTED_MODULE_30__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_voronoi__WEBPACK_IMPORTED_MODULE_30__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_voronoi__WEBPACK_IMPORTED_MODULE_30__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var d3_zoom__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(39);
+/* harmony import */ var d3_zoom__WEBPACK_IMPORTED_MODULE_31___default = /*#__PURE__*/__webpack_require__.n(d3_zoom__WEBPACK_IMPORTED_MODULE_31__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in d3_zoom__WEBPACK_IMPORTED_MODULE_31__) if(["version","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return d3_zoom__WEBPACK_IMPORTED_MODULE_31__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/***/ }),
+/* 59 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _require = __webpack_require__(0),
+    BOARD_SIZE = _require.BOARD_SIZE;
+/**
+ * Gets an empty board array; that is, an array of
+ * the given size filled with arrays of the given size
+ * filled with `null`.
+ *
+ * @param {number} [size=BOARD_SIZE] the size of the board
+ * to create
+ * @returns {null[][]} the empty board array
+ */
+
+
+var getEmptyBoardArray = function getEmptyBoardArray() {
+  var size = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : BOARD_SIZE;
+  var board = [];
+
+  for (var x = 0; x < size; x++) {
+    board[x] = [];
+
+    for (var y = 0; y < size; y++) {
+      board[x][y] = null;
+    }
+  }
+
+  return board;
+};
+
+module.exports = getEmptyBoardArray;
+
+/***/ }),
+/* 60 */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+var Path = __webpack_require__(45);
+
+var Tile = __webpack_require__(40);
+
+var _require = __webpack_require__(42),
+    getPositionFromLetter = _require.getPositionFromLetter;
+/**
+ * Gets a Tile object from the letter-specified tile JSON.
+ *
+ * @param {string[][]} tileJSON the letter-specified tile
+ * JSON
+ * @returns {Tile} the corresponding Tile object
+ */
+
+
+var getTileFromLetters = function getTileFromLetters(tileJSON) {
+  var paths = tileJSON.map(function (_ref) {
+    var _ref2 = _slicedToArray(_ref, 2),
+        start = _ref2[0],
+        end = _ref2[1];
+
+    return new Path(getPositionFromLetter(start), getPositionFromLetter(end));
+  });
+  return new Tile(paths);
+};
+
+module.exports = getTileFromLetters;
+
+/***/ }),
+/* 61 */
+/***/ (function(module, exports) {
+
+var COLORS = {
+  BLACK: '#000000',
+  BOARD: '#E3A865',
+  BORDER: '#583C14',
+  GRAY: '#eeeeee',
+  HIGHLIGHT: '#ffff00',
+  WHITE: '#ffffff',
+  TILE: '#936D36',
+  PATH: '#FCE8B8'
+};
+var styles = "\n  .avatar, .border, .port {\n    stroke: ".concat(COLORS.BORDER, ";\n    stroke-width: 1;\n  }\n\n  .avatar__highlight {\n    fill: ").concat(COLORS.BOARD, ";\n    stroke: ").concat(COLORS.BOARD, ";\n    stroke-width: 7;\n  }\n\n  .avatar__shadow {\n    fill: ").concat(COLORS.PATH, ";\n    stroke: ").concat(COLORS.PATH, ";\n    stroke-width: 5;\n  }\n\n  .background {\n    fill: ").concat(COLORS.WHITE, ";\n  }\n\n  .border {\n    fill: none;\n  }\n\n  .dead {\n    opacity: 0.5;\n  }\n\n  .port {\n    fill: ").concat(COLORS.WHITE, ";\n  }\n\n  .path {\n    fill: none;\n    stroke: ").concat(COLORS.PATH, ";\n    stroke-width: 3;\n  }\n\n  .path__shadow {\n    fill: none;\n    opacity: 0.5;\n    stroke: ").concat(COLORS.BORDER, ";\n    stroke-width: 7;\n  }\n\n  .tile__highlight {\n    fill: ").concat(COLORS.HIGHLIGHT, ";\n    stroke: ").concat(COLORS.HIGHLIGHT, ";\n    stroke-width: 7;\n    opacity: 0.3;\n  }\n\n  .tile-bg {\n    fill: ").concat(COLORS.TILE, ";\n  }\n\n  .tile-bg--empty {\n    fill: ").concat(COLORS.BOARD, ";\n  }\n\n  text {\n    fill: ").concat(COLORS.BLACK, ";\n    font-family: 'Helvetica', sans-serif;\n    font-size: 16px;\n    transform: translate(0, 12px);\n  }\n\n  text tspan {\n    font-weight: 600;\n  }\n");
+module.exports = styles;
+
+/***/ }),
+/* 62 */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var _require = __webpack_require__(0),
+    BOARD_SIZE = _require.BOARD_SIZE,
+    DIRECTIONS = _require.DIRECTIONS;
+
+var Coords =
+/*#__PURE__*/
+function () {
+  /**
+   * Creates a new Coords object.
+   *
+   * @param {number} x the x coordinate
+   * @param {number} y the y coordinate
+   */
+  function Coords(x, y) {
+    _classCallCheck(this, Coords);
+
+    this.x = x;
+    this.y = y;
+
+    this._updateHash();
+  }
+  /**
+   * Creates a new copy of this Coords.
+   *
+   * @returns {Coords} a copy of this Coords
+   */
+
+
+  _createClass(Coords, [{
+    key: "copy",
+    value: function copy() {
+      return new Coords(this.x, this.y);
+    }
+    /**
+     * Gets the hash for this Coords.
+     *
+     * @returns {string} the hash for this Coords
+     */
+
+  }, {
+    key: "getHash",
+    value: function getHash() {
+      return this._hash;
+    }
+    /**
+     * @private
+     * Checks whether the given value is valid as a single
+     * coordinate value.
+     *
+     * @param {number} value the value to check
+     * @returns {boolean} whether the coordinate value is valid
+     */
+
+  }, {
+    key: "_isValidCoordinate",
+    value: function _isValidCoordinate(value) {
+      return value >= 0 && value < BOARD_SIZE;
+    }
+    /**
+     * @private
+     * Moves the coordinates along a single axis by the given value.
+     *
+     * @param {number} value the value to move by
+     * @param {boolean} isHorizontalMove whether the move occurs along
+     * the x-axis
+     * @param {boolean} isPositive whether move is positive (increase)
+     */
+
+  }, {
+    key: "_moveAlongAxis",
+    value: function _moveAlongAxis(value, isHorizontalMove, isPositive) {
+      var key = isHorizontalMove ? 'x' : 'y';
+      var multiplier = isPositive ? 1 : -1;
+      var newVal = this[key] + multiplier * value;
+
+      if (!this._isValidCoordinate(newVal)) {
+        throw 'Cannot move this way';
+      }
+
+      this[key] = newVal;
+    }
+    /**
+     * Moves this Coords in a given direction for a given value.
+     *
+     * @param {string} direction the direction to move
+     * @param {number} value a positive value to move by
+     * @returns {Coords} this Coords, moved
+     */
+
+  }, {
+    key: "move",
+    value: function move(direction, value) {
+      if (value < 0) {
+        throw 'Value must be positive';
+      } else if (value > 0) {
+        if (direction === DIRECTIONS.NORTH || direction === DIRECTIONS.SOUTH) {
+          this._moveAlongAxis(value, false, direction === DIRECTIONS.SOUTH);
+        } else if (direction === DIRECTIONS.EAST || direction === DIRECTIONS.WEST) {
+          this._moveAlongAxis(value, true, direction === DIRECTIONS.EAST);
+        } else {
+          throw 'Invalid direction';
+        }
+      }
+
+      this._updateHash();
+
+      return this;
+    }
+    /**
+     * Moves this Coords in a given direction by one.
+     *
+     * @param {string} direction the direction to move
+     * @returns {Coords} this Coords, moved
+     */
+
+  }, {
+    key: "moveOne",
+    value: function moveOne(direction) {
+      return this.move(direction, 1);
+    }
+    /**
+     * Checks the equality of this coords and the given one.
+     *
+     * @param {Coords} coords the Coords to check equality against
+     * @returns {boolean} whether the given coords is equal to this one
+     */
+
+  }, {
+    key: "isEqualTo",
+    value: function isEqualTo(coords) {
+      return this.x === coords.x && this.y === coords.y;
+    }
+    /**
+     * @private
+     * Updates the hash for this Coords when the x and/or
+     * y position changes.
+     */
+
+  }, {
+    key: "_updateHash",
+    value: function _updateHash() {
+      this._hash = "".concat(this.x).concat(this.y);
+    }
+  }]);
+
+  return Coords;
+}();
+
+module.exports = Coords;
+
+/***/ }),
+/* 63 */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Board = __webpack_require__(46);
+
+var RuleChecker =
+/*#__PURE__*/
+function () {
+  function RuleChecker() {
+    _classCallCheck(this, RuleChecker);
+  }
+
+  _createClass(RuleChecker, null, [{
+    key: "canTakeAction",
+
+    /**
+     * Takes in the board state (boardState), the player who is acting (Player), and the (TilePlacement) and
+     * checks whether that player can take a tilePlacement action. It must be a legal tilePlacement move and
+     * then must be a valid tilePlacement option.
+     *
+     * @param {BoardState} boardState is a representation of the board and the current state of the game
+     * @param {TilePlacement} tilePlacement is what is about to be done (eg. tile placement)
+     * @param {Player} player is the player intending on the action
+     * @returns {boolean} whether the action is valid
+     */
+    value: function canTakeAction(boardState, tilePlacement, player) {
+      // Check if we can put the tile here
+      if (this.checkPlacementLegality(boardState, tilePlacement, player)) {
+        // Check the death cases of validity for this tile placement
+        return this.checkHandValidity(boardState, tilePlacement, player);
+      }
+
+      return false;
+    }
+    /**
+     * Returns whether the tilePlacement is a legal dropping zone for on the given board for the given player
+     *
+     * @param {BoardState} boardState is a representation of the board and the current state of the game
+     * @param {TilePlacement} tilePlacement is what is about to be done (eg. tile placement)
+     * @param {Player} player is the player intending on the action
+     * @returns {boolean} whether the tile placement is legal for that player
+     */
+
+  }, {
+    key: "checkPlacementLegality",
+    value: function checkPlacementLegality(boardState, tilePlacement, player) {
+      var avatar = boardState.getAvatar(player.id); // Make sure we have our avatar, make sure the tile is empty, and make sure it is adjacent to the player.
+
+      return avatar && !boardState.getTile(tilePlacement.coords) && this._checkPlayerAdjacency(avatar, tilePlacement) && player.hand.some(function (tile) {
+        return tile.isEqualToRotated(tilePlacement.tile);
+      });
+    }
+    /**
+     * Returns whether the tilePlacement is a valid move where it does not result in the given player's suicide on the
+     * given board.
+     *
+     * @param {BoardState} boardState is a representation of the board and the current state of the game
+     * @param {TilePlacement} tilePlacement is what is about to be done (eg. tile placement)
+     * @param {Player} player is the player intending on the action
+     * @returns {boolean} whether the tile placement is valid
+     */
+
+  }, {
+    key: "checkPlacementValidity",
+    value: function checkPlacementValidity(boardState, tilePlacement, player) {
+      // Copy the board to test tile placement results
+      var boardCopy = new Board(boardState.copy());
+      boardCopy.placeTile(tilePlacement.tile, tilePlacement.coords);
+      var avatarCopy = boardCopy.getAvatar(player.id);
+      return !Board.isAvatarOnOutsidePosition(avatarCopy.coords, avatarCopy.position);
+    }
+    /**
+     * Check whether the tile placement is valid and, if not, whether the player has any valid moves within their hand.
+     *
+     * @param {BoardState} boardState is a representation of the board and the current state of the game
+     * @param {TilePlacement} tilePlacement is what is about to be done (eg. tile placement)
+     * @param {Player} player is the player intending on the action
+     * @returns {boolean} whether the player has a valid move in their hand
+     */
+
+  }, {
+    key: "checkHandValidity",
+    value: function checkHandValidity(boardState, tilePlacement, player) {
+      if (this.checkPlacementValidity(boardState, tilePlacement, player)) {
+        return true;
+      }
+
+      return this._doesPlayerHaveValidMove(boardState, tilePlacement.coords, player);
+    }
+    /**
+     * Returns whether the the given tilePlacement is adjacent to the given avatar
+     *
+     * @param {Avatar} avatar The avatar on the board
+     * @param {TilePlacement} tilePlacement is what is about to be done (eg. tile placement)
+     * @returns {boolean} whether an avatar is adjacent to the tile placement
+     * @private
+     */
+
+  }, {
+    key: "_checkPlayerAdjacency",
+    value: function _checkPlayerAdjacency(avatar, tilePlacement) {
+      if (!avatar) {
+        return false;
+      }
+
+      var coords = avatar.coords,
+          position = avatar.position;
+
+      try {
+        var newCoords = coords.copy().moveOne(position.direction);
+        return newCoords.isEqualTo(tilePlacement.coords);
+      } catch (e) {
+        return false;
+      }
+    }
+    /**
+     * Returns whether any tile in the given player's hand keeps the player alive if placed at the given coord.
+     *
+     * @param {BoardState} boardState is a representation of the board and the current state of the game
+     * @param {Coordinates} coords where the tile will be placed
+     * @param {Player} player is the player intending on the action
+     * @returns {boolean} true if any one tile keeps the player alive, false if all cards lead to death
+     */
+
+  }, {
+    key: "_doesPlayerHaveValidMove",
+    value: function _doesPlayerHaveValidMove(boardState, coords, player) {
+      var hand = player.hand,
+          id = player.id; // For each tile in hand, test for a tile that keeps the player alive
+
+      return hand.some(function (tile) {
+        // Test all four rotations
+        for (var j = 0; j < 4; j++) {
+          var boardCopy = new Board(boardState.copy());
+          var tileCopy = tile.copy(j);
+          boardCopy.placeTile(tileCopy, coords);
+          var avatarCopy = boardCopy.getAvatar(id); // If the player does not end up at the edge, they are alive return true
+
+          if (!Board.isAvatarOnOutsidePosition(avatarCopy.coords, avatarCopy.position)) {
+            return true;
+          }
+        }
+
+        return false;
+      });
+    }
+    /**
+     * Checks whether the given player (playerId) can place their avatar in the given position (position) at the tile (tile)
+     * located at the given Coord (coords) at the start of the game.
+     *
+     * @param {BoardState} boardState is a representation of the board and the current state of the game
+     * @param {string} playerId The player's ID
+     * @param {Coords} coords the coordinates to place the avatar at
+     * @param {Tile} tile the tile the avatar is attempting to be placed on
+     * @param {Position} position the position the avatar is attempting to be set as
+     * @returns {boolean} whether the player can place their avatar at that initial position at the start of the game
+     */
+
+  }, {
+    key: "canPlaceAvatar",
+    value: function canPlaceAvatar(boardState, playerId, coords, tile, position) {
+      return Board.isAvatarOnOutsidePosition(coords, position) && // On the edge of the board
+      !boardState.getAvatar(playerId) && // The avatar has not been placed
+      !boardState.getTile(coords) && // This tile space is empty
+      !boardState.hasNeighboringTiles(coords) && // There are no neighbors
+      tile.getEndingPosition(position).direction !== position.direction; // There is no loop back to the same side
+    }
+  }]);
+
+  return RuleChecker;
+}();
+
+module.exports = RuleChecker;
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _toArray(arr) { return _arrayWithHoles(arr) || _iterableToArray(arr) || _nonIterableRest(); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+var path = __webpack_require__(65);
+
+var _require = __webpack_require__(66),
+    Observer = _require.Observer;
+
+var Player = __webpack_require__(47);
+
+var _require2 = __webpack_require__(1),
+    Board = _require2.Board,
+    InitialAction = _require2.InitialAction,
+    IntermediateAction = _require2.IntermediateAction,
+    Coords = _require2.Coords;
+
+var _require3 = __webpack_require__(2),
+    getPositionFromLetter = _require3.getPositionFromLetter,
+    getTileFromLetters = _require3.getTileFromLetters;
+
+var _require4 = __webpack_require__(3),
+    isValidPlacement = _require4.isValidPlacement,
+    tiles = _require4.tiles;
+/**
+ * Renders the current state of a board given the moves.
+ *
+ * @param {any[][]} moves the game state specification, possibly ending
+ * in a turn specification
+ */
+
+
+var handleObserver = function handleObserver(moves) {
+  var observer = new Observer();
+  observer.updateCurrentTurn(moves.length);
+  var lastIdx = moves.length - 1;
+  var turnSpec;
+
+  if (Array.isArray(moves[lastIdx][0])) {
+    turnSpec = moves.pop();
+  }
+
+  var board = new Board();
+  var playerColors = {};
+  /**
+   * Handles placing an avatar and tile on the board based on the given placement
+   * spec, then returning a corresponding action.
+   *
+   * @param {[number, number, string, string, number, numer]} initialPlacement an initial
+   * placement array specification
+   * @returns {InitialAction} the corresponding initial action
+   */
+
+  var handleInitialPlacement = function handleInitialPlacement(_ref) {
+    var _ref2 = _slicedToArray(_ref, 6),
+        tileIdx = _ref2[0],
+        rotation = _ref2[1],
+        color = _ref2[2],
+        port = _ref2[3],
+        x = _ref2[4],
+        y = _ref2[5];
+
+    var player = new Player(color, color);
+    player.setColor(color);
+    playerColors[color] = [color];
+    observer.updateCurrentPlayerId(color);
+    var tile = getTileFromLetters(tiles[tileIdx]).rotate(rotation / 90);
+    var coords = new Coords(x, y);
+    var position = getPositionFromLetter(port);
+    board.placeInitialTileAvatar(player, tile, coords, position);
+    return new InitialAction(tile, coords, position);
+  };
+  /**
+   * Handles placing a tile on the board based on the given placement spec, then
+   * returning a corresponding action.
+   *
+   * @param {[string, number, number, number, numer]} intermediatePlacement an
+   * intermediate placement array specification
+   * @returns {IntermediateAction} the corresponding intermediate action
+   */
+
+
+  var handleIntermediatePlacement = function handleIntermediatePlacement(_ref3) {
+    var _ref4 = _slicedToArray(_ref3, 5),
+        color = _ref4[0],
+        tileIdx = _ref4[1],
+        rotation = _ref4[2],
+        x = _ref4[3],
+        y = _ref4[4];
+
+    observer.updateCurrentPlayerId(color);
+    var tile = getTileFromLetters(tiles[tileIdx]).rotate(rotation / 90);
+    var coords = new Coords(x, y);
+    board.placeTile(tile, coords);
+    return new IntermediateAction(tile, coords);
+  };
+  /**
+   * Handles parsing placement specifications and updating the board accordingly.
+   * Also updates the observer's last used action.
+   *
+   * @param {array} placement an array-based placement specification
+   */
+
+
+  var handlePlacement = function handlePlacement(placement) {
+    var action;
+
+    if (isValidPlacement(placement, true)) {
+      action = handleInitialPlacement(placement);
+    } else if (isValidPlacement(placement, false)) {
+      action = handleIntermediatePlacement(placement);
+    } else {
+      throw 'Invalid placement instruction';
+    }
+
+    observer.updateLastAction(action);
+  };
+
+  moves.forEach(function (move) {
+    handlePlacement(move);
+  });
+
+  if (turnSpec) {
+    var _turnSpec = turnSpec,
+        _turnSpec2 = _toArray(_turnSpec),
+        placement = _turnSpec2[0],
+        hand = _turnSpec2.slice(1);
+
+    var parsedHand = hand.map(function (idx) {
+      return getTileFromLetters(tiles[idx]);
+    });
+    observer.updateCurrentHand(parsedHand);
+    handlePlacement(placement);
+  }
+
+  observer.setPlayerColors(playerColors);
+  var boardState = board.getState();
+  observer.updateState(boardState);
+  var pathArg = process.argv[2];
+
+  if (!pathArg) {
+    throw 'Argument must be passed for output path';
+  }
+
+  observer.renderToFile(path.resolve(pathArg));
+};
+
+module.exports = handleObserver;
+
+/***/ }),
+/* 65 */
+/***/ (function(module, exports) {
+
+module.exports = require("path");
+
+/***/ }),
+/* 66 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports.Observer = __webpack_require__(67);
+exports.Referee = __webpack_require__(69);
+
+/***/ }),
+/* 67 */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var fs = __webpack_require__(68);
+
+var D3Node = __webpack_require__(7);
+
+var _require = __webpack_require__(1),
+    BoardState = _require.BoardState;
+
+var _require2 = __webpack_require__(2),
+    styles = _require2.styles;
+
+var MARGIN = 20;
+var MARGIN_INNER = MARGIN / 2;
+var TILE_PREVIEW_SIZE = 45;
+var WIDTH = 800;
+var HEIGHT = WIDTH + TILE_PREVIEW_SIZE + MARGIN;
+
+var Observer =
+/*#__PURE__*/
+function () {
+  /**
+   * @constructor
+   * Creates a new Observer with an empty board state.
+   */
+  function Observer(id) {
+    _classCallCheck(this, Observer);
+
+    this.id = id;
+    this._boardState = new BoardState();
+    this._playerColors = {};
+    this._deadPlayers = new Set();
+    this._currentTurn = 0;
+    this._currentPlayerId = null;
+    this._lastPlayerId = this._currentPlayerId;
+    this._currentHand = [];
+    this._lastHand = this._currentHand;
+    this._lastAction = null; // RENDER VARIABLES
+
+    this.d3Node = new D3Node({
+      styles: styles
+    });
+    this.d3 = this.d3Node.d3;
+  }
+  /**
+   * Sets the player ID-to-colors map as given by the referee.
+   *
+   * @param {object} playerColors a map from player ID to
+   * corresponding player color
+   */
+
+
+  _createClass(Observer, [{
+    key: "setPlayerColors",
+    value: function setPlayerColors(playerColors) {
+      this._playerColors = playerColors;
+    }
+    /**
+     * Updates the currently stored board state with the latest one
+     * from the referee.
+     *
+     * @param {BoardState} boardState the current board state
+     */
+
+  }, {
+    key: "updateState",
+    value: function updateState(boardState) {
+      this._boardState = boardState;
+    }
+    /**
+     * Updates the player ID to that of the player whose turn it
+     * currently is, as told by the referee.
+     *
+     * @param {string} currentPlayerId the current player's ID
+     */
+
+  }, {
+    key: "updateCurrentPlayerId",
+    value: function updateCurrentPlayerId(currentPlayerId) {
+      this._currentPlayerId = currentPlayerId;
+    }
+    /**
+     * Updates the turn number, as told by the referee.
+     *
+     * @param {number} currentTurn the current turn number
+     */
+
+  }, {
+    key: "updateCurrentTurn",
+    value: function updateCurrentTurn(currentTurn) {
+      this._currentTurn = currentTurn;
+    }
+    /**
+     * Updates the observer's view of the current player's hand, as
+     * told by the referee.
+     *
+     * @param {Tile[]} currentHand the current player's hand.
+     */
+
+  }, {
+    key: "updateCurrentHand",
+    value: function updateCurrentHand(currentHand) {
+      this._currentHand = currentHand;
+    }
+    /**
+     * Updates the last action used by a player, as told by the referee.
+     * This also updates the last hand and player ID to use the currently
+     * set ones (in anticipation of the next turn).
+     *
+     * @param {Action} lastAction the last action used
+     */
+
+  }, {
+    key: "updateLastAction",
+    value: function updateLastAction(lastAction) {
+      this._lastAction = lastAction;
+      this._lastHand = this._currentHand;
+      this._lastPlayerId = this._currentPlayerId;
+    }
+    /**
+     * Removes a player from play, as decided by the referee.
+     *
+     * @param {string} id the ID of the player to be removed
+     */
+
+  }, {
+    key: "removePlayer",
+    value: function removePlayer(id) {
+      this._deadPlayers.add(id);
+    }
+    /**
+     * @private
+     * Renders an avatar icon at the given x-position.
+     *
+     * @param {d3.Selection} selection the selection to render the avatar to
+     * @param {number} x the x-position to center the avatar
+     * @param {string} [className="avatar"] the class name to give the avatar
+     * @returns {d3.Selection} the avatar selection
+     */
+
+  }, {
+    key: "_renderAvatar",
+    value: function _renderAvatar(selection, x) {
+      var className = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'avatar';
+      return selection.append('circle').attr('class', className).attr('cx', x).attr('cy', 2.25 * MARGIN + MARGIN_INNER).attr('r', MARGIN_INNER);
+    }
+    /**
+     * @private
+     * Renders all avatars to a new group within the given selection. This will
+     * fade out any currently dead or removed players, and highlight the player
+     * whose turn it currently is.
+     *
+     * @param {d3.Selection} selection the selection to render the avatars to
+     */
+
+  }, {
+    key: "_renderAvatars",
+    value: function _renderAvatars(selection) {
+      var _this = this;
+
+      var avatarGroup = selection.append('g');
+      var radius = MARGIN_INNER;
+      var avatarX = MARGIN + radius;
+      Object.keys(this._playerColors).forEach(function (id) {
+        var avatar = avatarGroup.append('g').attr('id', id).classed('dead', _this._deadPlayers.has(id) || _this._boardState.getAvatar(id).hasLost());
+
+        if (_this._currentPlayerId === id) {
+          _this._renderAvatar(avatar, avatarX, 'avatar__highlight');
+        }
+
+        _this._renderAvatar(avatar, avatarX).attr('fill', _this._playerColors[id]);
+
+        avatarX += radius * 3;
+      });
+    }
+    /**
+     * @private
+     * Renders the last action to the given selection. This includes the player
+     * to make the last action, the cards in the player's hand, and highlighting
+     * the tile that was chosen from the hand.
+     *
+     * @param {d3.Selection} selection the selection to render the action to
+     * @param {number} width the total width of the screen
+     */
+
+  }, {
+    key: "_renderLastAction",
+    value: function _renderLastAction(selection, width) {
+      var _this2 = this;
+
+      if (this._lastAction) {
+        var tileX = width - MARGIN;
+
+        this._lastHand.forEach(function (tile) {
+          tileX -= TILE_PREVIEW_SIZE;
+          var tileGroup = selection.append('g');
+          tileGroup.classed('dead', !tile.isEqualToRotated(_this2._lastAction.tile));
+          tile.render(tileGroup, tileX, MARGIN, TILE_PREVIEW_SIZE);
+          tileX -= MARGIN_INNER;
+        });
+
+        selection.append('text').attr('dx', tileX).attr('dy', MARGIN).attr('text-anchor', 'end').append('tspan').text('Last move');
+
+        this._renderAvatar(selection, tileX - MARGIN_INNER).attr('fill', this._playerColors[this._lastPlayerId]);
+      }
+    }
+    /**
+     * @private
+     * Renders the meta data to the game, including turn number, avatar and turn
+     * order, and the last action made.
+     *
+     * @param {d3.Selection} selection the selection to render the action to
+     * @param {number} width the total width of the screen
+     */
+
+  }, {
+    key: "_renderMeta",
+    value: function _renderMeta(selection, width) {
+      selection.append('text').attr('dx', MARGIN).attr('dy', MARGIN).text(this._currentTurn).append('tspan').text('Turn ').lower();
+
+      this._renderAvatars(selection);
+
+      this._renderLastAction(selection, width);
+    }
+    /**
+     * Renders the entire screen to the given selection, including
+     * the meta info and current board state.
+     *
+     * @param {d3.Selection} selection the current D3 selection
+     * @param {number} width the total width of the "screen"
+     * @param {number} height the total height of the "screen"
+     */
+
+  }, {
+    key: "render",
+    value: function render(selection) {
+      var width = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : WIDTH;
+      var height = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : HEIGHT;
+      selection.append('g').append('rect').attr('class', 'background').attr('x', 0).attr('y', 0).attr('width', width).attr('height', height);
+
+      this._renderMeta(selection, width);
+
+      var boardSize = width - 2 * MARGIN;
+
+      this._boardState.render(selection, MARGIN, height - boardSize - MARGIN, boardSize, this._lastAction ? this._lastAction.coords : null);
+    }
+    /**
+     * Renders the current game state screen to a file at the
+     * given path.
+     *
+     * @param {string} path the path to render the state to
+     */
+
+  }, {
+    key: "renderToFile",
+    value: function renderToFile(path) {
+      var svg = this.d3Node.createSVG(WIDTH, HEIGHT);
+      this.render(svg, WIDTH, HEIGHT);
+      var svgFile = fs.createWriteStream(path);
+      svgFile.write(this.d3Node.svgString());
+      svgFile.end();
+    }
+  }]);
+
+  return Observer;
+}();
+
+module.exports = Observer;
+
+/***/ }),
+/* 68 */
+/***/ (function(module, exports) {
+
+module.exports = require("fs");
+
+/***/ }),
+/* 69 */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var _require = __webpack_require__(1),
+    Board = _require.Board,
+    RuleChecker = _require.RuleChecker;
+
+var _require2 = __webpack_require__(2),
+    getTileFromLetters = _require2.getTileFromLetters,
+    incrementIndex = _require2.incrementIndex;
+
+var _require3 = __webpack_require__(0),
+    COLORS = _require3.COLORS;
+
+var _require4 = __webpack_require__(3),
+    tiles = _require4.tiles;
+
+var COLOR_SET = [COLORS.WHITE, COLORS.BLACK, COLORS.RED, COLORS.GREEN, COLORS.BLUE];
+
+var Referee =
+/*#__PURE__*/
+function () {
+  /**
+   * Creates a new Referee with a new board and no players.
+   */
+  function Referee() {
+    _classCallCheck(this, Referee);
+
+    this.board = new Board();
+    this.currentPlayerIdx = -1;
+    this.deckIdx = 0;
+    this.currentTurn = 0;
+    this.playerMap = {};
+    this.currentPlayers = {};
+    this.playerIds = [];
+    this.removedPlayersForTurn = {};
+    this.observerMap = {};
+  }
+  /**
+   * Adds an observer to the current game.
+   *
+   * @param {Observer} observer the observer to add to the game
+   */
+
+
+  _createClass(Referee, [{
+    key: "addObserver",
+    value: function addObserver(observer) {
+      var id = observer.id;
+      this.observerMap[id] = observer;
+    }
+    /**
+     * @private
+     * Gets a list of all observers in the current game.
+     *
+     * @returns {Observer[]} an array of all current observers
+     */
+
+  }, {
+    key: "_getObservers",
+    value: function _getObservers() {
+      return Object.values(this.observerMap);
+    }
+    /**
+     * @private
+     * Helper function for quickly updating all observers, using the given
+     * update function.
+     *
+     * @param {function} updateFunc a callback function which takes in a
+     * single observer and updates it accordingly
+     */
+
+  }, {
+    key: "_updateObservers",
+    value: function _updateObservers(updateFunc) {
+      this._getObservers().forEach(updateFunc);
+    }
+    /**
+     * Adds a player to the current game, and sets their color.
+     *
+     * @param {Player} player the player to add to the game
+     */
+
+  }, {
+    key: "addPlayer",
+    value: function addPlayer(player) {
+      var playerIdx = this.playerIds.length;
+
+      if (playerIdx >= COLOR_SET.length) {
+        throw 'Max players already added.';
+      }
+
+      var id = player.id;
+      this.playerMap[id] = player;
+      this.currentPlayers[id] = player;
+      this.playerIds.push(id);
+      player.setColor(COLOR_SET[playerIdx]);
+    }
+    /**
+     * Notifies all players and observers of the other players' colors.
+     */
+
+  }, {
+    key: "notifyPlayersOfColors",
+    value: function notifyPlayersOfColors() {
+      var _this = this;
+
+      var idToColorMap = this.playerIds.reduce(function (acc, id) {
+        var color = _this.playerMap[id].getColor();
+
+        return Object.assign(acc, _defineProperty({}, id, color));
+      }, {});
+      this.playerIds.forEach(function (id) {
+        _this.playerMap[id].setPlayerColors(idToColorMap);
+      });
+
+      this._updateObservers(function (observer) {
+        observer.setPlayerColors(idToColorMap);
+      });
+    }
+    /**
+     * @private
+     * Checks whether the given player has an avatar currently on
+     * the board.
+     *
+     * @param {Player} player the player to check for
+     * @returns {boolean} whether the given player has an avatar
+     * currently on the baord
+     */
+
+  }, {
+    key: "_hasAvatar",
+    value: function _hasAvatar(player) {
+      return !!this.board.getAvatar(player.id);
+    }
+    /**
+     * @private
+     * Checks whether the given player can move, ala if they have
+     * lost or not.
+     *
+     * @param {Player} player the player to check for
+     * @returns {boolean} whether the given player has lost the
+     * game
+     */
+
+  }, {
+    key: "_canPlayerMove",
+    value: function _canPlayerMove(player) {
+      var avatar = this.board.getAvatar(player.id);
+      return !avatar.hasLost();
+    }
+    /**
+     * @private
+     * Gets a hand of the given size to give to the player.
+     *
+     * @param {number} size the preferred size of the hand
+     * @returns {Tile[]} the hand of tiles
+     */
+
+  }, {
+    key: "_getHand",
+    value: function _getHand(size) {
+      var hand = [];
+
+      for (var i = 0; i < size; i++) {
+        var tile = getTileFromLetters(tiles[this.deckIdx]);
+        hand.push(tile);
+        this.deckIdx = incrementIndex(this.deckIdx, tiles);
+      }
+
+      return hand;
+    }
+    /**
+     * @private
+     * Starts a player's turn by updating their board state, setting their
+     * turn status to current, and giving them their hand.
+     *
+     * @param {Player} player the player to start-up
+     * @param {number} handSize the size of the player's hand
+     * @returns {BoardState} the current board state
+     */
+
+  }, {
+    key: "_startPlayerTurn",
+    value: function _startPlayerTurn(player, handSize) {
+      var _this2 = this;
+
+      this.currentTurn += 1;
+      var boardState = this.board.getState();
+      player.updateState(boardState);
+      player.setTurnStatus(true);
+
+      var hand = this._getHand(handSize);
+
+      player.receiveHand(hand);
+
+      this._updateObservers(function (observer) {
+        observer.updateState(boardState);
+        observer.updateCurrentTurn(_this2.currentTurn);
+        observer.updateCurrentPlayerId(player.id);
+        observer.updateCurrentHand(hand);
+      });
+
+      return boardState;
+    }
+    /**
+     * @private
+     * Checks if the given action is legal for the given player, that is it
+     * can be placed on the board at all.
+     *
+     * @param {BoardState} boardState the current state of the board
+     * @param {Player} player the player to check legality for
+     * @param {Action} action the action to check legality for
+     * @param {boolean} [isInitial=false] whether the given action is
+     * initial or intermediate
+     * @returns {boolean} whether the given action is legal for the
+     * given player
+     */
+
+  }, {
+    key: "_checkForActionLegality",
+    value: function _checkForActionLegality(boardState, player, action) {
+      var isInitial = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+      var isLegal = RuleChecker.checkPlacementLegality(boardState, action, player);
+
+      if (isInitial) {
+        return isLegal || RuleChecker.canPlaceAvatar(boardState, player.id, action.coords, action.tile, action.position);
+      }
+
+      return isLegal;
+    }
+    /**
+     * @private
+     * Checks if the given action is valid for the given player, that is it
+     * doesn't result in player suicide.
+     *
+     * @param {BoardState} boardState the current state of the board
+     * @param {Player} player the player to check validity for
+     * @param {Action} action the action to check validity for
+     * @param {boolean} [isInitial=false] whether the given action is
+     * initial or intermediate
+     * @returns {boolean} whether the given action is valid for the
+     * given player
+     */
+
+  }, {
+    key: "_checkForActionValidity",
+    value: function _checkForActionValidity(boardState, player, action) {
+      var isInitial = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+
+      if (isInitial) {
+        return true;
+      }
+
+      return RuleChecker.checkPlacementValidity(boardState, action, player);
+    }
+    /**
+     * @private
+     * Ends a player's turn by clearing their hand, setting their turn status
+     * to waiting, and updating all players' board states.
+     *
+     * @param {Player} player the player to close out
+     */
+
+  }, {
+    key: "_endPlayerTurn",
+    value: function _endPlayerTurn(player) {
+      var _this3 = this;
+
+      player.clearHand();
+      player.setTurnStatus(false);
+      var boardState = this.board.getState();
+      this.playerIds.forEach(function (id) {
+        _this3.playerMap[id].updateState(boardState);
+      });
+
+      this._updateObservers(function (observer) {
+        observer.updateState(boardState);
+      });
+    }
+    /**
+     * @private
+     * Removes a player from play.
+     *
+     * @param {Player} player the player to remove from play
+     */
+
+  }, {
+    key: "_removePlayer",
+    value: function _removePlayer(player) {
+      var id = player.id;
+      delete this.currentPlayers[id];
+      this.removedPlayersForTurn[this.currentTurn] = [].concat(_toConsumableArray(this.removedPlayersForTurn[this.currentTurn] || []), [id]);
+
+      this._updateObservers(function (observer) {
+        observer.removePlayer(id);
+      });
+    }
+    /**
+     * @private
+     * Places a tile on the board at the player's given discression. Also places the player's
+     * avatar if the action is initial. Then ends player's turn.
+     *
+     * @param {Player} player the player to use the action for
+     * @param {Action} action the action to use
+     * @param {boolean} [isInitial=false] whether the action is initial or intermediate
+     */
+
+  }, {
+    key: "_usePlayerAction",
+    value: function _usePlayerAction(player, action) {
+      var isInitial = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+      var coords = action.coords,
+          position = action.position,
+          tile = action.tile;
+
+      if (isInitial) {
+        try {
+          this.board.placeInitialTileAvatar(player, tile, coords, position);
+        } catch (err) {
+          this._removePlayer(player);
+        }
+      } else {
+        this.board.placeTile(tile, coords);
+      }
+
+      this._updateObservers(function (observer) {
+        observer.updateLastAction(action);
+      });
+
+      this._endPlayerTurn(player);
+    }
+    /**
+     * @private
+     * Plays through an entire player's turn, from start to end. This will start
+     * the player's turn, prompt them for action, and check for legality and
+     * validity. If the action isn't legal or valid, the player will be removed
+     * from play. Regardless, if the action is legal, the action will be played.
+     *
+     * @param {Player} player the player to prompt for action
+     * @param {boolean} [isInitial=false] whether to prompt for an initial or
+     * intermediate action
+     */
+
+  }, {
+    key: "_promptPlayerForAction",
+    value: function _promptPlayerForAction(player) {
+      var isInitial = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+      var handSize = isInitial ? 3 : 2;
+
+      var boardState = this._startPlayerTurn(player, handSize);
+
+      var action = player.getAction(isInitial);
+
+      var isLegal = this._checkForActionLegality(boardState, player, action, isInitial);
+
+      var isValid = this._checkForActionValidity(boardState, player, action, isInitial);
+
+      if (!isValid || !isLegal) {
+        this._removePlayer(player);
+      }
+
+      if (isLegal) {
+        this._usePlayerAction(player, action, isInitial);
+      }
+    }
+    /**
+     * @private
+     * Changes the current player to the next on in line. If the player is no longer
+     * playing, their turn will be skipped. If the player doesn't have an avatar on
+     * the board, they will be prompted for an initial action. If they do have an
+     * avatar and can move, they will be prompted for an intermediate action. If
+     * neither, they will be removed from play.
+     */
+
+  }, {
+    key: "_nextPlayer",
+    value: function _nextPlayer() {
+      this.currentPlayerIdx = incrementIndex(this.currentPlayerIdx, this.playerIds);
+      var id = this.playerIds[this.currentPlayerIdx];
+      var player = this.currentPlayers[id];
+
+      if (player) {
+        if (!this._hasAvatar(player)) {
+          this._promptPlayerForAction(player, true);
+        } else if (this._canPlayerMove(player)) {
+          this._promptPlayerForAction(player);
+        } else {
+          this._removePlayer(player);
+        }
+      }
+    }
+    /**
+     * @private
+     * Checks whether the game is over yet, that is if one or no players
+     * are left on the board.
+     *
+     * @returns {boolean} whether the game is over yet
+     */
+
+  }, {
+    key: "_isGameOver",
+    value: function _isGameOver() {
+      return Object.keys(this.currentPlayers).length <= 1;
+    }
+    /**
+     * @private
+     * Gets the current winners of the game, that is those are still in play. If
+     * none are left in play, it will check for the last turn in which players
+     * have been removed and award those players.
+     *
+     * @returns {string[]} an array of player IDs
+     */
+
+  }, {
+    key: "_getWinners",
+    value: function _getWinners() {
+      var currentPlayers = Object.keys(this.currentPlayers);
+
+      if (currentPlayers.length > 0) {
+        return currentPlayers;
+      }
+
+      var lastTurn = Math.max.apply(Math, _toConsumableArray(Object.keys(this.removedPlayersForTurn)));
+      return this.removedPlayersForTurn[lastTurn];
+    }
+    /**
+     * @private
+     * Notifies all players that the game is now over, and which players have
+     * won the game.
+     */
+
+  }, {
+    key: "_notifyPlayersOfGameOver",
+    value: function _notifyPlayersOfGameOver() {
+      var _this4 = this;
+
+      var winners = this._getWinners();
+
+      this.playerIds.forEach(function (id) {
+        _this4.playerMap[id].endGame(winners);
+      });
+    }
+    /**
+     * Starts and runs a game with the currently added players. This function
+     * will loop until the game is over, at which point all players will
+     * be notified of game over and who won.
+     */
+
+  }, {
+    key: "runGame",
+    value: function runGame() {
+      if (this.playerIds.length <= 1) {
+        throw 'At least two players are required to game.';
+      }
+
+      while (!this._isGameOver()) {
+        this._nextPlayer();
+      }
+
+      this._notifyPlayersOfGameOver();
+    }
+  }]);
+
+  return Referee;
+}();
+
+module.exports = Referee;
+
+/***/ })
+/******/ ]);

@@ -5,8 +5,6 @@ const { Board, InitialAction, IntermediateAction, Coords } = require('../../Comm
 const { getPositionFromLetter, getTileFromLetters } = require('../../Common/utils');
 const { isValidPlacement, tiles } = require('../../Common/__tests__');
 
-const DEFAULT_PATH = path.resolve(__dirname, '..', 'obs-tests', 'game.svg');
-
 /**
  * Renders the current state of a board given the moves.
  *
@@ -101,11 +99,11 @@ const handleObserver = moves => {
   const boardState = board.getState();
   observer.updateState(boardState);
 
-  let renderPath = DEFAULT_PATH;
-  if (process.argv[2]) {
-    renderPath = path.resolve(process.argv[2]);
+  const pathArg = process.argv[2];
+  if (!pathArg) {
+    throw 'Argument must be passed for output path';
   }
-  observer.renderToFile(renderPath);
+  observer.renderToFile(path.resolve(pathArg));
 };
 
 module.exports = handleObserver;

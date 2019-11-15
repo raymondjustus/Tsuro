@@ -5,4 +5,4 @@ const main = () => {
   getInput().then(handleObserver);
 };
 
-module.exports = main;
+main();
