@@ -282,17 +282,15 @@ class Referee {
    * @returns {string[]} an array of player IDs
    */
   getWinners() {
-    const result = [];
-    Object.keys(this.removedPlayersForTurn).forEach(turn => {
-      result.unshift(this.removedPlayersForTurn[turn]);
-    });
+    let result = Object.keys(this.removedPlayersForTurn)
+      .sort((a, b) => b - a)
+      .map(turn => {
+        return this.removedPlayersForTurn[turn];
+      });
     // Put winners in front
     const currentPlayers = Object.keys(this.currentPlayers);
     if (currentPlayers.length > 0) {
       result.unshift(currentPlayers);
-    } else {
-      const lastTurn = Math.max(...Object.keys(this.removedPlayersForTurn));
-      result.unshift(this.removedPlayersForTurn[lastTurn]);
     }
     return result;
   }
