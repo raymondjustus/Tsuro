@@ -7,12 +7,12 @@ class Observer {
     this._boardState = boardState;
   }
 
-  render() {
+  render(path) {
     if (!this._boardState) {
       throw 'No board state to render';
     }
 
-    this._boardState.renderToFile();
+    this._boardState.renderToFile(path);
   }
 }
 
