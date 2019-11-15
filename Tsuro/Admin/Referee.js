@@ -290,7 +290,7 @@ class Referee {
   /**
    * Returns a list of player Id's that have been eliminated from the game by taking illegal moves.
    *
-   * @returns string[] of player Id's
+   * @returns {string[]} an array of IDs for players eliminated from the game
    */
   getLosers() {
     return this.rejectedPlayers.slice();
