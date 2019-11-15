@@ -20,7 +20,7 @@ class Player {
     this.hand = [];
     this.gameStatus = GAME_STATUS.WAITING;
     this.boardState = new BoardState();
-    this.playerPrintResults = true;
+    this._shouldPrintResults = true;
   }
 
   /**
@@ -128,14 +128,7 @@ class Player {
    * @param {Boolean} flag if the player should print
    */
   setPlayerPrintResultsStatus(flag) {
-    this.playerPrintResults = flag;
-  }
-
-  /**
-   * Gets whether this player will print out who won their game at the end.
-   */
-  getPlayerPrintResultsStatus() {
-    return this.playerPrintResults;
+    this._shouldPrintResults = flag;
   }
 
   /**
@@ -147,7 +140,7 @@ class Player {
    */
   endGame(winners) {
     this.gameStatus = GAME_STATUS.GAME_OVER;
-    if (this.playerPrintResults) {
+    if (this._shouldPrintResults) {
       console.log(winners);
     }
   }

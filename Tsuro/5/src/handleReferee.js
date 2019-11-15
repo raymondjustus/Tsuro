@@ -1,23 +1,18 @@
 const Referee = require('../../Admin/Referee');
 const Player = require('../../Player/Player');
 const DumbStrategy = require('../../Player/Strategy/DumbStrategy');
-const path = require('path');
 
 /**
  * Handles the creation and running of a game through a referee.
  * @param {string[]} playerNames names who are playing. Should be 3 - 5 players.
  */
 const handleReferee = playerNames => {
+  const referee = new Referee();
   const players = [];
   playerNames.forEach(name => {
-    const temp = new Player(name, name, DumbStrategy);
-    temp.setPlayerPrintResultsStatus(false);
-    players.push(temp);
-  });
-
-  const referee = new Referee();
-
-  players.forEach(player => {
+    const player = new Player(name, name, DumbStrategy);
+    player.setPlayerPrintResultsStatus(false);
+    players.push(player);
     try {
       referee.addPlayer(player);
     } catch (error) {
@@ -37,8 +32,6 @@ const handleReferee = playerNames => {
 
   const output = { winners: [winners], losers: losers };
   console.log(JSON.stringify(output));
-
-  referee.board.renderToFile(path.resolve(__dirname, 'final.svg'));
 };
 
 module.exports = handleReferee;

@@ -12,4 +12,4 @@ If the test harness is given more than 5 players, there will be an error noted b
 
 ## Directions
 
-To run this, run xrules either with command line arguments as laid out in the assingment or by passing in a json file.
+To run this, run `xrules` either with command line arguments as laid out in the assignment or by passing in a JSON file.
