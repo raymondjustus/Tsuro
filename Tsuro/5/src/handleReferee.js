@@ -24,7 +24,7 @@ const handleReferee = playerNames => {
   const winners = referee.getWinners();
   const losers = referee.getLosers();
 
-  const output = { winners: winners, losers: losers };
+  const output = { winners, losers };
   console.log(JSON.stringify(output));
 };
 

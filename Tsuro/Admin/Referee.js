@@ -182,7 +182,7 @@ class Referee {
    * @param {Player} player the player to remove from play
    * @param {boolean} [fromLegalMove=true] will add to rejected players if false
    */
-  _removePlayer(player, fromLegalMove) {
+  _removePlayer(player, fromLegalMove = true) {
     const { id } = player;
     delete this.currentPlayers[id];
     this.removedPlayersForTurn[this.currentTurn] = [
