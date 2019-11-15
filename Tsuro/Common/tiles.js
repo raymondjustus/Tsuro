@@ -218,6 +218,8 @@ class Tile {
 
     // Renders border
     renderBorder();
+
+    return group;
   }
 }
 

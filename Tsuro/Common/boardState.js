@@ -193,18 +193,37 @@ class BoardState {
    * @param {number} yStart the starting y position for the board
    * @param {number} size the total size of the board
    */
-  render(selection, xStart, yStart, size) {
+  render(selection, xStart, yStart, size, highlightCoords) {
     const tileSize = size / BOARD_SIZE;
+
+    const getRenderCoords = (x, y) => {
+      const tileX = xStart + x * tileSize;
+      const tileY = yStart + y * tileSize;
+      return [tileX, tileY];
+    };
 
     const emptyTile = new Tile();
     this._tiles.forEach((column, x) => {
       column.forEach((tile, y) => {
         const tileToRender = tile || emptyTile;
-        const tileX = xStart + x * tileSize;
-        const tileY = yStart + y * tileSize;
-        tileToRender.render(selection, tileX, tileY, tileSize);
+        const [tileX, tileY] = getRenderCoords(x, y);
+        tileToRender
+          .render(selection, tileX, tileY, tileSize)
+          .classed('raise', highlightCoords && highlightCoords.x === x && highlightCoords.y === y);
       });
     });
+
+    if (highlightCoords) {
+      const [tileX, tileY] = getRenderCoords(highlightCoords.x, highlightCoords.y);
+      selection
+        .append('rect')
+        .attr('class', 'tile__highlight')
+        .attr('x', tileX)
+        .attr('y', tileY)
+        .attr('width', tileSize)
+        .attr('height', tileSize);
+      selection.select('.raise').raise();
+    }
 
     const avatarGroup = selection.append('g');
 

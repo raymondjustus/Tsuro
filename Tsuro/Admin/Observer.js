@@ -76,7 +76,7 @@ class Observer {
       const avatar = avatarGroup
         .append('g')
         .attr('id', id)
-        .classed('dead', this._deadPlayers.has(id));
+        .classed('dead', this._deadPlayers.has(id) || this._boardState.getAvatar(id).hasLost());
 
       if (this._currentPlayerId === id) {
         this._renderAvatar(avatar, avatarX, 'avatar__highlight');
@@ -142,7 +142,13 @@ class Observer {
     this._renderMeta(selection, width);
 
     const boardSize = width - 2 * MARGIN;
-    this._boardState.render(selection, x + MARGIN, height - boardSize - MARGIN, boardSize);
+    this._boardState.render(
+      selection,
+      x + MARGIN,
+      height - boardSize - MARGIN,
+      boardSize,
+      this._lastAction ? this._lastAction.coords : null
+    );
   }
 
   /**

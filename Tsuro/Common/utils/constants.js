@@ -50,6 +50,7 @@ const RENDER_COLORS = {
   BOARD: '#E3A865',
   BORDER: '#583C14',
   GRAY: '#eeeeee',
+  HIGHLIGHT: '#ffff00',
   WHITE: '#ffffff',
   TILE: '#936D36',
   PATH: '#FCE8B8',
@@ -101,6 +102,13 @@ exports.RENDER_STYLES = `
     opacity: 0.5;
     stroke: ${RENDER_COLORS.BORDER};
     stroke-width: 7;
+  }
+
+  .tile__highlight {
+    fill: ${RENDER_COLORS.HIGHLIGHT};
+    stroke: ${RENDER_COLORS.HIGHLIGHT};
+    stroke-width: 7;
+    opacity: 0.3;
   }
 
   .tile-bg {

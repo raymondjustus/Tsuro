@@ -1,26 +1,111 @@
-const Observer = require('../../Admin/Observer');
-const Player = require('../../Player/Player');
 const path = require('path');
+const { Observer } = require('../../Admin');
+const Player = require('../../Player/Player');
+const { Board, InitialAction, IntermediateAction, Coords } = require('../../Common');
+const { getPositionFromLetter, getTileFromLetters } = require('../../Common/utils');
+const { isValidPlacement, tiles } = require('../../Common/__tests__');
+
+const DEFAULT_PATH = path.resolve(__dirname, '..', 'obs-tests', 'game.svg');
 
 /**
- * Creates a view of the game through a gamestate.
- * @param {string[]} gameState the game state specification.
- * @param {string[]} turnSpec the turn requested by the given player.
- * TODO: Don't remember how to represent optional intake ^^^
+ * Renders the current state of a board given the moves.
+ *
+ * @param {any[][]} moves the game state specification, possibly ending
+ * in a turn specification
  */
-const handleObserver = (gameState, turnSpec = null) => {
-  const playa = new Player();
+const handleObserver = moves => {
+  const observer = new Observer();
+  observer.updateCurrentTurn(moves.length);
 
-  if (turnSpec) {
-    //TODO: Making a move
+  const lastIdx = moves.length - 1;
+  let turnSpec;
+  if (Array.isArray(moves[lastIdx][0])) {
+    turnSpec = moves.pop();
   }
 
-  //make an observer
-  const observer = new Observer();
-  //update its boardstate to be the given one
-  observer.updateBoardState(gameState);
-  //render it
-  observer.render(path.resolve(__dirname, 'tsuro.svg'));
+  const board = new Board();
+  const playerColors = {};
+
+  /**
+   * Handles placing an avatar and tile on the board based on the given placement
+   * spec, then returning a corresponding action.
+   *
+   * @param {[number, number, string, string, number, numer]} initialPlacement an initial
+   * placement array specification
+   * @returns {InitialAction} the corresponding initial action
+   */
+  const handleInitialPlacement = ([tileIdx, rotation, color, port, x, y]) => {
+    const player = new Player(color, color);
+    player.setColor(color);
+    playerColors[color] = [color];
+    observer.updateCurrentPlayerId(color);
+
+    const tile = getTileFromLetters(tiles[tileIdx]).rotate(rotation / 90);
+    const coords = new Coords(x, y);
+    const position = getPositionFromLetter(port);
+
+    board.placeInitialTileAvatar(player, tile, coords, position);
+
+    return new InitialAction(tile, coords, position);
+  };
+
+  /**
+   * Handles placing a tile on the board based on the given placement spec, then
+   * returning a corresponding action.
+   *
+   * @param {[string, number, number, number, numer]} intermediatePlacement an
+   * intermediate placement array specification
+   * @returns {IntermediateAction} the corresponding intermediate action
+   */
+  const handleIntermediatePlacement = ([color, tileIdx, rotation, x, y]) => {
+    observer.updateCurrentPlayerId(color);
+
+    const tile = getTileFromLetters(tiles[tileIdx]).rotate(rotation / 90);
+    const coords = new Coords(x, y);
+
+    board.placeTile(tile, coords);
+
+    return new IntermediateAction(tile, coords);
+  };
+
+  /**
+   * Handles parsing placement specifications and updating the board accordingly.
+   * Also updates the observer's last used action.
+   *
+   * @param {array} placement an array-based placement specification
+   */
+  const handlePlacement = placement => {
+    let action;
+    if (isValidPlacement(placement, true)) {
+      action = handleInitialPlacement(placement);
+    } else if (isValidPlacement(placement, false)) {
+      action = handleIntermediatePlacement(placement);
+    } else {
+      throw 'Invalid placement instruction';
+    }
+    observer.updateLastAction(action);
+  };
+
+  moves.forEach(move => {
+    handlePlacement(move);
+  });
+
+  if (turnSpec) {
+    const [placement, ...hand] = turnSpec;
+    const parsedHand = hand.map(idx => getTileFromLetters(tiles[idx]));
+    observer.updateCurrentHand(parsedHand);
+    handlePlacement(placement);
+  }
+
+  observer.setPlayerColors(playerColors);
+  const boardState = board.getState();
+  observer.updateBoardState(boardState);
+
+  let renderPath = DEFAULT_PATH;
+  if (process.argv[2]) {
+    renderPath = path.resolve(process.argv[2]);
+  }
+  observer.renderToFile(renderPath);
 };
 
 module.exports = handleObserver;
