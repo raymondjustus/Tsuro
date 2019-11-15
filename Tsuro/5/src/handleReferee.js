@@ -22,15 +22,24 @@ const handleReferee = playerNames => {
 
   referee.notifyPlayersOfColors();
   referee.runGame();
-  const winners = referee.getWinners();
+
+  const winners = [referee.getWinners()];
+
+  Object.keys(referee.removedPlayersForTurn).forEach(ending => {
+    winners.push(referee.removedPlayersForTurn[ending]);
+  });
+
   const losers = [];
-  for (let i = playerNames.length; i--; ) {
-    if (winners.indexOf(playerNames[i]) === -1) {
-      losers.push(playerNames[i]);
+  const nonDisqualiedPlayers = winners => [].concat(...winners);
+  for (let i = nonDisqualiedPlayers.length; i--; ) {
+    if (winners.indexOf(nonDisqualiedPlayers[i]) === -1) {
+      if (nonDisqualiedPlayers[i]) {
+        losers.push(nonDisqualiedPlayers[i]);
+      }
     }
   }
 
-  const output = { winners: [winners], losers: losers };
+  const output = { winners: winners, losers: losers };
   console.log(JSON.stringify(output));
 };
 

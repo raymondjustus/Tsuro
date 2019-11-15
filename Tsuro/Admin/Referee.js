@@ -18,7 +18,7 @@ class Referee {
     this.playerMap = {};
     this.currentPlayers = {};
     this.playerIds = [];
-
+    this.rejectedPlayers = [];
     this.removedPlayersForTurn = {};
   }
 
@@ -138,6 +138,7 @@ class Referee {
         )
       );
     }
+
     return isLegal;
   }
 
@@ -188,6 +189,7 @@ class Referee {
       id,
     ];
     this.board.removeAvatar(id);
+    this.rejectedPlayers.push(id);
   }
 
   /**
@@ -283,6 +285,15 @@ class Referee {
     }
     const lastTurn = Math.max(...Object.keys(this.removedPlayersForTurn));
     return this.removedPlayersForTurn[lastTurn];
+  }
+
+  /**
+   * Returns a list of player Id's that have been eliminated from the game by taking illegal moves.
+   *
+   * @returns string[] of player Id's
+   */
+  getLosers() {
+    return this.rejectedPlayers.slice();
   }
 
   /**
