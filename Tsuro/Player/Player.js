@@ -20,6 +20,7 @@ class Player {
     this.hand = [];
     this.gameStatus = GAME_STATUS.WAITING;
     this.boardState = new BoardState();
+    this._shouldPrintResults = true;
   }
 
   /**
@@ -123,6 +124,14 @@ class Player {
   }
 
   /**
+   * Sets whether this player will print out who won their game at the end.
+   * @param {Boolean} flag if the player should print
+   */
+  setPlayerPrintResultsStatus(flag) {
+    this._shouldPrintResults = flag;
+  }
+
+  /**
    * Sets the `gameStatus` to `GameOver`. This signals to the player
    * that the game is now over, and which player(s) won.
    *
@@ -131,7 +140,9 @@ class Player {
    */
   endGame(winners) {
     this.gameStatus = GAME_STATUS.GAME_OVER;
-    console.log(winners);
+    if (this._shouldPrintResults) {
+      console.log(winners);
+    }
   }
 }
 

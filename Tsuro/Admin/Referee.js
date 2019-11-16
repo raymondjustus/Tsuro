@@ -18,7 +18,7 @@ class Referee {
     this.playerMap = {};
     this.currentPlayers = {};
     this.playerIds = [];
-
+    this.rejectedPlayers = [];
     this.removedPlayersForTurn = {};
   }
 
@@ -138,6 +138,7 @@ class Referee {
         )
       );
     }
+
     return isLegal;
   }
 
@@ -179,8 +180,9 @@ class Referee {
    * Removes a player from the board and play.
    *
    * @param {Player} player the player to remove from play
+   * @param {boolean} [fromLegalMove=true] will add to rejected players if false
    */
-  _removePlayer(player) {
+  _removePlayer(player, fromLegalMove = true) {
     const { id } = player;
     delete this.currentPlayers[id];
     this.removedPlayersForTurn[this.currentTurn] = [
@@ -188,6 +190,9 @@ class Referee {
       id,
     ];
     this.board.removeAvatar(id);
+    if (!fromLegalMove) {
+      this.rejectedPlayers.push(id);
+    }
   }
 
   /**
@@ -229,7 +234,7 @@ class Referee {
     const isLegal = this._checkForActionLegality(boardState, player, action, isInitial);
     const isValid = this._checkForActionValidity(boardState, player, action, isInitial);
     if (!isValid || !isLegal) {
-      this._removePlayer(player);
+      this._removePlayer(player, isLegal);
     }
     if (isLegal) {
       this._usePlayerAction(player, action, isInitial);
@@ -276,13 +281,27 @@ class Referee {
    *
    * @returns {string[]} an array of player IDs
    */
-  _getWinners() {
+  getWinners() {
+    let result = Object.keys(this.removedPlayersForTurn)
+      .sort((a, b) => b - a)
+      .map(turn => {
+        return this.removedPlayersForTurn[turn];
+      });
+    // Put winners in front
     const currentPlayers = Object.keys(this.currentPlayers);
     if (currentPlayers.length > 0) {
-      return currentPlayers;
+      result.unshift(currentPlayers);
     }
-    const lastTurn = Math.max(...Object.keys(this.removedPlayersForTurn));
-    return this.removedPlayersForTurn[lastTurn];
+    return result;
+  }
+
+  /**
+   * Returns a list of player Id's that have been eliminated from the game by taking illegal moves.
+   *
+   * @returns {string[]} an array of IDs for players eliminated from the game
+   */
+  getLosers() {
+    return this.rejectedPlayers.slice();
   }
 
   /**
@@ -290,7 +309,7 @@ class Referee {
    * won the game.
    */
   _notifyPlayersOfGameOver() {
-    const winners = this._getWinners();
+    const winners = this.getWinners();
     this.playerIds.forEach(id => {
       this.playerMap[id].endGame(winners);
     });
