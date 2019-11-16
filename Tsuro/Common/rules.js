@@ -51,7 +51,7 @@ class RuleChecker {
    */
   static checkPlacementValidity(boardState, tilePlacement, player) {
     // Copy the board to test tile placement results
-    const boardCopy = new Board([], boardState.copy());
+    const boardCopy = new Board(boardState.copy());
     boardCopy.placeTile(tilePlacement.tile, tilePlacement.coords);
     const avatarCopy = boardCopy.getAvatar(player.id);
 
@@ -61,10 +61,10 @@ class RuleChecker {
   /**
    * Check whether the tile placement is valid and, if not, whether the player has any valid moves within their hand.
    *
-   * @param {*} boardState
-   * @param {*} tilePlacement
-   * @param {*} player
-   * @returns {boolean}
+   * @param {BoardState} boardState is a representation of the board and the current state of the game
+   * @param {TilePlacement} tilePlacement is what is about to be done (eg. tile placement)
+   * @param {Player} player is the player intending on the action
+   * @returns {boolean} whether the player has a valid move in their hand
    */
   static checkHandValidity(boardState, tilePlacement, player) {
     if (this.checkPlacementValidity(boardState, tilePlacement, player)) {
@@ -108,7 +108,7 @@ class RuleChecker {
     return hand.some(tile => {
       // Test all four rotations
       for (let j = 0; j < 4; j++) {
-        const boardCopy = new Board([], boardState.copy());
+        const boardCopy = new Board(boardState.copy());
         const tileCopy = tile.copy(j);
         boardCopy.placeTile(tileCopy, coords);
         const avatarCopy = boardCopy.getAvatar(id);

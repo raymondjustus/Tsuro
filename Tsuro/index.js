@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 
 const path = require('path');
-const Referee = require('./Admin/Referee');
+const { Observer, Referee } = require('./Admin');
 const Player = require('./Player/Player');
 const DumbStrategy = require('./Player/Strategy/DumbStrategy');
 
@@ -13,8 +13,10 @@ const woodsman = new Player('woodsman', 'Woodsman', DumbStrategy);
 const beast = new Player('beast', 'Beast', DumbStrategy);
 
 const referee = new Referee();
+const observer = new Observer();
 
-referee.addPlayer(jack); // Jack wins, by default
+referee.addObserver(observer);
+referee.addPlayer(jack); // Not enough players
 referee.addPlayer(jill); // Jill wins
 referee.addPlayer(wirt); // Wirt wins
 // referee.addPlayer(greg); // Jill wins
@@ -23,4 +25,4 @@ referee.addPlayer(wirt); // Wirt wins
 referee.notifyPlayersOfColors();
 referee.runGame();
 
-referee.board.renderToFile(path.resolve(__dirname, 'final.svg'));
+observer.renderToFile('final.png');
