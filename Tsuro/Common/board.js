@@ -1,28 +1,15 @@
-const fs = require('fs');
-const D3Node = require('d3-node');
 const BoardState = require('./boardState');
-const Tile = require('./tiles');
-const { BOARD_SIZE, DIRECTIONS, RENDER_STYLES } = require('./utils/constants');
+const { BOARD_SIZE, DIRECTIONS } = require('./utils/constants');
 
 class Board {
   /**
    * Creates a new board. Provides overrides for tiles and avatars for
    * cloning Board objects.
    *
-   * @param {InitialPlacement[]} [initialPlacements=[]] an array of initial
-   * placements that outline tile and avatar coords/positions
    * @param {BoardState} [stateOverride] override for initial state
    */
-  constructor(initialPlacements = [], stateOverride) {
-    this.d3Node = new D3Node({ styles: RENDER_STYLES });
-    this.d3 = this.d3Node.d3;
-
+  constructor(stateOverride) {
     this._state = new BoardState(stateOverride);
-
-    initialPlacements.forEach(({ tile, coords, player, color, position }) => {
-      player.setColor(color);
-      this.placeInitialTileAvatar(player, tile, coords, position);
-    });
   }
 
   /**
@@ -32,7 +19,7 @@ class Board {
    */
   copy() {
     const copiedState = this.getState();
-    return new Board([], copiedState);
+    return new Board(copiedState);
   }
 
   /**
@@ -233,10 +220,6 @@ class Board {
     });
   }
 
-  ///////////////////////////////////
-  // RENDER FUNCTIONS
-  ///////////////////////////////////
-
   /**
    * Renders a board to the given selection.
    *
@@ -246,33 +229,7 @@ class Board {
    * @param {number} size the total size of the board
    */
   render(selection, xStart, yStart, size) {
-    const tileSize = size / BOARD_SIZE;
-
-    const emptyTile = new Tile();
-    this._state.getTiles().forEach((column, x) => {
-      column.forEach((tile, y) => {
-        const tileToRender = tile || emptyTile;
-        const tileX = xStart + x * tileSize;
-        const tileY = yStart + y * tileSize;
-        tileToRender.render(selection, tileX, tileY, tileSize);
-      });
-    });
-  }
-
-  /**
-   * Renders a tile to the render directory, given a filename.
-   *
-   * @param {string} path the path of the file (with extension)
-   * @param {string} size the size of the image
-   */
-  renderToFile(path, size = 800) {
-    const svg = this.d3Node.createSVG(size, size);
-
-    this.render(svg, 0, 0, size);
-
-    const svgFile = fs.createWriteStream(path);
-    svgFile.write(this.d3Node.svgString());
-    svgFile.end();
+    this._state.render(selection, xStart, yStart, size);
   }
 }
 
