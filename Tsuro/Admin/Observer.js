@@ -160,13 +160,12 @@ class Observer {
    * the tile that was chosen from the hand.
    *
    * @param {d3.Selection} selection the selection to render the action to
-   * @param {number} width the total width of the screen
    * @param {boolean} renderAsSvg whether this should render for SVG file
    * formats
    */
-  _renderLastAction(selection, width, renderAsSvg) {
+  _renderLastAction(selection, renderAsSvg) {
     if (this._lastAction) {
-      let tileX = width - MARGIN;
+      let tileX = WIDTH - MARGIN;
 
       this._lastHand.forEach(tile => {
         tileX -= TILE_PREVIEW_SIZE;
@@ -202,11 +201,10 @@ class Observer {
    * order, and the last action made.
    *
    * @param {d3.Selection} selection the selection to render the action to
-   * @param {number} width the total width of the screen
    * @param {boolean} renderAsSvg whether this should render for SVG file
    * formats
    */
-  _renderMeta(selection, width, renderAsSvg) {
+  _renderMeta(selection, renderAsSvg) {
     selection
       .append('text')
       .attr('class', 'text')
@@ -219,7 +217,7 @@ class Observer {
       .lower();
 
     this._renderAvatars(selection);
-    this._renderLastAction(selection, width, renderAsSvg);
+    this._renderLastAction(selection, renderAsSvg);
   }
 
   /**
@@ -227,28 +225,26 @@ class Observer {
    * the meta info and current board state.
    *
    * @param {d3.Selection} selection the current D3 selection
-   * @param {number} [width=WIDTH] the total width of the "screen"
-   * @param {number} [height=HEIGHT] the total height of the "screen"
    * @param {boolean} [renderAsSvg=true] whether this should render for
    * SVG file formats
    */
-  render(selection, width = WIDTH, height = HEIGHT, renderAsSvg = true) {
+  render(selection, renderAsSvg = true) {
     selection
       .append('g')
       .append('rect')
       .attr('class', 'background')
       .attr('x', 0)
       .attr('y', 0)
-      .attr('width', width)
-      .attr('height', height);
+      .attr('width', WIDTH)
+      .attr('height', HEIGHT);
 
-    this._renderMeta(selection, width, renderAsSvg);
+    this._renderMeta(selection, renderAsSvg);
 
-    const boardSize = width - 2 * MARGIN;
+    const boardSize = WIDTH - 2 * MARGIN;
     this._boardState.render(
       selection,
       MARGIN,
-      height - boardSize - MARGIN,
+      HEIGHT - boardSize - MARGIN,
       boardSize,
       this._lastAction ? this._lastAction.coords : null
     );
@@ -301,7 +297,7 @@ class Observer {
     }
 
     const svg = this.d3Node.createSVG(WIDTH, HEIGHT);
-    this.render(svg, WIDTH, HEIGHT, shouldCreateSvg);
+    this.render(svg, shouldCreateSvg);
     const svgString = this.d3Node.svgString();
 
     if (shouldCreateSvg) {
