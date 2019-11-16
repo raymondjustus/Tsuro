@@ -6,6 +6,8 @@ This directory contains all code for `sudo-wudo`'s Tsuro game for CS 4500 Softwa
 
 ## Table of Contents
 
+- [About the Project](#about-the-project)
+- [Commit History](#commit-history)
 - [Project Structure](#project-structure)
 
 ## About the Project
@@ -30,6 +32,49 @@ This project is to be completed by the `sudo-wudo` team, whose members include J
 
 ```
 Tsuro
-|-- README.md
+|== 1
+|== 2
+|== 3
+|== 4
+|== 5
+|== Admin
+|  |-- index.js
+|  |-- Observer.js
+|  |-- Referee.js
+|
+|== Common
+|  |== __tests__
+|  |== utils
+|  |-- action.js
+|  |-- avatar.js
+|  |-- board.js
+|  |-- boardState.js
+|  |-- coords.js
+|  |-- index.js
+|  |-- path.js
+|  |-- position.js
+|  |-- renderUtils.js
+|  |-- rules.js
+|  |-- tiles.js
+|
+|== Planning
+|  |-- board.md
+|  |-- observer.md
+|  |-- player.md
+|  |-- referee.md
+|  |-- rules.md
+|
+|== Player
+|  |== Strategy
+|  |  |-- Strategy.js
+|  |  |-- DumbStrategy.js
+|  |
+|  |-- Player.js
+|
+|-- .babelrc
+|-- package-lock.json
+|-- package.json
 |-- plan.md
+|-- README.md
+|-- webpack.config.js
 ```
