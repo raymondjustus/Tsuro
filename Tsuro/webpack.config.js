@@ -3,7 +3,8 @@ const { BannerPlugin } = require('webpack');
 const WebpackShellPlugin = require('webpack-shell-plugin-next');
 
 const files = {
-  '5/xobs': '5/src/index.js',
+  '5/xobs': '5/src/xobs.js',
+  '5/xref': '5/src/xref.js',
 };
 
 module.exports = {
