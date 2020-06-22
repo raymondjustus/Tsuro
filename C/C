@@ -1,5 +1,0 @@
-#!/usr/bin/env node
-
-const main = require('./Other/1');
-
-main(8000);
